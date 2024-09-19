@@ -26,7 +26,7 @@ void AppWindow::onCreate()
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	vertex list[] = {
+	Vertex list[] = {
 		//X - Y - Z
 		{-0.5f, -0.5f, 0.0f}, //POS1
 		{0.5f, 0.5f, 0.0f}, //POS2
@@ -45,7 +45,7 @@ void AppWindow::onCreate()
 	UINT size_shader = 0;
 	GraphicsEngine::get()->getShaderBufferAndSize(&shader_byte_code, &size_shader);
 
-	this->m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	this->m_vb->load(list, sizeof(Vertex), size_list, shader_byte_code, size_shader);
 }
 
 void AppWindow::onUpdate()
