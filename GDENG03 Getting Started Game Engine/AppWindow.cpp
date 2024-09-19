@@ -5,7 +5,7 @@ struct vec3
 	float x, y, z;
 };
 
-struct vertex 
+struct Vertex 
 {
 	vec3 position;
 };
@@ -29,8 +29,12 @@ void AppWindow::onCreate()
 	vertex list[] = {
 		//X - Y - Z
 		{-0.5f, -0.5f, 0.0f}, //POS1
-		{0.0f, 0.5f, 0.0f}, //POS2
+		{0.5f, 0.5f, 0.0f}, //POS2
 		{0.5f, -0.5f, 0.0f}, //POS3
+
+		{-0.5f, -0.5f, 0.0f}, //POS1
+		{-0.5f, 0.5f, 0.0f}, //POS2
+		{0.5f, 0.5f, 0.0f}, //POS3
 	};
 	this->m_vb = GraphicsEngine::get()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(list);
