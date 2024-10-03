@@ -6,6 +6,7 @@
 #include "VertexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "Quad.h"
 
 class AppWindow: public Window
 {

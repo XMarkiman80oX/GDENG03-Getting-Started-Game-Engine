@@ -1,14 +1,15 @@
 #include "AppWindow.h"
+#include "Quad.h"
 
-struct vec3
-{
-	float x, y, z;
-};
+//struct vec3
+//{
+//	float x, y, z;
+//};
 
 struct vertex
 {
-	vec3 position;
-	vec3 color;
+	Vector3 position;
+	Vector3 color;
 };
 
 AppWindow::AppWindow()
@@ -19,42 +20,43 @@ AppWindow::AppWindow()
 AppWindow::~AppWindow()
 {
 }
-
 void AppWindow::onCreate()
 {
-	Window::onCreate();
-	GraphicsEngine::get()->init();
-	m_swap_chain=GraphicsEngine::get()->createSwapChain();
+    Window::onCreate();
+    GraphicsEngine::get()->init();
+    m_swap_chain = GraphicsEngine::get()->createSwapChain();
 
-	RECT rc = this->getClientWindowRect();
-	m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
+    RECT rc = this->getClientWindowRect();
+    m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-	vertex list[] = 
-	{
-		//X - Y - Z
-		{-0.5f,-0.5f,0.0f,   0,0,0}, // POS1
-		{-0.5f,0.5f,0.0f,    1,1,0}, // POS2
-		{ 0.5f,-0.5f,0.0f,   0,0,1},// POS2
-		{ 0.5f,0.5f,0.0f,    1,1,1}
-	};
+    // Create a Quad instance
+    Quad quad;
 
-	m_vb=GraphicsEngine::get()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(list);
+    vertex list[4];
 
-	void* shader_byte_code = nullptr;
-	size_t size_shader = 0;
-	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
+    // Populate the vertex list using Quad's data
+    for (int i = 0; i < 4; i++)
+    {
+        list[i].position = quad.getVertexPositions()[i];
+        list[i].color = quad.getVertexColors()[i];
+    }
 
-	m_vs=GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
-	m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+    // Create and load the vertex buffer using Quad's data
+    m_vb = GraphicsEngine::get()->createVertexBuffer();
+    UINT size_list = ARRAYSIZE(list);
 
-	GraphicsEngine::get()->releaseCompiledShader();
+    void* shader_byte_code = nullptr;
+    size_t size_shader = 0;
+    GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
 
+    m_vs = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+    m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
-	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
-	m_ps = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
-	GraphicsEngine::get()->releaseCompiledShader();
+    GraphicsEngine::get()->releaseCompiledShader();
 
+    GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
+    m_ps = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
+    GraphicsEngine::get()->releaseCompiledShader();
 }
 
 void AppWindow::onUpdate()
