@@ -30,6 +30,9 @@ public:
 private:
 	ID3D11DeviceContext* m_device_context;
 
+public:
+	ID3D11DeviceContext* getDeviceContext();
+
 private:
 	friend class ConstantBuffer;
 };

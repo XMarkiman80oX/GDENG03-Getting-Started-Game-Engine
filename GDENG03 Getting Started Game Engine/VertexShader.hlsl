@@ -1,28 +1,26 @@
 struct VS_INPUT
 {
-    float4 position : POSITION;
-    float4 position1 : POSITION1; 
-    float3 color : COLOR;
-    float3 color1 : COLOR1;
-};
-struct VS_OUTPUT
-{
-    float4 position : SV_POSITION;
-    float3 color : COLOR;
-    float3 color1 : COLOR1;
+    float4 position1 : POSITION; // First position
+    float4 position2 : POSITION; // Second position
+    float3 color1 : COLOR; // First color
+    float3 color2 : COLOR1; // Second color
+    float2 texCoord : TEXCOORD; // Texture coordinates
 };
 
-cbuffer constant : register(b0)
+struct PS_INPUT
 {
-    unsigned int m_time;
+    float4 position : SV_POSITION; // Output position for pixel shader
+    float2 texCoord : TEXCOORD; // Pass through texture coordinates
+    float3 color1 : COLOR; // Pass through first color
+    float3 color2 : COLOR1; // Pass through second color
 };
 
-VS_OUTPUT main(VS_INPUT input)
+PS_INPUT vsmain(VS_INPUT input)
 {
-    VS_OUTPUT output = (VS_OUTPUT) 0;
-    output.position = lerp(input.position, input.position1, sin(m_time/1000.0f) + 1.0f/2.0f);
-    output.color = input.color;
-    output.color1 = input.color1;
-    
+    PS_INPUT output;
+    output.position = input.position1; // Or use some transformation if needed
+    output.texCoord = input.texCoord; // Pass through texture coordinates
+    output.color1 = input.color1; // Pass through first color
+    output.color2 = input.color2; // Pass through second color
     return output;
 }

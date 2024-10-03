@@ -5,6 +5,7 @@
 #include "ConstantBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "Texture.h"
 
 #include <d3dcompiler.h>
 
@@ -120,6 +121,11 @@ PixelShader* GraphicsEngine::createPixelShader(const void* shader_byte_code, siz
 	}
 
 	return ps;
+}
+
+Texture* GraphicsEngine::createTexture() 
+{
+	return new Texture();
 }
 
 bool GraphicsEngine::compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)

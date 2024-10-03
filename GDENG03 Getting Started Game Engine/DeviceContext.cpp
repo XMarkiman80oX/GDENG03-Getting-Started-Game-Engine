@@ -80,3 +80,8 @@ bool DeviceContext::release()
 DeviceContext::~DeviceContext()
 {
 }
+
+ID3D11DeviceContext* DeviceContext::getDeviceContext()
+{
+	return this->m_device_context;
+}
