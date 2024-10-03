@@ -1,15 +1,15 @@
 #include "VertexBuffer.h"
 #include "GraphicsEngine.h"
 
-VertexBuffer::VertexBuffer()
-	: m_buffer(0), m_layout(0)
+
+VertexBuffer::VertexBuffer():m_layout(0),m_buffer(0)
 {
 }
 
-bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, size_t size_byte_shader)
+bool VertexBuffer::load(void* list_vertices,UINT size_vertex,UINT size_list,void*shader_byte_code,size_t size_byte_shader)
 {
-	if (this->m_buffer)this->m_buffer->Release();
-	if (this->m_layout)this->m_layout->Release();
+	if (m_buffer)m_buffer->Release();
+	if (m_layout)m_layout->Release();
 
 	D3D11_BUFFER_DESC buff_desc = {};
 	buff_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -24,19 +24,24 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list, v
 	m_size_vertex = size_vertex;
 	m_size_list = size_list;
 
-	if(FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
+	if (FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
+	{
 		return false;
-
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	}
+	
+	D3D11_INPUT_ELEMENT_DESC layout[]=
 	{
 		//SEMANTIC NAME - SEMANTIC INDEX - FORMAT - INPUT SLOT - ALIGNED BYTE OFFSET - INPUT SLOT CLASS - INSTANCE DATA STEP RATE
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"POSITION", 0,  DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,D3D11_INPUT_PER_VERTEX_DATA ,0},
+		{ "COLOR", 0,  DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,D3D11_INPUT_PER_VERTEX_DATA ,0 }
 	};
+	
 	UINT size_layout = ARRAYSIZE(layout);
-	
+
 	if (FAILED(GraphicsEngine::get()->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &m_layout)))
+	{
 		return false;
-	
+	}
 
 	return true;
 }
@@ -48,11 +53,12 @@ UINT VertexBuffer::getSizeVertexList()
 
 bool VertexBuffer::release()
 {
-	this->m_layout->Release();
-	this->m_buffer->Release();
+	m_layout->Release();
+	m_buffer->Release();
 	delete this;
 	return true;
 }
+
 
 VertexBuffer::~VertexBuffer()
 {
