@@ -13,10 +13,10 @@ Quad::Quad()
 	this->colors = new vec3[vertexCount];
 
 	if (this->vertexCount == 4) {
-		position[0] = { -0.5f, -0.5f, 0.0f };
-		position[1] = { -0.5f,  0.5f, 0.0f };
-		position[2] = { 0.5f, -0.5f, 0.0f };
-		position[3] = { 0.5f,  0.5f, 0.0f };
+		position[0] = { -0.25f, -0.25f, 0.0f };
+		position[1] = { -0.25f,  0.25f, 0.0f };
+		position[2] = { 0.25f, -0.25f, 0.0f };
+		position[3] = { 0.25f,  0.25f, 0.0f };
 	}
 }
 

@@ -1,5 +1,6 @@
 #include "AppWindow.h"
 #include "Quad.h"
+#include "iostream"
 
 //struct vec3
 //{
@@ -29,21 +30,35 @@ void AppWindow::onCreate()
     RECT rc = this->getClientWindowRect();
     m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
-    // Create a Quad instance
-    Quad quad;
+    const int numQuads = 3; // Number of quads to draw
+    Quad quads[numQuads];    // Create an array of Quads
 
-    vertex list[4];
+    // Adjust positions of each quad (you can set unique colors as well)
+    quads[0].setPosition(-1.0f, 0.0f); // Position for first quad
+    quads[1].setPosition(0.0f, 0.0f);  // Position for second quad
+    quads[2].setPosition(1.0f, 0.0f);  // Position for third quad
+
+    const int verticesPerQuad = 4;
+    vertex list[numQuads * verticesPerQuad]; // Array to hold all vertices for all quads
 
     // Populate the vertex list using Quad's data
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < numQuads; i++)
     {
-        list[i].position = quad.getVertexPositions()[i];
-        list[i].color = quad.getVertexColors()[i];
+        Vector3* quadPositions = quads[i].getVertexPositions();
+        Vector3* quadColors = quads[i].getVertexColors();
+
+        for (int j = 0; j < verticesPerQuad; j++)
+        {
+            list[i * verticesPerQuad + j].position = quadPositions[j];
+            list[i * verticesPerQuad + j].color = quadColors[j];
+        }
     }
 
     // Create and load the vertex buffer using Quad's data
     m_vb = GraphicsEngine::get()->createVertexBuffer();
     UINT size_list = ARRAYSIZE(list);
+    std::cout << "size list: " << size_list << std::endl; //4
+    std::cout << "size of vertex: " << sizeof(vertex) << std::endl; //24
 
     void* shader_byte_code = nullptr;
     size_t size_shader = 0;
