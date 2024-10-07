@@ -21,7 +21,8 @@ public:
 	bool isRun();
 
 	RECT getClientWindowRect();
-	void setHWND(HWND hwnd);
+	void setHWND(HWND hwnd); /*Set the handle of the window before the onCreate is called, otherwise,
+								when we initialize the SwapChain we will pass an invalid window handle*/
 
 	//EVENTS
 	virtual void onCreate() = 0;

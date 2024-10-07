@@ -14,11 +14,21 @@ GraphicsEngine::GraphicsEngine()
 
 bool GraphicsEngine::init()
 {
+	/* -"allows us to create the device from which we will get access to all the necessary
+	* resources necessary to draw on the screen"
+	*  -"The driver is what allows directX to exectute the throw in functions"
+	*  - We have to loop through some driver types until the creation of the device will be successful
+	* hence why the vector
+	*/
 	D3D_DRIVER_TYPE driver_types[] =
 	{
-		D3D_DRIVER_TYPE_HARDWARE,
-		D3D_DRIVER_TYPE_WARP,
-		D3D_DRIVER_TYPE_REFERENCE
+		//Arranged best to worst
+		D3D_DRIVER_TYPE_HARDWARE, /*Where the drawing calls are executed mainly on the gpu 
+										to guarantee the best performance
+									*/
+		D3D_DRIVER_TYPE_WARP, /* Where the draw and calls are all executed on the CPU
+								*/
+		D3D_DRIVER_TYPE_REFERENCE /* Really slow performance */
 	};
 	UINT num_driver_types = ARRAYSIZE(driver_types);
 
@@ -30,6 +40,7 @@ bool GraphicsEngine::init()
 
 	HRESULT res = 0;
 
+	//This loop is for scanning our vector of driver types
 	for (UINT driver_type_index = 0; driver_type_index < num_driver_types;)
 	{
 		res = D3D11CreateDevice(NULL, driver_types[driver_type_index], NULL, NULL, feature_levels,
@@ -47,9 +58,33 @@ bool GraphicsEngine::init()
 
 	m_imm_device_context = new DeviceContext(m_imm_context);
 
+	/*
+	*	If m_d3d_device supports IDXGIDevice, QueryInterface will 
+	* return a pointer to it and that pointer will be stored in m_dxgi_device
+	*/
 	m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&m_dxgi_device);
+	/*
+	*	-IDXGIAdapter is basically the GPU or the hardware
+	*	-This queries info about the hardware and its capabilities
+	*	-The result of this call will give you a pointer to IDXGIAdapter, stored in m_dxgi_adapter.
+	*/
 	m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&m_dxgi_adapter);
+	/*
+	*	-The IDXGIFactory interface allows you to create and manage resources related to DirectX,
+	such as swap chains (which manage buffers for rendering and presenting frames on the screen).
+		-The result of this call will give you a pointer to IDXGIFactory, stored in m_dxgi_factory.
+	*/
 	m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)&m_dxgi_factory);
+	/*
+	* DXGI (DirectX Graphics Infrastructure) provides low-level access to display devices, 
+	such as video cards and monitors, and is responsible for tasks like 
+	presenting rendered frames to the screen, managing full-screen transitions, and creating swap chains.
+
+	* -"By accessing the IDXGIDevice, IDXGIAdapter, and IDXGIFactory,
+	you can manage these resources and handle things like 
+	creating swap chains, querying GPU information, 
+	and handling display modes (windowed vs fullscreen)."
+	*/
 
 	return true;
 }
