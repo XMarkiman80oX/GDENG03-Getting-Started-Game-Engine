@@ -91,8 +91,8 @@ bool GraphicsEngine::init()
 
 bool GraphicsEngine::release()
 {
-	if (m_vs)m_vs->Release();
-	if (m_ps)m_ps->Release();
+	if (m_vertex_shader)m_vertex_shader->Release();
+	if (m_pixel_shader)m_pixel_shader->Release();
 
 	if (m_vsblob)m_vsblob->Release();
 	if (m_psblob)m_psblob->Release();

@@ -15,7 +15,7 @@ private:
 	bool init(const void* shader_byte_code, size_t byte_code_size);
 
 private:
-	ID3D11PixelShader* m_ps;
+	ID3D11PixelShader* m_pixel_shader;
 
 private:
 	friend class GraphicsEngine;

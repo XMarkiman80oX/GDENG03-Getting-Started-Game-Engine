@@ -21,9 +21,9 @@ public:
 
 private:
 	SwapChain* m_swap_chain;
-	VertexBuffer* m_vb;
-	VertexShader* m_vs;
-	PixelShader* m_ps;
+	VertexBuffer* m_vertex_buffer;
+	VertexShader* m_vertex_shader;
+	PixelShader* m_pixel_shader;
 	ConstantBuffer* m_cb;
 };
 

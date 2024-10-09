@@ -37,6 +37,7 @@ void AppWindow::onCreate()
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
+	//Set the vertices of the object here
 	vertex list[] = {
 		//X - Y - Z
 		{-0.5f, -0.5f, 0.0f,  -0.32f, -0.11f, 0.0f,      0,1,0,  0,1,0}, //POS1
@@ -44,22 +45,23 @@ void AppWindow::onCreate()
 		{0.5f, -0.5f, 0.0f,    0.75f, -0.73f, 0.0f,      0,1,0, 1,0,0}, //POS3
 		{0.5f, 0.5f, 0.0f,     0.88f, 0.77f, 0.0f,       0,1,0, 0,0,1}, //POS4
 	};
-	this->m_vb = GraphicsEngine::get()->createVertexBuffer();
+	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
+	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(list);
 
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
 	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
 	
-	this->m_vs = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
 	
-	this->m_vb->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	this->m_vertex_buffer->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
 
 	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
 
-	this->m_ps = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
+	this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
 
@@ -82,25 +84,25 @@ void AppWindow::onUpdate()
 	constant cc;
 	cc.m_time = GetTickCount();
 	this->m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vs, m_cb);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_ps, m_cb);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_cb);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_cb);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vs);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_ps);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vb);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vb->getSizeVertexList(), 0);
+	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vertex_buffer->getSizeVertexList(), 0);
 	m_swap_chain->present(true);
 }
 
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
-	this->m_vb->release();
+	this->m_vertex_buffer->release();
 	this->m_swap_chain->release();
 
-	this->m_vs->release();
-	this->m_ps->release();
+	this->m_vertex_shader->release();
+	this->m_pixel_shader->release();
 	GraphicsEngine::get()->release();
 }
