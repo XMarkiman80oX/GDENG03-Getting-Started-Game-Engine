@@ -38,6 +38,7 @@ void AppWindow::onCreate()
 	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
 	//Set the vertices of the object here
+	//This is using the triangle strip approach
 	vertex list[] = {
 		//X - Y - Z
 		{-0.5f, -0.5f, 0.0f,  -0.32f, -0.11f, 0.0f,      0,1,0,  0,1,0}, //POS1
