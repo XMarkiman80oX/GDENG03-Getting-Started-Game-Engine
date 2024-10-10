@@ -160,8 +160,15 @@ PixelShader* GraphicsEngine::createPixelShader(const void* shader_byte_code, siz
 bool GraphicsEngine::compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
 	ID3DBlob* error_blob = nullptr;
-	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name
-		, "vs_5_0", 0, 0, &this->m_blob, &error_blob)))
+	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, 
+		entry_point_name //the name of the function given by vertex shader hlsl
+		, "vs_5_0", //indicates the version of the set of shader features with which we want to 
+					//compile our shader code. "vs" for vertex shader.
+		0, 0, //useless as of the moment
+		&this->m_blob, //output param
+						//data structure in which we replaced the buffer with the compiled shader and its size in the memory
+		&error_blob))) //output param
+						//includes all the warning and error messages in case the compilation fails
 	{
 		if(error_blob)error_blob->Release();
 		return false;
@@ -175,6 +182,7 @@ bool GraphicsEngine::compileVertexShader(const wchar_t* file_name, const char* e
 
 bool GraphicsEngine::compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
+	//Notes are similar in compileVertexShader function
 	ID3DBlob* error_blob = nullptr;
 	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name
 		, "ps_5_0", 0, 0, &this->m_blob, &error_blob)))

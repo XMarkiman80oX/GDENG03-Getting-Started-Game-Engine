@@ -1,17 +1,23 @@
 struct VS_INPUT
 {
-    float4 position : POSITION;
+    float4 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
+                                // identifies that this attribute corresponds to "up vertex position"
     float4 position1 : POSITION1; 
     float3 color : COLOR;
     float3 color1 : COLOR1;
 };
-struct VS_OUTPUT
+struct VS_OUTPUT //The vertex shader will send the input data to the pixel shader after its execution
 {
-    float4 position : SV_POSITION;
+    float4 position : SV_POSITION; // The " : SV_POSITION " part is a system value semantic
+                                   // after the signature of the function. This indicates to the graphics
+                                   // pipeline that the output of our vertex shader will contain
+                                   // the final transformed vertex position in the screen space coordinates
+                                   // used for rasterization
     float3 color : COLOR;
     float3 color1 : COLOR1;
 };
 
+//This is the constant buffer that will be passed to this vertex shader
 cbuffer constant : register(b0)
 {
     unsigned int m_time;
@@ -19,8 +25,13 @@ cbuffer constant : register(b0)
 
 VS_OUTPUT main(VS_INPUT input)
 {
-    VS_OUTPUT output = (VS_OUTPUT) 0;
-    output.position = lerp(input.position, input.position1, sin(m_time/1000.0f) + 1.0f/2.0f);
+    VS_OUTPUT output = (VS_OUTPUT) 0; //This creates a VS_OUTPUT object
+    output.position = lerp(input.position /*initial position*/, input.position1/*new position*/, 
+                            sin(m_time / 1000.0f) + 1.0f / 2.0f /*- delta time
+                                                                  - + 1/2 because delta only accepts [0,1],
+                                                                  by default it's [-1,1] (if only +1, it's going to be
+                                                                  [0,2])*/
+                            );
     output.color = input.color;
     output.color1 = input.color1;
     

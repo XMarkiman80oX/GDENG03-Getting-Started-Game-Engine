@@ -19,7 +19,7 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	if (this->m_layout)this->m_layout->Release();
 
 	D3D11_BUFFER_DESC buff_desc = {};
-	buff_desc.Usage = D3D11_USAGE_DEFAULT; //Means it can be read and writting in both cpu and gpu
+	buff_desc.Usage = D3D11_USAGE_DEFAULT; //Means it can be read and written in both cpu and gpu
 	buff_desc.ByteWidth = size_vertex * size_list; //Size in bytes of our buffer
 	buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //We tell directx how to bind our buffer to the graphics pipleine
 													//Here, we're saying it's a vertex buffer
@@ -42,7 +42,7 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 		//SEMANTIC NAME - SEMANTIC INDEX - FORMAT - INPUT SLOT - ALIGNED BYTE OFFSET - INPUT SLOT CLASS - INSTANCE DATA STEP RATE
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0}, //only rgb, not rgba
 		{"COLOR", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	UINT size_layout = ARRAYSIZE(layout);//returns the number of attributes

@@ -24,6 +24,6 @@ private:
 	VertexBuffer* m_vertex_buffer;
 	VertexShader* m_vertex_shader;
 	PixelShader* m_pixel_shader;
-	ConstantBuffer* m_cb;
+	ConstantBuffer* m_constant_buffer;
 };
 

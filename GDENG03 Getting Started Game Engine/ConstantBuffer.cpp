@@ -28,6 +28,7 @@ bool ConstantBuffer::load(void* buffer, UINT size_buffer)
 
 void ConstantBuffer::update(DeviceContext* context, void* buffer)
 {
+	//This will allow us "to upload the new data into our constant buffer in video memory".
 	context->m_device_context->UpdateSubresource(this->m_buffer, NULL, NULL, buffer, NULL, NULL);
 }
 
