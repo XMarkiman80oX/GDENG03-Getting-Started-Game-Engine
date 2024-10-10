@@ -1,18 +1,6 @@
 #include "AppWindow.h"
 #include <Windows.h>
 
-struct vec3
-{
-	float x, y, z;
-};
-
-struct vertex 
-{
-	vec3 position;
-	vec3 position1;
-	vec3 color;
-	vec3 color1;
-};
 
 __declspec(align(16))
 struct constant 
@@ -40,10 +28,10 @@ void AppWindow::onCreate()
 	//Set the vertices of the object here
 	vertex list[] = {
 		//X - Y - Z
-		{-0.5f, -0.5f, 0.0f,  -0.32f, -0.11f, 0.0f,      0,1,0,  0,1,0}, //POS1
-		{-0.5f, 0.5f, 0.0f,   -0.11f, 0.78f, 0.0f,       0,1,0, 0,1,0}, //POS2
-		{0.5f, -0.5f, 0.0f,    0.75f, -0.73f, 0.0f,      0,1,0, 1,0,0}, //POS3
-		{0.5f, 0.5f, 0.0f,     0.88f, 0.77f, 0.0f,       0,1,0, 0,0,1}, //POS4
+		{vec3(-0.5f, -0.5f, 0.0f),  vec3(-0.5f, -0.5f, 0.0f),      vec3(0,1,0),  vec3(0,1,0)}, //POS1
+		{vec3(-0.5f, 0.5f, 0.0f),   vec3(-0.5f, 0.5f, 0.0f),       vec3(0,1,0), vec3(0,1,0)}, //POS2
+		{vec3(0.5f, -0.5f, 0.0f),    vec3(0.5f, -0.5f, 0.0f),      vec3(0,1,0), vec3(1,0,0)}, //POS3
+		//{0.5f, 0.5f, 0.0f,    0.5f, 0.5f, 0.0f,       0,1,0, 0,0,1}, //POS4
 	};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
@@ -105,4 +93,8 @@ void AppWindow::onDestroy()
 	this->m_vertex_shader->release();
 	this->m_pixel_shader->release();
 	GraphicsEngine::get()->release();
+}
+
+void AppWindow::DrawTriangle()
+{
 }
