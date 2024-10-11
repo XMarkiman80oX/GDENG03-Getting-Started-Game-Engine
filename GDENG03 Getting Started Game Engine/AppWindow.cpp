@@ -95,6 +95,7 @@ void AppWindow::onUpdate()
 		std::cout << "BACKSPACE PRESSED" << std::endl;
 		this->isPressed = false;
 		CircleManager::get()->popCircle();
+		this->loadBuffersAndShaders();
 	}
 }
 
@@ -120,30 +121,7 @@ void AppWindow::SpawnCircle(vec3 position, vec3 color, bool isFirstTime)
 
 	if (isFirstTime) 
 	{
-		//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-		this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
-
-
-		GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-
-		this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
-
-		this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
-
-		GraphicsEngine::get()->releaseCompiledShader();
-
-
-		GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-
-		this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
-
-		//GraphicsEngine::get()->releaseCompiledShader();
-
-		constant cc;
-		cc.m_time = 0;
-
-		this->m_constant_buffer = GraphicsEngine::get()->createConstantBuffer();
-		this->m_constant_buffer->load(&cc, sizeof(constant));
+		this->loadBuffersAndShaders();
 	}
 	else
 	{
@@ -153,4 +131,32 @@ void AppWindow::SpawnCircle(vec3 position, vec3 color, bool isFirstTime)
 
 void AppWindow::loadBuffersAndShaders()
 {
+	UINT size_list = CircleManager::get()->getAllCircleVertices().size();
+	void* shader_byte_code = nullptr;
+	size_t size_shader = 0;
+
+	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
+	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
+
+
+	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+
+	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+
+	this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
+
+	GraphicsEngine::get()->releaseCompiledShader();
+
+
+	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
+
+	this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
+
+	//GraphicsEngine::get()->releaseCompiledShader();
+
+	constant cc;
+	cc.m_time = 0;
+
+	this->m_constant_buffer = GraphicsEngine::get()->createConstantBuffer();
+	this->m_constant_buffer->load(&cc, sizeof(constant));
 }
