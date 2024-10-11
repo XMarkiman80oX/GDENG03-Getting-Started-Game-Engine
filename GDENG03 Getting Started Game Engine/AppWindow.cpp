@@ -54,6 +54,7 @@ void AppWindow::onUpdate()
 
 	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 	//std::cout << "m_time: " << cc.m_time << " m_duration: "<< cc.m_duration << std::endl;
+	//std::cout << "m_time / m_duration: "<< cc.m_time/cc.m_duration << std::endl;
 	//std::cout << cc.m_time << std::endl;
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer);
@@ -95,6 +96,12 @@ void AppWindow::onUpdate()
 		std::cout << "BACKSPACE PRESSED" << std::endl;
 		this->isPressed = false;
 		CircleManager::get()->popCircle();
+		this->loadBuffersAndShaders();
+	}
+	if (elapsed_time >= this->duration) 
+	{
+		std::cout << "1 second has passed!" << std::endl;
+		CircleManager::get()->randomizeNewPositions();
 		this->loadBuffersAndShaders();
 	}
 }

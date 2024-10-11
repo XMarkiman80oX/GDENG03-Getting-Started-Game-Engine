@@ -34,7 +34,7 @@ int CircleManager::getDefaultSegmentCount()
 
 std::vector<newVertex> CircleManager::getAllCircleVertices()
 {
-	std::cout << "Circle Vertices Size: " << this->allCircleVertices.size() << std::endl;
+	//std::cout << "Circle Vertices Size: " << this->allCircleVertices.size() << std::endl;
 	return this->allCircleVertices;
 }
 
@@ -74,5 +74,16 @@ void CircleManager::popCircle()
 	}
 
 	std::cout << this->allCircleVertices.size() << std::endl;
+}
+
+void CircleManager::randomizeNewPositions()
+{
+	for (Circle* circle : this->circles)
+	{
+		for (int i = 0; i < circle->GetCircleVertices().size(); i++)
+		{
+			circle->GetCircleVertices()[i].newPositionDistance.randomizeVector(true);
+		}
+	}
 }
 
