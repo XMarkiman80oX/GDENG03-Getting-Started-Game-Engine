@@ -20,7 +20,17 @@ void Circle::GenerateVertices()
 {
     float deltaAngle = 2.0f * (float)DirectX::XM_PI / segmentCount;
 
-    circleVertices.push_back({ this->position, vec3(this->position.x + 1.0f, this->position.y, 0.0f), this->color });
+    vec3 randomizedVector;
+    randomizedVector.randomizeVector(true);
+
+    //clamp with radius, else, center would go to the end of screen instead of the edge
+    if (randomizedVector.x == 1.0f || randomizedVector.x == -1.0f)
+        randomizedVector.x -= this->radius * randomizedVector.x;
+    if (randomizedVector.y == 1.0f || randomizedVector.y == -1.0f)
+        randomizedVector.y -= this->radius * randomizedVector.y;
+
+    randomizedVector.printVector();
+
 
     for (int i = 0; i < segmentCount; ++i)
     {
@@ -32,7 +42,8 @@ void Circle::GenerateVertices()
         x += position.x;
         y += position.y;
 
-        circleVertices.push_back({ vec3(x, y, 0.0f), vec3(x + 1.0f - this->radius, y, 0.0f), this->color });
+
+        circleVertices.push_back({ vec3(x, y, 0.0f), vec3(x, y, 0.0f) + randomizedVector, this->color});
     }
 
     //std::cout << "Inside Circle GenerateVertices(): "<<circleVertices.size() << std::endl;

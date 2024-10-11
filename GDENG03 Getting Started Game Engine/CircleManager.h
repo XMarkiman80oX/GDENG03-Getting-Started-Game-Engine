@@ -25,5 +25,8 @@ public:
 
 public:
 	void spawnCircle(vec3 position, vec3 color, float screenAspectRatio);
+	void releaseCircles();
+	void popCircle();
+
 };
 

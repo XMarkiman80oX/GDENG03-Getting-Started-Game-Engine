@@ -4,7 +4,7 @@
 class Window
 {
 public:
-	Window();
+	Window(); 
 	//Initialize the window
 	bool init();
 
@@ -29,6 +29,9 @@ public:
 	virtual void onUpdate() = 0;
 	virtual void onDestroy();
 	~Window();
+public:
+	bool keys[256];
+	bool isPressed = false;
 
 protected:
 	HWND m_hwnd;

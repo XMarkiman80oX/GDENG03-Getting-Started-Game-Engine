@@ -28,7 +28,25 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             ::PostQuitMessage(0);
             break;
         }
-
+        case WM_KEYDOWN:
+        {
+            Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+            if (wparam < 256)
+            {
+                window->keys[wparam] = true;
+                window->isPressed = true;
+            }
+            break;
+        }
+        case WM_KEYUP:
+        {
+            Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+            if (wparam < 256)
+            {
+                window->keys[wparam] = false;
+            }
+            break;
+        }
         default:
             return ::DefWindowProcA(hwnd, msg, wparam, lparam);
     }

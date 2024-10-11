@@ -29,41 +29,10 @@ void AppWindow::onCreate()
 	UINT screenHeight = rc.bottom - rc.top;
 	this->m_swap_chain->init(this->m_hwnd, screenWidth, screenHeight);
 
-	float aspectRatio = (float)screenWidth / screenHeight;
+	this->aspectRatio = (float)screenWidth / screenHeight;
 
 	//CircleManager::get()->spawnCircle(vec3(-0.5f, 0, 0), vec3(1, 1, 1), aspectRatio);
-	CircleManager::get()->spawnCircle(vec3(0.0f, 0, 0), vec3(1, 1, 1), aspectRatio);
-
-		//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
-
-	UINT size_list = CircleManager::get()->getAllCircleVertices().size();
-
-	std::cout << "Size List: " <<size_list<< std::endl;
-	void* shader_byte_code = nullptr;
-	size_t size_shader = 0;
-
-
-	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-
-	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
-
-	this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
-
-	GraphicsEngine::get()->releaseCompiledShader();
-
-
-	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-
-	this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
-
-	GraphicsEngine::get()->releaseCompiledShader();
-
-	constant cc;
-	cc.m_time = 0;
-
-	this->m_cb = GraphicsEngine::get()->createConstantBuffer();
-	this->m_cb->load(&cc, sizeof(constant));
+	this->SpawnCircle(vec3(-0.5f, 0, 0), vec3(1, 1, 1), true);
 
 }
 
@@ -83,11 +52,11 @@ void AppWindow::onUpdate()
 	cc.m_time = elapsed_time;
 	cc.m_duration = duration;
 
+	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 	//std::cout << "m_time: " << cc.m_time << " m_duration: "<< cc.m_duration << std::endl;
 	//std::cout << cc.m_time << std::endl;
-	this->m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_cb);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_cb);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer);
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
@@ -95,14 +64,44 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vertex_buffer->getSizeVertexList(), 1);
-	//std::cout << m_vertex_buffer->getSizeVertexList() << std::endl;
-	//GraphicsEngine::get()->getImmediateDeviceContext()->drawCircles(CircleManager::get()->getCircleCount(), m_vertex_buffer->getSizeVertexList(), CircleManager::get()->getDefaultSegmentCount() + 2);
 	m_swap_chain->present(true);
+	
+	if (this->keys[VK_SPACE] && this->isPressed) 
+	{
+		std::cout << "SPACE PRESSED" << std::endl;
+
+		vec3 randomizedPosition;
+		randomizedPosition.randomizeVector(false, -0.5f, 0.5f);
+		std::cout << "New Circle Randomized Position: ";
+
+		this->SpawnCircle(randomizedPosition, vec3(1.0f, 1.0f, 1.0f), false);
+		this->isPressed = false;
+	}
+	if (this->keys[VK_DELETE] && this->isPressed)
+	{
+		std::cout << "DELETE PRESSED" << std::endl;
+		CircleManager::get()->releaseCircles(); 
+		this->m_vertex_buffer->load(0, 0, 0, 0, 0);
+		this->isPressed = false;
+	}
+	if (this->keys[VK_ESCAPE] && this->isPressed)
+	{
+		std::cout << "ESCAPE PRESSED" << std::endl;
+		this->isPressed = false;
+		this->onDestroy();
+	}
+	if (this->keys[VK_BACK] && this->isPressed)
+	{
+		std::cout << "BACKSPACE PRESSED" << std::endl;
+		this->isPressed = false;
+		CircleManager::get()->popCircle();
+	}
 }
 
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
+	this->m_constant_buffer->release();
 	this->m_vertex_buffer->release();
 	this->m_swap_chain->release();
 
@@ -111,6 +110,47 @@ void AppWindow::onDestroy()
 	GraphicsEngine::get()->release();
 }
 
-void AppWindow::DrawTriangle()
+void AppWindow::SpawnCircle(vec3 position, vec3 color, bool isFirstTime)
+{
+	CircleManager::get()->spawnCircle(position, color, aspectRatio);
+
+	UINT size_list = CircleManager::get()->getAllCircleVertices().size();
+	void* shader_byte_code = nullptr;
+	size_t size_shader = 0;
+
+	if (isFirstTime) 
+	{
+		//Here we create the vertex buffer, then the established vertex list will be loaded here later on
+		this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
+
+
+		GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+
+		this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+
+		this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
+
+		GraphicsEngine::get()->releaseCompiledShader();
+
+
+		GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
+
+		this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
+
+		//GraphicsEngine::get()->releaseCompiledShader();
+
+		constant cc;
+		cc.m_time = 0;
+
+		this->m_constant_buffer = GraphicsEngine::get()->createConstantBuffer();
+		this->m_constant_buffer->load(&cc, sizeof(constant));
+	}
+	else
+	{
+		this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
+	}
+}
+
+void AppWindow::loadBuffersAndShaders()
 {
 }

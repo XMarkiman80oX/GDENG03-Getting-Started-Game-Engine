@@ -2,16 +2,77 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <iostream>
+#include <random>
 
 struct vec3
 {
 	float x, y, z;
 
-	vec3() {
+	vec3() 
+	{
 		this->x = 0.0f; this->y = 0.0f; this->z = 0.0f;
 	}
-	vec3(float x, float y, float z) {
+	vec3(float x, float y, float z) 
+	{
 		this->x = x; this->y = y; this->z = z;
+	}
+	void randomizeVector(bool clampToEnds) 
+	{
+		std::random_device rd; 
+		std::mt19937 eng(rd()); 
+
+		std::uniform_real_distribution<> distrFloat(-1.0f, 1.0f); 
+
+		this->x = distrFloat(eng);
+		this->y = distrFloat(eng);
+		this->z = 0;
+
+		if (clampToEnds) {
+			this->clampToEnds();
+		}
+	}
+	void randomizeVector(bool clampToEnds, float lowerBound, float upperBound)
+	{
+		std::random_device rd;
+		std::mt19937 eng(rd());
+
+		std::uniform_real_distribution<> distrFloat(lowerBound, upperBound);
+
+		this->x = distrFloat(eng);
+		this->y = distrFloat(eng);
+		this->z = 0;
+
+		if (clampToEnds) {
+			this->clampToEnds();
+		}
+	}
+	void clampToEnds() {
+		float abs_x = std::abs(this->x), abs_y = std::abs(this->y), abs_z = std::abs(this->z);
+		float highest = 0;
+
+		if (abs_x >= abs_y)
+			highest = abs_x;
+		else
+			highest = abs_y;
+
+		if (highest == abs_x) {
+			if (this->x < 0) this->x = -1;
+			else this->x = 1;
+		}
+		else if (highest == abs_y) {
+			if (this->y < 0) this->y = -1;
+			else this->y = 1;
+		}
+	}
+	vec3 operator+(const vec3& other) const {
+		return vec3(x + other.x, y + other.y, z + other.z);
+	}
+	vec3 operator-(const vec3& other) const {
+		return vec3(x - other.x, y - other.y, z - other.z);
+	}
+	void printVector() 
+	{
+		std::cout << "x: " << this->x << " ,y: " << this->y << " ,z: " << this->z <<std::endl;
 	}
 };
 struct newVertex 
