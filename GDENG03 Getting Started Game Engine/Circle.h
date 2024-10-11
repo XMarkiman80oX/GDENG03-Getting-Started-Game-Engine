@@ -2,7 +2,6 @@
 #include <vector>
 #include <DirectXMath.h>
 #include <iostream>
-//#include "AppWindow.h"
 
 struct vec3
 {
@@ -15,29 +14,33 @@ struct vec3
 		this->x = x; this->y = y; this->z = z;
 	}
 };
-struct vertex
-{
-	vec3 position;
-	vec3 position1;
-	vec3 color;
-	vec3 color1;
-};
 struct newVertex 
 {
 	vec3 position;
+	vec3 newPositionDistance;
 	vec3 color;
 	newVertex(vec3 position, vec3 color) 
 	{
 		this->position = position;
+		this->newPositionDistance = vec3();
+		this->color = color;
+	}
+	newVertex(vec3 position, vec3 newPositionDistance, vec3 color)
+	{
+		this->position = position;
+		this->newPositionDistance = newPositionDistance;
 		this->color = color;
 	}
 	newVertex()
 	{
-		this->position = { 0,0,0 };
-		this->color = { 0,0,0 };
+		this->position = vec3();
+		this->newPositionDistance = vec3();
+		this->color = vec3();
 	}
 };
+
 class AppWindow;
+
 class Circle
 {
 private:

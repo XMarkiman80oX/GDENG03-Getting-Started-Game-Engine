@@ -5,10 +5,12 @@ __declspec(align(16))
 struct constant 
 {
 	unsigned int m_time;
+	float m_duration;
 };
 
 AppWindow::AppWindow()
 {
+	this->duration = 1000.0f;
 }
 
 AppWindow::~AppWindow()
@@ -17,6 +19,7 @@ AppWindow::~AppWindow()
 
 void AppWindow::onCreate()
 {
+	this->start_time = GetTickCount();
 	//Window::onCreate();
 	GraphicsEngine::get()->init();
 	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
@@ -28,7 +31,7 @@ void AppWindow::onCreate()
 
 	float aspectRatio = (float)screenWidth / screenHeight;
 
-	CircleManager::get()->spawnCircle(vec3(-0.5f, 0, 0), vec3(1, 1, 1), aspectRatio);
+	//CircleManager::get()->spawnCircle(vec3(-0.5f, 0, 0), vec3(1, 1, 1), aspectRatio);
 	CircleManager::get()->spawnCircle(vec3(0.0f, 0, 0), vec3(1, 1, 1), aspectRatio);
 
 		//Here we create the vertex buffer, then the established vertex list will be loaded here later on
@@ -73,8 +76,14 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 	
+	DWORD current_time = GetTickCount();
+	float elapsed_time = static_cast<float>(current_time - this->start_time);
+
 	constant cc;
-	cc.m_time = GetTickCount();
+	cc.m_time = elapsed_time;
+	cc.m_duration = duration;
+
+	//std::cout << "m_time: " << cc.m_time << " m_duration: "<< cc.m_duration << std::endl;
 	//std::cout << cc.m_time << std::endl;
 	this->m_cb->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_cb);

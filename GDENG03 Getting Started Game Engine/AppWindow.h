@@ -28,6 +28,8 @@ private:
 	PixelShader* m_pixel_shader;
 	ConstantBuffer* m_cb;
 
+	DWORD start_time;
+	float duration;
 private:
 	void DrawTriangle();
 };
