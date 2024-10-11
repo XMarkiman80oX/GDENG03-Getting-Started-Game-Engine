@@ -29,11 +29,11 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	D3D11_SUBRESOURCE_DATA init_data = {};
 	init_data.pSysMem = list_vertices; //passing the pointer in memory in whcih the vertices are located
 
-	m_size_vertex = size_vertex;
-	m_size_list = size_list;
+	this->m_size_vertex = size_vertex;
+	this->m_size_list = size_list;
 
 	//This is where the vertex buffer is created
-	if(FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
+	if(FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
 		return false;
 
 	//This is a descriptor object, where we add all the info about the attributes composed in our vertex type

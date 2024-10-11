@@ -3,6 +3,7 @@
 
 class DeviceContext;
 
+//A buffer (list) of only one type of vertices 
 class VertexBuffer
 {
 public:

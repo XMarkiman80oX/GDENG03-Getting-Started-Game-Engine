@@ -61,6 +61,7 @@ void DeviceContext::drawTriangleStrip(UINT vertex_count, UINT start_vertex_index
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	this->m_device_context->Draw(vertex_count, start_vertex_index);
 }
+
 //We're setting the area or viewportof the already established render target we want to draw on.
 void DeviceContext::setViewportSize(UINT width, UINT height)
 {
