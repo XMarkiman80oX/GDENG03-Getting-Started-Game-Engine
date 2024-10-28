@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "EngineTime.h"
 
 class Window
 {
@@ -31,6 +32,7 @@ public:
 	~Window();
 
 protected:
+	float elapsedTime = 0.0f;
 	HWND m_hwnd;
 	bool m_is_run;
 };
