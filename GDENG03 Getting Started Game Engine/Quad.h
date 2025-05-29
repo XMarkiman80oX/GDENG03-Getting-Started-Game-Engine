@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include "iostream"
 typedef struct vec3
 {
 	float x, y, z;
@@ -68,6 +69,7 @@ class Quad
 {
 protected:
 	const int vertexCount = 4;
+	const float length = 0.25;
 
 private:
 	Vector3* position;

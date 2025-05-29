@@ -10,14 +10,19 @@ Quad::Quad()
 		{ 0.5f,0.5f,0.0f...}
 	*/
 	this->position = new vec3[vertexCount];
-	this->colors = new vec3[vertexCount];
+	colors = new vec3[vertexCount];
 
-	if (this->vertexCount == 4) {
-		position[0] = { -0.25f, -0.25f, 0.0f };
-		position[1] = { -0.25f,  0.25f, 0.0f };
-		position[2] = { 0.25f, -0.25f, 0.0f };
-		position[3] = { 0.25f,  0.25f, 0.0f };
-	}
+	float halfLength = length / 2.0f;
+	this->position[0] = { -halfLength, -halfLength, 0.0f };
+	this->position[1] = { -halfLength,  halfLength, 0.0f };
+	this->position[2] = { halfLength, -halfLength, 0.0f };
+	this->position[3] = { halfLength,  halfLength, 0.0f };
+
+	// Set default colors
+	this->colors[0] = { 1.0f, 0.0f, 0.0f };  // Red
+	this->colors[1] = { 0.0f, 1.0f, 0.0f };  // Green
+	this->colors[2] = { 0.0f, 0.0f, 1.0f };  // Blue
+	this->colors[3] = { 1.0f, 1.0f, 0.0f };  // Yellow
 }
 
 Quad::~Quad()
@@ -33,9 +38,9 @@ Quad::~Quad()
 
 void Quad::setPosition(float x, float y)
 {
-	for (int i = 0; i < sizeof(this->vertexCount); i++) 
+	for (int i = 0; i < vertexCount; i++)  // FIXED: use vertexCount not sizeof
 	{
-		this->position[i] += vec3{ x, y, 0 };
+		position[i] += vec3{ x, y, 0 };
 	}
 }
 
