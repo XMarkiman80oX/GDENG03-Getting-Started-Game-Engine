@@ -7,7 +7,7 @@ class SwapChain
 public:
 	SwapChain();
 	//Initialize SwapChain for a window
-	bool init(HWND hwnd, UINT width, UINT height);
+	bool init(HWND hwnd, UINT width, UINT height, UINT msaaSampleCount, UINT msaaQuality); 
 
 	bool present(bool vsync);
 

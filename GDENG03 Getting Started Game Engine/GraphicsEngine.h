@@ -23,13 +23,21 @@ public:
 	VertexBuffer* createVertexBuffer(); 
 	ConstantBuffer* createConstantBuffer();
 	VertexShader* createVertexShader(const void* shader_byte_code, size_t byte_code_size); 
-	PixelShader* createPixelShader(const void* shader_byte_code, size_t byte_code_size);
+	PixelShader* createPixelShader(const void* shader_byte_code, size_t byte_code_size); 
+
+	bool isMSAAEnabled() const;
+	UINT getMSAASampleCount() const;
+	UINT getMSAAQualityLevels() const;
+	void toggleMSAA(HWND hwnd, UINT width, UINT height); // Method to toggle MSAA
 
 public:
 	bool compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
 	bool compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
 	
 	void releaseCompiledShader();
+	// Add a public method to allow AppWindow to reinitialize the SwapChain
+    // This might involve more than just the swap chain if other resources depend on it
+	bool reinitializeSwapChain(HWND hwnd, UINT width, UINT height, SwapChain*& swapChain);
 
 public:
 	static GraphicsEngine* get();
@@ -39,7 +47,10 @@ private:
 
 private:
 	ID3D11Device* m_d3d_device;
-	D3D_FEATURE_LEVEL m_feature_level;
+	D3D_FEATURE_LEVEL m_feature_level; 
+	bool m_msaaEnabled = false; // Current MSAA state
+	UINT m_msaaSampleCount = 1;    // Default to no MSAA
+	UINT m_msaaQualityLevels = 0;  // To be determined by hardware support
 
 private:
 	IDXGIDevice* m_dxgi_device;

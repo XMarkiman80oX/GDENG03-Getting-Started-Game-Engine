@@ -2,8 +2,8 @@
 
 CircleManager::CircleManager()
 {
-	this->defaultSegmentCount = 30;
-	this->defaultRadius = 0.15f;
+	this->defaultSegmentCount = 144;
+	this->defaultRadius = 0.75f;
 	this->allCircleVertices = {};
 }
 
