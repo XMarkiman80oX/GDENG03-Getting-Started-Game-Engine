@@ -84,7 +84,7 @@ void AppWindow::onUpdate()
     }
 
     bool aspectRatioChanged = false;
-    // Compare with a small epsilon to detect meaningful changes
+
     if (std::abs(this->aspectRatio - newAspectRatio) > 0.001f)
     {
         this->aspectRatio = newAspectRatio; 
