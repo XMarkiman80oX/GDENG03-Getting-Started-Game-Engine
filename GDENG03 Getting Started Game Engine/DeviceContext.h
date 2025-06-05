@@ -23,6 +23,8 @@ public:
 
 	void setConstantBuffer(VertexShader* vertex_shader, ConstantBuffer* buffer);
 	void setConstantBuffer(PixelShader* pixel_shader, ConstantBuffer* buffer);
+	void setRasterizerState(ID3D11RasterizerState* rasterizer_state);
+	ID3D11DeviceContext* getDeviceContext();
 
 	bool release();
 	~DeviceContext();

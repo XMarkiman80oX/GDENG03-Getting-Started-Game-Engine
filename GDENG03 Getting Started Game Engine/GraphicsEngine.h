@@ -19,6 +19,7 @@ public:
 	~GraphicsEngine();
 public:
 	SwapChain* createSwapChain();
+	ID3D11RasterizerState* getSolidNoCullRasterizerState();
 	DeviceContext* getImmediateDeviceContext();
 	VertexBuffer* createVertexBuffer(); 
 	ConstantBuffer* createConstantBuffer();
@@ -63,7 +64,8 @@ private:
 	ID3DBlob* m_vsblob = nullptr;
 	ID3DBlob* m_psblob = nullptr;
 	ID3D11VertexShader* m_vertex_shader = nullptr;
-	ID3D11PixelShader* m_pixel_shader = nullptr;
+	ID3D11PixelShader* m_pixel_shader = nullptr; 
+	ID3D11RasterizerState* m_solidNoCullState = nullptr;
 
 private:
 	friend class SwapChain;

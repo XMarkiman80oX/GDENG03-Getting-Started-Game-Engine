@@ -51,6 +51,22 @@ bool GraphicsEngine::init()
 
 	m_imm_device_context = new DeviceContext(m_imm_context);
 
+	// Create Rasterizer State for solid fill with no culling
+	D3D11_RASTERIZER_DESC rasterDesc;
+	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.CullMode = D3D11_CULL_NONE; // Disable culling
+	rasterDesc.FrontCounterClockwise = FALSE; // Adjust if needed based on your vertex order
+	// Set other rasterDesc members as needed (e.g., DepthBias, SlopeScaledDepthBias, DepthClipEnable, ScissorEnable, MultisampleEnable, AntialiasedLineEnable)
+	// For now, default values from ZeroMemory are often fine for these.
+
+	res = m_d3d_device->CreateRasterizerState(&rasterDesc, &m_solidNoCullState);
+	if (FAILED(res))
+	{
+		std::cout << "Failed to create Rasterizer State." << std::endl;
+		// Consider this a fatal error for the purpose of this fix
+		return false;
+	}
 	// Check MSAA support (example: 4x MSAA)
 	UINT desiredSampleCount = 8;
 	// Ensure m_d3d_device is valid before using it
@@ -156,6 +172,8 @@ bool GraphicsEngine::reinitializeSwapChain(HWND hwnd, UINT width, UINT height, S
 }
 bool GraphicsEngine::release()
 {
+	if (m_solidNoCullState) { m_solidNoCullState->Release(); m_solidNoCullState = nullptr; } // Release new state
+
 	if (m_vertex_shader)m_vertex_shader->Release();
 	if (m_pixel_shader)m_pixel_shader->Release();
 
@@ -260,6 +278,10 @@ void GraphicsEngine::releaseCompiledShader()
 		m_blob->Release();
 }
 
+ID3D11RasterizerState* GraphicsEngine::getSolidNoCullRasterizerState()
+{
+	return this->m_solidNoCullState;
+}
 
 GraphicsEngine* GraphicsEngine::get()
 {

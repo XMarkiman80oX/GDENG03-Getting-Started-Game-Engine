@@ -54,6 +54,17 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 	
+	// Set the custom rasterizer state (no culling)
+	ID3D11RasterizerState* noCullState = GraphicsEngine::get()->getSolidNoCullRasterizerState();
+	if (noCullState) // Ensure it was created
+	{
+		// If you added setRasterizerState to your DeviceContext class:
+		// GraphicsEngine::get()->getImmediateDeviceContext()->setRasterizerState(noCullState);
+		// Otherwise, you can call it directly on the raw context if you had access, but the method is cleaner:
+		GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext()->RSSetState(noCullState); // Accessing m_device_context directly assuming it's public or via a getter
+		// Or use the setRasterizerState method if implemented in DeviceContext
+	}
+
 	DWORD current_time = GetTickCount();
 	float elapsed_time = static_cast<float>(current_time - this->start_time);
 
