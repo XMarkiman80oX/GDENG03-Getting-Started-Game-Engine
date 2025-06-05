@@ -29,4 +29,5 @@ public:
     void releaseCircles();
     void popCircle();
     void randomizeNewPositions(); // This will now trigger regeneration of vertices
+    void rebuildAllCircleVertices(); // New method
 };

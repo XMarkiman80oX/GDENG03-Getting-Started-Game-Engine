@@ -42,66 +42,97 @@ void AppWindow::onCreate()
     this->aspectRatio = (float)screenWidth / screenHeight;
 
     // --- Spawning multiple circles ---
-    int numberOfCirclesToSpawn = 5; // You can change this value
-    std::random_device rd;
-    std::mt19937 eng(rd());
+    int numberOfCirclesToSpawn = 10; 
+    float lowerBoundRadii = 0.25f;
+    float upperBoundRadiiIncrement = 0.5f;
+    std::random_device rd; 
+    std::mt19937 eng(rd()); 
     std::uniform_real_distribution<> distrPos(-0.8f, 0.8f); // Position range
-    std::uniform_real_distribution<> distrRadius(0.05f, 0.15f); // Radius range
+    // MODIFIED LINE FOR RADIUS:
+    std::uniform_real_distribution<> distrRadius(lowerBoundRadii, lowerBoundRadii + upperBoundRadiiIncrement); 
     std::uniform_real_distribution<> distrColor(0.1f, 1.0f);  // Color component range
 
-    for (int i = 0; i < numberOfCirclesToSpawn; ++i)
+    for (int i = 0; i < numberOfCirclesToSpawn; i++) 
     {
-        vec3 randomPosition(
-            static_cast<float>(distrPos(eng)),
-            static_cast<float>(distrPos(eng)),
-            0.0f
+        vec3 randomPosition( 
+            static_cast<float>(distrPos(eng)), 
+            static_cast<float>(distrPos(eng)), 
+            0.0f 
         );
-        float randomRadius = static_cast<float>(distrRadius(eng));
-        vec3 randomColor(
-            static_cast<float>(distrColor(eng)),
-            static_cast<float>(distrColor(eng)),
-            static_cast<float>(distrColor(eng))
+        float randomRadius = static_cast<float>(distrRadius(eng)); 
+        vec3 randomColor( 
+            static_cast<float>(distrColor(eng)), 
+            static_cast<float>(distrColor(eng)), 
+            static_cast<float>(distrColor(eng)) 
         );
-        CircleManager::get()->spawnCircle(randomPosition, randomColor, this->aspectRatio, randomRadius);
+        CircleManager::get()->spawnCircle(randomPosition, randomColor, this->aspectRatio, randomRadius); //
     }
 
-    // Load buffers and shaders *after* all initial circles are spawned
-    this->loadBuffersAndShaders();
+    this->loadBuffersAndShaders(); 
 }
 
 void AppWindow::onUpdate()
 {
-    // ... (clearRenderTargetColor, setViewportSize, setRasterizerState as before) ...
-    GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-        0.0f, 0.0f, 0.0f, 1);
-    RECT rc = this->getClientWindowRect();
-    GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
+    RECT rc = this->getClientWindowRect(); 
+    UINT newScreenWidth = rc.right - rc.left;
+    UINT newScreenHeight = rc.bottom - rc.top;
 
-    ID3D11RasterizerState* noCullState = GraphicsEngine::get()->getSolidNoCullRasterizerState();
-    if (noCullState)
-    {
-        GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext()->RSSetState(noCullState);
+    // Ensure no division by zero if window is minimized
+    float newAspectRatio = 1.0f; // Default aspect ratio
+    if (newScreenWidth > 0 && newScreenHeight > 0) {
+        newAspectRatio = static_cast<float>(newScreenWidth) / newScreenHeight;
     }
 
-    DWORD current_time = GetTickCount();
-    float elapsed_time = static_cast<float>(current_time - this->start_time);
+    bool aspectRatioChanged = false;
+    // Compare with a small epsilon to detect meaningful changes
+    if (std::abs(this->aspectRatio - newAspectRatio) > 0.001f)
+    {
+        this->aspectRatio = newAspectRatio; 
+        aspectRatioChanged = true;
+        std::cout << "Aspect ratio changed to: " << this->aspectRatio << std::endl;
+
+        // Update aspect ratio for all existing circles and trigger regeneration
+        for (Circle* circle : CircleManager::get()->getCircles()) // Assumes getCircles() is public
+        {
+            circle->setScreenAspectRatio(this->aspectRatio); // New method in Circle
+        }
+
+        // After updating all circles, CircleManager needs to rebuild its master vertex list
+        CircleManager::get()->rebuildAllCircleVertices(); // New method in CircleManager
+
+        // Reload buffers with the newly updated vertex data
+        this->loadBuffersAndShaders(); 
+    }
+
+    GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0.0f, 0.0f, 0.0f, 1); //
+    // Use the current screen dimensions for the viewport
+    GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(newScreenWidth, newScreenHeight); 
+
+    ID3D11RasterizerState* noCullState = GraphicsEngine::get()->getSolidNoCullRasterizerState(); 
+    if (noCullState) 
+    {
+        GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext()->RSSetState(noCullState); 
+    }
+
+    DWORD current_time = GetTickCount(); 
+    float elapsed_time = static_cast<float>(current_time - this->start_time); 
 
     constant cc;
-    cc.m_time = elapsed_time; // Shader uses this to animate
-    cc.m_duration = duration; // Shader uses this to know the animation cycle length
+    cc.m_time = static_cast<unsigned int>(elapsed_time); 
+    cc.m_duration = this->duration; 
 
-    this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+    this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc); 
 
-    GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
-    GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer); 
+    GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer); 
 
-    GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
-    GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader); 
+    GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader); 
 
-    GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
-    GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vertex_buffer->getSizeVertexList(), 0); // Using TriangleList
+    GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer); 
+    GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vertex_buffer->getSizeVertexList(), 0); 
 
-    m_swap_chain->present(true);
+    m_swap_chain->present(true); 
 
     // --- Input Handling ---
     if (this->keys[0x4D] && this->isPressed) // M key for MSAA
@@ -118,26 +149,29 @@ void AppWindow::onUpdate()
         }
         this->isPressed = false;
     }
-    if (this->keys[VK_SPACE] && this->isPressed)
+    if (this->keys[VK_SPACE] && this->isPressed) 
     {
-        std::cout << "SPACE PRESSED - Spawning new circle" << std::endl;
-        vec3 randomizedPosition;
-        randomizedPosition.randomizeVector(false, -0.8f, 0.8f); // Confine to screen
+        std::cout << "SPACE PRESSED - Spawning new circle" << std::endl; 
+        vec3 randomizedPosition; 
+        randomizedPosition.randomizeVector(false, -0.8f, 0.8f); // Confine to screen 
 
-        std::random_device rd;
-        std::mt19937 eng(rd());
-        std::uniform_real_distribution<> distrRadius(0.05f, 0.15f);
-        float newRandomRadius = static_cast<float>(distrRadius(eng));
-        std::uniform_real_distribution<> distrColor(0.1f, 1.0f);
-        vec3 randomColor(
-            static_cast<float>(distrColor(eng)),
-            static_cast<float>(distrColor(eng)),
-            static_cast<float>(distrColor(eng))
+        std::random_device rd_space; // Use a different name for rd if preferred, or reuse if scope is fine
+        std::mt19937 eng_space(rd_space());
+        // MODIFIED LINE FOR RADIUS:
+        std::uniform_real_distribution<> distrRadius_space(0.10f, 0.20f); // Old range was (0.05f, 0.15f)
+        float newRandomRadius = static_cast<float>(distrRadius_space(eng_space)); 
+
+        std::uniform_real_distribution<> distrColor_space(0.1f, 1.0f);
+        vec3 randomColor
+        ( 
+            static_cast<float>(distrColor_space(eng_space)), 
+            static_cast<float>(distrColor_space(eng_space)), 
+            static_cast<float>(distrColor_space(eng_space)) 
         );
 
-        CircleManager::get()->spawnCircle(randomizedPosition, randomColor, this->aspectRatio, newRandomRadius);
-        this->loadBuffersAndShaders(); // Reload all buffers
-        this->isPressed = false;
+        CircleManager::get()->spawnCircle(randomizedPosition, randomColor, this->aspectRatio, newRandomRadius); 
+        this->loadBuffersAndShaders(); // Reload all buffers //
+        this->isPressed = false; 
     }
     if (this->keys[VK_DELETE] && this->isPressed)
     {

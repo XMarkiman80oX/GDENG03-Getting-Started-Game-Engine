@@ -118,11 +118,12 @@ public:
 	Circle(int segmentCount, float radius, vec3 position, vec3 color, float screenAspectRatio);
 	~Circle();
 
-	void GenerateVertices(); // Made public if CircleManager needs to call it after randomizing movement
+	void GenerateVertices();
 	void randomizeMovementTarget();
+	void setScreenAspectRatio(float newAspectRatio); // New method
 
 public:
-	std::vector<newVertex> GetCircleVertices();
+	std::vector<newVertex> GetCircleVertices(); //
 	// Add a getter for position if needed for other logic, though not strictly for this request
 	vec3 getPosition() const { return position; }
 };

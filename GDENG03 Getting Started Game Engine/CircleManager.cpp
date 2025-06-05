@@ -23,9 +23,24 @@ int CircleManager::getCircleCount()
     return this->circles.size();
 }
 
-std::vector<Circle*> CircleManager::getCircles()
+std::vector<Circle*> CircleManager::getCircles() // Make sure this method exists and is public
 {
-    return this->circles;
+    return this->circles; 
+}
+
+void CircleManager::rebuildAllCircleVertices()
+{
+    this->allCircleVertices.clear(); //
+    for (Circle* circle : this->circles) //
+    {
+        // Each circle should have already updated its internal vertices via
+        // circle->setScreenAspectRatio() -> randomizeMovementTarget() -> GenerateVertices()
+        for (const newVertex& vert : circle->GetCircleVertices()) //
+        {
+            this->allCircleVertices.push_back(vert); //
+        }
+    }
+    std::cout << "Rebuilt all circle vertices for CircleManager due to aspect ratio change. Total vertices: " << this->allCircleVertices.size() << std::endl;
 }
 
 int CircleManager::getDefaultSegmentCount()
