@@ -4,29 +4,29 @@
 class CircleManager
 {
 private:
-	int defaultSegmentCount;
-	float defaultRadius;
+    int defaultSegmentCount;
+    // float defaultRadius; // Will be passed per circle
 
-	std::vector<Circle*> circles;
-	std::vector<newVertex> allCircleVertices;
-
-public:
-	CircleManager();
-	~CircleManager();
+    std::vector<Circle*> circles;
+    std::vector<newVertex> allCircleVertices;
 
 public:
-	static CircleManager* get();
+    CircleManager();
+    ~CircleManager();
 
 public:
-	int getCircleCount();
-	std::vector<Circle*> getCircles();
-	int getDefaultSegmentCount();
-	std::vector<newVertex> getAllCircleVertices();
+    static CircleManager* get();
 
 public:
-	void spawnCircle(vec3 position, vec3 color, float screenAspectRatio);
-	void releaseCircles();
-	void popCircle();
-	void randomizeNewPositions();
+    int getCircleCount();
+    std::vector<Circle*> getCircles();
+    int getDefaultSegmentCount();
+    std::vector<newVertex> getAllCircleVertices();
+
+public:
+    // Modified spawnCircle
+    void spawnCircle(vec3 position, vec3 color, float screenAspectRatio, float radius);
+    void releaseCircles();
+    void popCircle();
+    void randomizeNewPositions(); // This will now trigger regeneration of vertices
 };
-

@@ -107,19 +107,23 @@ class Circle
 private:
 	vec3 color;
 	float screenAspectRatio;
-	vec3 position;
+	vec3 position; // Center position of the circle
 	float radius;
 	int segmentCount;
 	std::vector<newVertex> circleVertices;
+
+	vec3 currentAnimationTargetOffset; // Each circle has its own movement target offset
 
 public:
 	Circle(int segmentCount, float radius, vec3 position, vec3 color, float screenAspectRatio);
 	~Circle();
 
-private:
-	void GenerateVertices();
+	void GenerateVertices(); // Made public if CircleManager needs to call it after randomizing movement
+	void randomizeMovementTarget();
 
 public:
 	std::vector<newVertex> GetCircleVertices();
+	// Add a getter for position if needed for other logic, though not strictly for this request
+	vec3 getPosition() const { return position; }
 };
 

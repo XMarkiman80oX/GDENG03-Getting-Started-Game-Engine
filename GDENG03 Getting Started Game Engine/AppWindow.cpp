@@ -10,212 +10,256 @@ struct constant
 
 AppWindow::AppWindow()
 {
-	this->duration = 1000.0f;
+    this->duration = 1000.0f; // Duration before randomizing positions
 }
 
 AppWindow::~AppWindow()
 {
+    // CircleManager::get()->releaseCircles(); // Ensure cleanup if not done elsewhere,
+                                            // but CircleManager's destructor should handle it.
 }
 
 void AppWindow::onCreate()
 {
-	this->start_time = GetTickCount();
-	GraphicsEngine::get()->init(); // GraphicsEngine::init() now checks MSAA
+    this->start_time = GetTickCount();
+    GraphicsEngine::get()->init();
 
-	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
+    this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
 
-	RECT rc = this->getClientWindowRect();
-	UINT screenWidth = rc.right - rc.left;
-	UINT screenHeight = rc.bottom - rc.top;
+    RECT rc = this->getClientWindowRect();
+    UINT screenWidth = rc.right - rc.left;
+    UINT screenHeight = rc.bottom - rc.top;
 
-	// Initialize SwapChain with current MSAA settings from GraphicsEngine
-	if (!this->m_swap_chain->init(this->m_hwnd, screenWidth, screenHeight,
-		GraphicsEngine::get()->getMSAASampleCount(),
-		GraphicsEngine::get()->getMSAAQualityLevels()))
-	{
-		// Handle error - perhaps throw an exception or log and exit
-		std::cout << "Failed to initialize SwapChain in AppWindow::onCreate!" << std::endl;
-		PostQuitMessage(0); // Example: quit the application
-		return;
-	}
+    if (!this->m_swap_chain->init(this->m_hwnd, screenWidth, screenHeight,
+        GraphicsEngine::get()->getMSAASampleCount(),
+        GraphicsEngine::get()->getMSAAQualityLevels()))
+    {
+        std::cout << "Failed to initialize SwapChain in AppWindow::onCreate!" << std::endl;
+        PostQuitMessage(0);
+        return;
+    }
 
+    this->aspectRatio = (float)screenWidth / screenHeight;
 
-	this->aspectRatio = (float)screenWidth / screenHeight;
-	this->SpawnCircle(vec3(-0.5f, 0, 0), vec3(1, 1, 1), true);
+    // --- Spawning multiple circles ---
+    int numberOfCirclesToSpawn = 5; // You can change this value
+    std::random_device rd;
+    std::mt19937 eng(rd());
+    std::uniform_real_distribution<> distrPos(-0.8f, 0.8f); // Position range
+    std::uniform_real_distribution<> distrRadius(0.05f, 0.15f); // Radius range
+    std::uniform_real_distribution<> distrColor(0.1f, 1.0f);  // Color component range
 
+    for (int i = 0; i < numberOfCirclesToSpawn; ++i)
+    {
+        vec3 randomPosition(
+            static_cast<float>(distrPos(eng)),
+            static_cast<float>(distrPos(eng)),
+            0.0f
+        );
+        float randomRadius = static_cast<float>(distrRadius(eng));
+        vec3 randomColor(
+            static_cast<float>(distrColor(eng)),
+            static_cast<float>(distrColor(eng)),
+            static_cast<float>(distrColor(eng))
+        );
+        CircleManager::get()->spawnCircle(randomPosition, randomColor, this->aspectRatio, randomRadius);
+    }
+
+    // Load buffers and shaders *after* all initial circles are spawned
+    this->loadBuffersAndShaders();
 }
 
 void AppWindow::onUpdate()
 {
-	//Window::onUpdate();
-	//change color here
-	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0.0f, 0.0f, 0.0f, 1);
-	RECT rc = this->getClientWindowRect();
-	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
-	
-	// Set the custom rasterizer state (no culling)
-	ID3D11RasterizerState* noCullState = GraphicsEngine::get()->getSolidNoCullRasterizerState();
-	if (noCullState) // Ensure it was created
-	{
-		// If you added setRasterizerState to your DeviceContext class:
-		// GraphicsEngine::get()->getImmediateDeviceContext()->setRasterizerState(noCullState);
-		// Otherwise, you can call it directly on the raw context if you had access, but the method is cleaner:
-		GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext()->RSSetState(noCullState); // Accessing m_device_context directly assuming it's public or via a getter
-		// Or use the setRasterizerState method if implemented in DeviceContext
-	}
+    // ... (clearRenderTargetColor, setViewportSize, setRasterizerState as before) ...
+    GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
+        0.0f, 0.0f, 0.0f, 1);
+    RECT rc = this->getClientWindowRect();
+    GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	DWORD current_time = GetTickCount();
-	float elapsed_time = static_cast<float>(current_time - this->start_time);
+    ID3D11RasterizerState* noCullState = GraphicsEngine::get()->getSolidNoCullRasterizerState();
+    if (noCullState)
+    {
+        GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext()->RSSetState(noCullState);
+    }
 
-	constant cc;
-	cc.m_time = elapsed_time;
-	cc.m_duration = duration;
+    DWORD current_time = GetTickCount();
+    float elapsed_time = static_cast<float>(current_time - this->start_time);
 
-	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
-	//std::cout << "m_time: " << cc.m_time << " m_duration: "<< cc.m_duration << std::endl;
-	//std::cout << "m_time / m_duration: "<< cc.m_time/cc.m_duration << std::endl;
-	//std::cout << cc.m_time << std::endl;
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer);
+    constant cc;
+    cc.m_time = elapsed_time; // Shader uses this to animate
+    cc.m_duration = duration; // Shader uses this to know the animation cycle length
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
+    this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer);
 
-	//GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vertex_buffer->getSizeVertexList(), 0); // Use 0 for start_vertex_index
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vertex_buffer->getSizeVertexList(), 0);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
-	m_swap_chain->present(true);
+    GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
+    GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleList(m_vertex_buffer->getSizeVertexList(), 0); // Using TriangleList
 
-	if (this->keys[0x4D] && this->isPressed)
-	{
-		std::cout << "M KEY PRESSED - Toggling MSAA" << std::endl;
-		RECT rc = this->getClientWindowRect();
-		UINT screenWidth = rc.right - rc.left;
-		UINT screenHeight = rc.bottom - rc.top;
+    m_swap_chain->present(true);
 
-		// Toggle MSAA state in GraphicsEngine
-		GraphicsEngine::get()->toggleMSAA(this->m_hwnd, screenWidth, screenHeight);
+    // --- Input Handling ---
+    if (this->keys[0x4D] && this->isPressed) // M key for MSAA
+    {
+        // ... (MSAA toggle logic remains the same) ...
+        std::cout << "M KEY PRESSED - Toggling MSAA" << std::endl;
+        RECT rc_msaa = this->getClientWindowRect(); // Renamed to avoid conflict
+        UINT screenWidth_msaa = rc_msaa.right - rc_msaa.left;
+        UINT screenHeight_msaa = rc_msaa.bottom - rc_msaa.top;
+        GraphicsEngine::get()->toggleMSAA(this->m_hwnd, screenWidth_msaa, screenHeight_msaa);
+        if (!GraphicsEngine::get()->reinitializeSwapChain(this->m_hwnd, screenWidth_msaa, screenHeight_msaa, this->m_swap_chain))
+        {
+            std::cout << "Failed to reinitialize swap chain for MSAA toggle." << std::endl;
+        }
+        this->isPressed = false;
+    }
+    if (this->keys[VK_SPACE] && this->isPressed)
+    {
+        std::cout << "SPACE PRESSED - Spawning new circle" << std::endl;
+        vec3 randomizedPosition;
+        randomizedPosition.randomizeVector(false, -0.8f, 0.8f); // Confine to screen
 
-		// Recreate the swap chain with new MSAA settings
-		if (!GraphicsEngine::get()->reinitializeSwapChain(this->m_hwnd, screenWidth, screenHeight, this->m_swap_chain))
-		{
-			std::cout << "Failed to reinitialize swap chain for MSAA toggle." << std::endl;
-			// Potentially handle this error, e.g., by trying to revert or exiting
-		}
+        std::random_device rd;
+        std::mt19937 eng(rd());
+        std::uniform_real_distribution<> distrRadius(0.05f, 0.15f);
+        float newRandomRadius = static_cast<float>(distrRadius(eng));
+        std::uniform_real_distribution<> distrColor(0.1f, 1.0f);
+        vec3 randomColor(
+            static_cast<float>(distrColor(eng)),
+            static_cast<float>(distrColor(eng)),
+            static_cast<float>(distrColor(eng))
+        );
 
-		this->isPressed = false; // Prevent continuous toggling
-	}
-	if (this->keys[VK_SPACE] && this->isPressed) 
-	{
-		std::cout << "SPACE PRESSED" << std::endl;
+        CircleManager::get()->spawnCircle(randomizedPosition, randomColor, this->aspectRatio, newRandomRadius);
+        this->loadBuffersAndShaders(); // Reload all buffers
+        this->isPressed = false;
+    }
+    if (this->keys[VK_DELETE] && this->isPressed)
+    {
+        std::cout << "DELETE PRESSED - Releasing all circles" << std::endl;
+        CircleManager::get()->releaseCircles();
+        this->loadBuffersAndShaders(); // Reload (likely empty) buffers
+        this->isPressed = false;
+    }
+    if (this->keys[VK_ESCAPE] && this->isPressed)
+    {
+        std::cout << "ESCAPE PRESSED - Quitting" << std::endl;
+        this->isPressed = false;
+        this->onDestroy(); // This calls PostQuitMessage via Window::onDestroy
+    }
+    if (this->keys[VK_BACK] && this->isPressed)
+    {
+        std::cout << "BACKSPACE PRESSED - Popping one circle" << std::endl;
+        CircleManager::get()->popCircle();
+        this->loadBuffersAndShaders(); // Reload buffers
+        this->isPressed = false;
+    }
 
-		vec3 randomizedPosition;
-		randomizedPosition.randomizeVector(false, -0.5f, 0.5f);
-		std::cout << "New Circle Randomized Position: ";
-
-		this->SpawnCircle(randomizedPosition, vec3(1.0f, 1.0f, 1.0f), false);
-		this->isPressed = false;
-	}
-	if (this->keys[VK_DELETE] && this->isPressed)
-	{
-		std::cout << "DELETE PRESSED" << std::endl;
-		CircleManager::get()->releaseCircles(); 
-		this->m_vertex_buffer->load(0, 0, 0, 0, 0);
-		this->isPressed = false;
-	}
-	if (this->keys[VK_ESCAPE] && this->isPressed)
-	{
-		std::cout << "ESCAPE PRESSED" << std::endl;
-		this->isPressed = false;
-		this->onDestroy();
-	}
-	if (this->keys[VK_BACK] && this->isPressed)
-	{
-		std::cout << "BACKSPACE PRESSED" << std::endl;
-		this->isPressed = false;
-		CircleManager::get()->popCircle();
-		this->loadBuffersAndShaders();
-	}
-	if (elapsed_time >= this->duration) 
-	{
-		CircleManager::get()->randomizeNewPositions();
-		this->loadBuffersAndShaders();
-	}
+    // --- Timed update for movement randomization ---
+    //if (elapsed_time >= this->duration)
+    //{
+    //    std::cout << "Duration reached. Randomizing new positions for circles." << std::endl;
+    //    this->start_time = GetTickCount(); // Reset the timer for the next cycle
+    //    CircleManager::get()->randomizeNewPositions(); // This now updates targets and regenerates all vertex data in CircleManager
+    //    this->loadBuffersAndShaders(); // Reload the vertex buffer with new data
+    //}
 }
 
 void AppWindow::onDestroy()
 {
-	Window::onDestroy();
-	// Release AppWindow specific resources
-	if (this->m_constant_buffer) this->m_constant_buffer->release();
-	if (this->m_vertex_buffer) this->m_vertex_buffer->release();
+    Window::onDestroy(); // This sets m_is_run = false and calls PostQuitMessage
 
-	// SwapChain is released here
-	if (this->m_swap_chain)
-	{
-		this->m_swap_chain->release(); // This should release its RTV
-		delete this->m_swap_chain; // Delete the object itself
-		this->m_swap_chain = nullptr;
-	}
+    // Release AppWindow specific D3D resources
+    if (this->m_constant_buffer) this->m_constant_buffer->release();
+    if (this->m_vertex_buffer) this->m_vertex_buffer->release(); // VertexBuffer::release also deletes 'this'
 
+    if (this->m_swap_chain)
+    {
+        this->m_swap_chain->release();
+        delete this->m_swap_chain; // SwapChain new/delete is managed by AppWindow
+        this->m_swap_chain = nullptr;
+    }
 
-	if (this->m_vertex_shader) this->m_vertex_shader->release();
-	if (this->m_pixel_shader) this->m_pixel_shader->release();
+    if (this->m_vertex_shader) this->m_vertex_shader->release(); // VertexShader::release also deletes 'this'
+    if (this->m_pixel_shader) this->m_pixel_shader->release();  // PixelShader::release also deletes 'this'
 
-	// GraphicsEngine is a singleton, usually released at the very end of the application
-	// or managed differently. If AppWindow is responsible for its lifecycle:
-	GraphicsEngine::get()->release();
+    // CircleManager is a singleton, its cleanup (deleting Circle objects) happens in its destructor
+    // or when releaseCircles is called. If AppWindow is the sole controller, ensure releaseCircles is called.
+    CircleManager::get()->releaseCircles(); // Explicitly release circles here too for safety.
+
+    GraphicsEngine::get()->release(); // GraphicsEngine is a singleton, release its resources
 }
 
-void AppWindow::SpawnCircle(vec3 position, vec3 color, bool isFirstTime)
-{
-	CircleManager::get()->spawnCircle(position, color, aspectRatio);
-
-	UINT size_list = CircleManager::get()->getAllCircleVertices().size();
-	void* shader_byte_code = nullptr;
-	size_t size_shader = 0;
-
-	if (isFirstTime) 
-	{
-		this->loadBuffersAndShaders();
-	}
-	else
-	{
-		this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
-	}
-}
+// SpawnCircle method is removed as its logic is now directly in onCreate or input handlers.
+// void AppWindow::SpawnCircle(vec3 position, vec3 color, bool isFirstTime) { ... }
 
 void AppWindow::loadBuffersAndShaders()
 {
-	UINT size_list = CircleManager::get()->getAllCircleVertices().size();
-	void* shader_byte_code = nullptr;
-	size_t size_shader = 0;
+    // This function now correctly reloads based on CircleManager's complete list of vertices
+    UINT size_list = CircleManager::get()->getAllCircleVertices().size();
+    void* shader_byte_code = nullptr;
+    size_t size_shader = 0;
 
-	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
+    // Release old buffers if they exist, to prevent leaks if this is called multiple times
+    if (this->m_vertex_buffer) {
+        // VertexBuffer::release() deletes the object, so we need to nullify and re-create
+        this->m_vertex_buffer->release();
+        this->m_vertex_buffer = nullptr;
+    }
+    if (this->m_constant_buffer) {
+        this->m_constant_buffer->release();
+        this->m_constant_buffer = nullptr;
+    }
+    if (this->m_vertex_shader) {
+        this->m_vertex_shader->release();
+        this->m_vertex_shader = nullptr;
+    }
+    if (this->m_pixel_shader) {
+        this->m_pixel_shader->release();
+        this->m_pixel_shader = nullptr;
+    }
 
 
-	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+    // Create Vertex Buffer
+    this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
+    if (size_list > 0) // Only load if there are vertices
+    {
+        // Compile and Create Vertex Shader (only needs to be done once, but for simplicity here)
+        GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+        this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
 
-	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+        // Load vertex data into the buffer
+        this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
+        GraphicsEngine::get()->releaseCompiledShader(); // Release blob from vertex shader compilation
+    }
+    else { // Handle case of no vertices (e.g., after DELETE and before new spawn)
+        // Compile and Create Vertex Shader even if no vertices, so m_vertex_shader is not null for pipeline
+        GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+        this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+        GraphicsEngine::get()->releaseCompiledShader();
+        // Load an empty buffer essentially, or ensure shaders can handle 0 vertices.
+        // The load function for VertexBuffer should handle size_list = 0 gracefully (e.g., not creating D3D buffer or creating a tiny one).
+        // The draw call will then draw 0 vertices.
+        this->m_vertex_buffer->load(nullptr, sizeof(newVertex), 0, shader_byte_code, size_shader);
+    }
 
-	this->m_vertex_buffer->load(static_cast<void*>(CircleManager::get()->getAllCircleVertices().data()), sizeof(newVertex), size_list, shader_byte_code, size_shader);
 
-	GraphicsEngine::get()->releaseCompiledShader();
+    // Compile and Create Pixel Shader
+    GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
+    this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
+    GraphicsEngine::get()->releaseCompiledShader(); // Release blob from pixel shader compilation
 
+    // Create Constant Buffer
+    constant cc_init;
+    cc_init.m_time = 0;
+    cc_init.m_duration = this->duration;
+    this->m_constant_buffer = GraphicsEngine::get()->createConstantBuffer();
+    this->m_constant_buffer->load(&cc_init, sizeof(constant));
 
-	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-
-	this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
-
-	//GraphicsEngine::get()->releaseCompiledShader();
-
-	constant cc;
-	cc.m_time = 0;
-
-	this->m_constant_buffer = GraphicsEngine::get()->createConstantBuffer();
-	this->m_constant_buffer->load(&cc, sizeof(constant));
+    std::cout << "Buffers and shaders reloaded. Vertex count: " << size_list << std::endl;
 }

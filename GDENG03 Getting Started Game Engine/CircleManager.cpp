@@ -2,88 +2,102 @@
 
 CircleManager::CircleManager()
 {
-	this->defaultSegmentCount = 144;
-	this->defaultRadius = 0.75f;
-	this->allCircleVertices = {};
+    this->defaultSegmentCount = 144; // Keep default segments
+    // this->defaultRadius = 0.75f; // Removed, radius is now a parameter
+    this->allCircleVertices = {};
 }
 
 CircleManager::~CircleManager()
 {
+    releaseCircles(); // Ensure circles are deleted
 }
 
 CircleManager* CircleManager::get()
 {
-	static CircleManager circleManager;
-	return &circleManager;
+    static CircleManager circleManager;
+    return &circleManager;
 }
 
 int CircleManager::getCircleCount()
 {
-	return this->circles.size();
+    return this->circles.size();
 }
 
 std::vector<Circle*> CircleManager::getCircles()
 {
-	return this->circles;
+    return this->circles;
 }
 
 int CircleManager::getDefaultSegmentCount()
 {
-	return this->defaultSegmentCount;
+    return this->defaultSegmentCount;
 }
 
 std::vector<newVertex> CircleManager::getAllCircleVertices()
 {
-	//std::cout << "Circle Vertices Size: " << this->allCircleVertices.size() << std::endl;
-	return this->allCircleVertices;
+    return this->allCircleVertices;
 }
 
-void CircleManager::spawnCircle(vec3 position, vec3 color, float screenAspectRatio)
+// Modified to accept radius
+void CircleManager::spawnCircle(vec3 position, vec3 color, float screenAspectRatio, float radius)
 {
-	Circle* newCircle = new Circle(this->defaultSegmentCount, this->defaultRadius, position, color, screenAspectRatio);
-	this->circles.push_back(newCircle);
+    // Use the passed radius
+    Circle* newCircle = new Circle(this->defaultSegmentCount, radius, position, color, screenAspectRatio);
+    this->circles.push_back(newCircle);
 
-	for (const newVertex& element : newCircle->GetCircleVertices()) 
-	{
-		this->allCircleVertices.push_back(element);
-	}
-
-	std::cout << this->allCircleVertices.size() << std::endl;
+    // Add new circle's vertices to the master list
+    for (const newVertex& element : newCircle->GetCircleVertices())
+    {
+        this->allCircleVertices.push_back(element);
+    }
+    std::cout << "Spawned circle. Total vertices: " << this->allCircleVertices.size() << std::endl;
 }
 
 void CircleManager::releaseCircles()
 {
-	this->circles.clear();
-	this->allCircleVertices.clear();
-	std::cout << this->allCircleVertices.size() << std::endl;
+    for (Circle* circle : circles) {
+        delete circle; // Important: free the memory for each Circle object
+    }
+    this->circles.clear();
+    this->allCircleVertices.clear();
+    std::cout << "Released all circles. Total vertices: " << this->allCircleVertices.size() << std::endl;
 }
 
 void CircleManager::popCircle()
 {
-	this->allCircleVertices.clear();
+    if (!this->circles.empty()) {
+        delete this->circles.back(); // Free memory of the popped circle
+        this->circles.pop_back();
 
-	this->circles.pop_back();
-
-	//Update list
-	for (Circle* circle : this->circles) 
-	{
-		for (const newVertex& element : circle->GetCircleVertices())
-		{
-			this->allCircleVertices.push_back(element);
-		}
-	}
-
-	std::cout << this->allCircleVertices.size() << std::endl;
+        // Rebuild allCircleVertices from remaining circles
+        this->allCircleVertices.clear();
+        for (Circle* circle : this->circles)
+        {
+            for (const newVertex& element : circle->GetCircleVertices())
+            {
+                this->allCircleVertices.push_back(element);
+            }
+        }
+        std::cout << "Popped circle. Total vertices: " << this->allCircleVertices.size() << std::endl;
+    }
 }
 
+// This method now tells each circle to update its movement target and regenerate its vertices.
+// Then it collects all vertices again.
 void CircleManager::randomizeNewPositions()
 {
-	for (Circle* circle : this->circles)
-	{
-		for (int i = 0; i < circle->GetCircleVertices().size(); i++)
-		{
-			circle->GetCircleVertices()[i].newPositionDistance.randomizeVector(true);
-		}
-	}
-}
+    this->allCircleVertices.clear(); // Clear the old master list
 
+    for (Circle* circle : this->circles)
+    {
+        circle->randomizeMovementTarget(); // Each circle gets a new target
+        circle->GenerateVertices();        // Regenerate its vertices based on the new target
+
+        // Add the updated vertices of this circle to the master list
+        for (const newVertex& vert : circle->GetCircleVertices())
+        {
+            this->allCircleVertices.push_back(vert);
+        }
+    }
+    std::cout << "Randomized new positions for all circles. Total vertices: " << this->allCircleVertices.size() << std::endl;
+}
