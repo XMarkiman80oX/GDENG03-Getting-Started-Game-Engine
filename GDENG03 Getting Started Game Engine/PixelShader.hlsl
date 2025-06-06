@@ -9,6 +9,10 @@ struct PS_INPUT // We are getting the output data from the vertex shader, so it 
 //This is the constant buffer that will be passed to this pixel shader
 cbuffer constant : register(b0)
 {
+    row_major float4x4 m_world;
+    row_major float4x4 m_view;
+    row_major float4x4 m_proj;
+    
     unsigned int m_time;
 };
 
