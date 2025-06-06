@@ -1,12 +1,13 @@
 #include "AppWindow.h"
-#include <Windows.h>
+#include "Windows.h"
+#include "cmath"
 
 struct vec3
 {
 	float x, y, z;
 };
 
-struct vertex 
+struct vertex
 {
 	vec3 position;
 	vec3 position1;
@@ -14,13 +15,8 @@ struct vertex
 	vec3 color1;
 };
 
-/*
-	"DirectX handles the constant in video memory in checks of 16 bytes, so if our structure has
-	a size of 24 bytes, this size must be modified to be a multiple of 16, so we will have to enlarge it
-	of further 8 bytes. That's what "__declspec(align(16))" does.
-*/
 __declspec(align(16))
-struct constant 
+struct constant
 {
 	unsigned int m_time;
 };
@@ -59,9 +55,9 @@ void AppWindow::onCreate()
 	size_t size_shader = 0;
 	/*----------------VERTEX SHADER PART----------------*/
 	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	
+
 	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
-	
+
 	this->m_vertex_buffer->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
@@ -84,19 +80,39 @@ void AppWindow::onCreate()
 	/*------------------------------------------------*/
 
 }
-
 void AppWindow::onUpdate()
 {
 	//Window::onUpdate();
 	//change color here
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0,0.3f,0.4f,1);
+		0, 0.3f, 0.4f, 1);
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
-	
+
+	const float baseSpeed = 500.0f;
+	const float maxSpeed = 5000.0f;
+	const float accelerationRate = 250.0f;
+	const float deltaTime = static_cast<float>(EngineTime::getDeltaTime());
+
+	if (m_is_accelerating) {
+		m_current_speed += accelerationRate * deltaTime;
+		if (m_current_speed >= maxSpeed) {
+			m_current_speed = maxSpeed;
+			m_is_accelerating = false;
+		}
+	}
+	else { // Decelerating
+		m_current_speed -= accelerationRate * deltaTime;
+		if (m_current_speed <= baseSpeed) {
+			m_current_speed = baseSpeed;
+			m_is_accelerating = true;
+		}
+	}
+
+	m_time_accumulator += m_current_speed * deltaTime;
+
 	constant cc;
-	cc.m_time = GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
-								system started in milliseconds*/
+	cc.m_time = static_cast<unsigned int>(m_time_accumulator);
 
 	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
@@ -110,6 +126,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vertex_buffer->getSizeVertexList(), 0);
 	m_swap_chain->present(true);
 }
+
 
 void AppWindow::onDestroy()
 {

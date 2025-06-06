@@ -11,6 +11,7 @@ class EngineTime
 public:
 	static void initialize();
 	static double getDeltaTime();
+	static double getTotalElapsedTime(); // New function
 
 private:
 	EngineTime();
@@ -24,9 +25,9 @@ private:
 	std::chrono::system_clock::time_point end;
 
 	double deltaTime = 0.0f;
+	double totalElapsedTime = 0.0f; // New member to track total time
 	static void LogFrameStart();
 	static void LogFrameEnd();
 
 	friend class Window;
 };
-

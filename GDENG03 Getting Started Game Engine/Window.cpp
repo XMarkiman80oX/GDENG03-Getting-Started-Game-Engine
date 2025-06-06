@@ -88,16 +88,11 @@ bool Window::broadcast()
     Sleep(1);
     EngineTime::LogFrameEnd();
 
-    this->elapsedTime += EngineTime::getDeltaTime();
-
-    if (this->elapsedTime >= 10.0f)
-    {
-        std::cout << "HI" << std::endl;
-        this->elapsedTime = 0.0f;
-    }
+    // The old elapsedTime logic is removed from here.
 
     return true;
 }
+
 
 bool Window::release()
 {

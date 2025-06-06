@@ -18,6 +18,11 @@ double EngineTime::getDeltaTime() {
 	return sharedInstance->deltaTime;
 }
 
+double EngineTime::getTotalElapsedTime() {
+	if (!sharedInstance) initialize();
+	return sharedInstance->totalElapsedTime;
+}
+
 void EngineTime::LogFrameStart() {
 	if (sharedInstance) {
 		sharedInstance->start = std::chrono::system_clock::now();
@@ -29,5 +34,6 @@ void EngineTime::LogFrameEnd() {
 		sharedInstance->end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed = sharedInstance->end - sharedInstance->start;
 		sharedInstance->deltaTime = elapsed.count();
+		sharedInstance->totalElapsedTime += sharedInstance->deltaTime; // Update total elapsed time
 	}
 }

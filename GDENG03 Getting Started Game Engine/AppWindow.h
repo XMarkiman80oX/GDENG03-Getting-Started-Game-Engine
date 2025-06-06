@@ -25,5 +25,9 @@ private:
 	VertexShader* m_vertex_shader;
 	PixelShader* m_pixel_shader;
 	ConstantBuffer* m_constant_buffer;
-};
 
+	// Add these for animation control
+	float m_time_accumulator = 0.0f;
+	float m_current_speed = 20.0f; // Start at base speed
+	bool m_is_accelerating = true;
+};
