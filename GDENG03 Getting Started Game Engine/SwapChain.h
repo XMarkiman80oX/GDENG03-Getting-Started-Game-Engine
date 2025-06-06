@@ -13,9 +13,11 @@ public:
 
 	bool release();
 	~SwapChain();
+
 private:
 	IDXGISwapChain* m_swap_chain;
 	ID3D11RenderTargetView* m_rtv;
+
 private:
 	friend class DeviceContext;
 };

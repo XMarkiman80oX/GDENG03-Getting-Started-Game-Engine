@@ -24,6 +24,7 @@ void DeviceContext::setVertexBuffer(VertexBuffer* vertex_buffer)
 	UINT offset = 0;//Size in bytes that allows us to set the beginning of our buffer in another position
 
 	//You're passing the pointer to the buffer and indicating how many buffers will be set.
+	//Indicates we only pass one buffer (param 2) and that we have to pass the pointer to the buffer (param 3)
 	this->m_device_context->IASetVertexBuffers(0, 1, &vertex_buffer->m_buffer, &stride, &offset);
 	
 	//We're setting the input layout here.

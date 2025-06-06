@@ -18,9 +18,17 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	if (this->m_buffer)this->m_buffer->Release();
 	if (this->m_layout)this->m_layout->Release();
 
+	/*
+	* This is a descriptor object where we set data relative to our buffer
+	*/
 	D3D11_BUFFER_DESC buff_desc = {};
-	buff_desc.Usage = D3D11_USAGE_DEFAULT; //Means it can be read and written in both cpu and gpu
-	buff_desc.ByteWidth = size_vertex * size_list; //Size in bytes of our buffer
+
+	/*
+	* Indicates whether our buffer can be accessible by the cpu and gpu
+	*/
+	buff_desc.Usage = D3D11_USAGE_DEFAULT; // D3D11_USAGE_DEFAULT means it can be read and written in both cpu and gpu
+										   
+	buff_desc.ByteWidth = size_vertex * size_list; //Indicates the size in bytes of our buffer
 	buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //We tell directx how to bind our buffer to the graphics pipleine
 													//Here, we're saying it's a vertex buffer
 	buff_desc.CPUAccessFlags = 0; //Not important rn

@@ -56,7 +56,7 @@ bool GraphicsEngine::init()
 		return false;
 	}
 
-	m_imm_device_context = new DeviceContext(m_imm_context);
+	this->m_imm_device_context = new DeviceContext(m_imm_context);
 
 	/*
 	*	If m_d3d_device supports IDXGIDevice, QueryInterface will 
@@ -174,8 +174,8 @@ bool GraphicsEngine::compileVertexShader(const wchar_t* file_name, const char* e
 		return false;
 	}
 
-	*shader_byte_code = m_blob->GetBufferPointer();
-	*byte_code_size = m_blob->GetBufferSize();
+	*shader_byte_code = this->m_blob->GetBufferPointer();
+	*byte_code_size = this->m_blob->GetBufferSize();
 
 	return true;
 }

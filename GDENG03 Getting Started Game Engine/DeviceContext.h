@@ -7,6 +7,7 @@ class ConstantBuffer;
 class VertexShader;
 class PixelShader;
 
+//Immediate Context (not yet deferred)
 class DeviceContext
 {
 public:

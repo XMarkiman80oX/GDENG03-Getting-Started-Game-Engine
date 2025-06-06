@@ -46,12 +46,24 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
     if (FAILED(hr))
         return false;
 
+    /*
+    * We need the render type view of the swap chain (in DeviceContext::clearRenderTargetColor()), in this case we
+    * want the back buffer so we're getting it here
+    */
     ID3D11Texture2D* buffer = NULL;
-    hr = m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffer);
 
+    /*
+    * We are getting a texture in param 2 but it must be converted to a render target view
+    */
+    hr = m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&buffer);
+    /*
+    * Check here if it fails
+    */
     if (FAILED(hr))
         return false;
-
+    /*
+    * After checking we create the render target view here
+    */
     device->CreateRenderTargetView(buffer, NULL, &m_rtv);
     buffer->Release();
 
@@ -63,6 +75,10 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 
 bool SwapChain::present(bool vsync)
 {
+    /*
+    * ->Param 1: The sync interval, if it's 0, the presentation occurs immediately without any synchronization
+    * ->Param 2: Not important for now
+    */
     m_swap_chain->Present(vsync, NULL);
     return true;
 }
