@@ -33,31 +33,31 @@ public:
 	}
 	void setRotationX(float x) {
 		this->setIdentity();
-		this->m_mat[1][1] = cos(x);
-		this->m_mat[1][2] = sin(x);
-		this->m_mat[2][1] = -sin(x);
-		this->m_mat[2][2] = cos(x); 
+		this->m_mat[1][1] = (float)cos(x);
+		this->m_mat[1][2] = (float)sin(x);
+		this->m_mat[2][1] = (float)-sin(x);
+		this->m_mat[2][2] = (float)cos(x);
 	}
 	void setRotationY(float y) {
 		this->setIdentity();
-		this->m_mat[0][0] = cos(y);
-		this->m_mat[0][2] = -sin(y);
-		this->m_mat[2][0] = sin(y);
-		this->m_mat[2][2] = cos(y); 
+		this->m_mat[0][0] = (float)cos(y);
+		this->m_mat[0][2] = (float)-sin(y);
+		this->m_mat[2][0] = (float)sin(y);
+		this->m_mat[2][2] = (float)cos(y);
 	}
 	void setRotationZ(float z) {
 		this->setIdentity();
-		this->m_mat[0][0] = cos(z);
-		this->m_mat[0][1] = sin(z);
-		this->m_mat[1][0] = -sin(z);
-		this->m_mat[1][1] = cos(z); 
+		this->m_mat[0][0] = (float)cos(z);
+		this->m_mat[0][1] = (float)sin(z);
+		this->m_mat[1][0] = (float)-sin(z);
+		this->m_mat[1][1] = (float)cos(z);
 	}
 	void setOrthogonalProjectionMatrix(float width, float height, float near_plane, float far_plane) {
 		this->setIdentity();
-		this->m_mat[0][0] = 2.0f/width;
+		this->m_mat[0][0] = 2.0f / width;
 		this->m_mat[1][1] = 2.0f / height;
-		this->m_mat[2][2] = 1.0f/(far_plane - near_plane);
-		this->m_mat[3][2] = -(near_plane/(far_plane - near_plane));
+		this->m_mat[2][2] = 1.0f / (far_plane - near_plane);
+		this->m_mat[3][2] = -(near_plane / (far_plane - near_plane));
 	}
 
 	void operator *= (const Matrix4x4& matrix) {

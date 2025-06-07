@@ -4,7 +4,7 @@
 #include "Matrix4x4.h"
 
 
-struct vertex 
+struct vertex
 {
 	Vector3D position;
 	Vector3D color;
@@ -17,7 +17,7 @@ struct vertex
 	of further 8 bytes. That's what "__declspec(align(16))" does.
 */
 __declspec(align(16))
-struct constant 
+struct constant
 {
 	Matrix4x4 m_world;
 	Matrix4x4 m_view;
@@ -43,70 +43,14 @@ void AppWindow::onCreate()
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
-	//Set the vertices of the object here
-	//This is using the triangle strip approach
-	vertex vertexList[] = {
-		//X - Y - Z
-		/***************FRONT FACE****************/
-		{Vector3D( -0.5f, -0.5f, -0.5f), //POS1
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)}, 
-		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-		/******************************************/
-
-		/***************BACK FACE****************/
-		{Vector3D(0.5f, -0.5f, 0.5f), //POS1
-			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-		{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-		{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-		/******************************************/
-	};
-	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-	this->m_vertex_buffer = GraphicsEngine::getInstance()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(vertexList);
-
-	/*----------------INDEX BUFFER PART----------------*/
-	unsigned int index_list[] = {
-		//FRONT SIDE
-		0,1,2, // 1st Triangle
-		2,3,0, //2nd Triangle
-		//BACK SIDE
-		4,5,6,
-		6,7,4,
-		//TOP SIDE
-		1,6,5,
-		5,2,1,
-		//BOTTOM SIDE
-		7,0,3,
-		3,4,7,
-		//RIGHT SIDE
-		3,2,5,
-		5,4,3,
-		//LEFT SIDE
-		7,6,1,
-		1,0,7
-	};
-	this->m_index_buffer = GraphicsEngine::getInstance()->createIndexBuffer();
-	UINT size_index_list = ARRAYSIZE(index_list);
-	this->m_index_buffer->load(index_list, size_index_list);
-	/*------------------------------------------------*/
-
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
 	/*----------------VERTEX SHADER PART----------------*/
 	GraphicsEngine::getInstance()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	
+
 	this->m_vertex_shader = GraphicsEngine::getInstance()->createVertexShader(shader_byte_code, size_shader);
-	
-	this->m_vertex_buffer->load(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	this->m_cube = new Cube("MyCube", shader_byte_code, size_shader);
+
 
 	GraphicsEngine::getInstance()->releaseCompiledShader();
 	/*------------------------------------------------*/
@@ -118,15 +62,6 @@ void AppWindow::onCreate()
 
 	GraphicsEngine::getInstance()->releaseCompiledShader();
 	/*------------------------------------------------*/
-
-	/*----------------CONSTANT BUFFER PART----------------*/
-	constant cc;
-	cc.m_time = 0;
-
-	this->m_constant_buffer = GraphicsEngine::getInstance()->createConstantBuffer();
-	this->m_constant_buffer->load(&cc, sizeof(constant));
-	/*------------------------------------------------*/
-
 }
 
 void AppWindow::onUpdate()
@@ -134,90 +69,38 @@ void AppWindow::onUpdate()
 	//Window::onUpdate();
 	//change color here
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0,0.3f,0.4f,1);
+		0, 0.3f, 0.4f, 1);
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
-	
-	this->updateQuadPosition();
 
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
+	this->updateQuadPosition();
 
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
-	//Here we will pass the vertex buffer from which to get the vertices to render
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
+	this->m_cube->draw(rc.right - rc.left, rc.bottom - rc.top, this->m_vertex_shader, this->m_pixel_shader);
 
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
-
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0,0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = ::GetTickCount();
 
 	//if the old delta has no value, set it to 0 so we dont have a new delta that equals to the new delta one
-	this->m_delta_time = (this->m_old_delta)?((this->m_new_delta - this->m_old_delta)/1000.0f) :0;
+	this->m_delta_time = (this->m_old_delta) ? ((this->m_new_delta - this->m_old_delta) / 1000.0f) : 0;
 }
 
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
-	this->m_vertex_buffer->release();
-	this->m_index_buffer->release();
-	this->m_constant_buffer->release();
 	this->m_swap_chain->release();
-
 	this->m_vertex_shader->release();
 	this->m_pixel_shader->release();
+	this->m_cube->~Cube();
 	GraphicsEngine::getInstance()->release();
 }
 
 void AppWindow::updateQuadPosition()
 {
-	constant cc;
-	cc.m_time = ::GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
-								system started in milliseconds*/
-
-	float movementRate = 1.0f/0.55f;
-	//This means we reach one unit per 1/movementRate seconds (reciprocal)
-	this->m_delta_pos += m_delta_time * movementRate;
-
-	if (this->m_delta_pos > 1.0f) 
-		m_delta_pos = 0;
-	
-	Matrix4x4 temp;
-	this->m_delta_scale += this->m_delta_time * movementRate;
-	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2.0f, -2.0f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), this->m_delta_pos));
-	/*cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
-	
-	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0.0f), Vector3D(1.5f, 1.5f, 0.0f), this->m_delta_pos));
-	
-	cc.m_world *= temp;*/
-
-	cc.m_world.setScale(Vector3D(1, 1, 1));
-
-	temp.setIdentity();
-	temp.setRotationZ(this->m_delta_scale);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationY(this->m_delta_scale);
-	cc.m_world *= temp;
-
-	temp.setIdentity();
-	temp.setRotationX(this->m_delta_scale);
-	cc.m_world *= temp;
-
-	float cubeSizeMultiplier = 1 / 300.0f;
-	cc.m_view.setIdentity();
-	cc.m_proj.setOrthogonalProjectionMatrix(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left)*cubeSizeMultiplier,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
-		-4.0f,
-		4.0f
-	);
-
-	this->m_constant_buffer->update(GraphicsEngine::getInstance()->getImmediateDeviceContext(), &cc);
+	this->m_delta_scale += this->m_delta_time * 0.5f;
+	this->m_cube->setRotation(this->m_delta_scale, this->m_delta_scale, this->m_delta_scale);
 }

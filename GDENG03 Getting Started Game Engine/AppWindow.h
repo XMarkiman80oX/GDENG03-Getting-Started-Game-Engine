@@ -8,6 +8,7 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "Cube.h"
 
 class AppWindow : public Window
 {
@@ -24,11 +25,10 @@ private:
 
 private:
 	SwapChain* m_swap_chain;
-	VertexBuffer* m_vertex_buffer;
 	VertexShader* m_vertex_shader;
 	PixelShader* m_pixel_shader;
-	ConstantBuffer* m_constant_buffer;
-	IndexBuffer* m_index_buffer;
+	Cube* m_cube;
+
 private:
 	float m_old_delta;
 	float m_new_delta;
@@ -37,4 +37,3 @@ private:
 	float m_delta_pos;
 	float m_delta_scale;
 };
-
