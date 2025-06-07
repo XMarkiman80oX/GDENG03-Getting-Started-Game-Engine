@@ -135,6 +135,7 @@
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
+    <ClCompile Include="EngineTime.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DeviceContext.h" />
+    <ClInclude Include="EngineTime.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Matrix4x4.h" />
