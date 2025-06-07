@@ -23,6 +23,7 @@ struct constant
 
 AppWindow::AppWindow()
 {
+	this->m_current_speed = this->baseSpeed;
 }
 
 AppWindow::~AppWindow()
@@ -43,16 +44,14 @@ void AppWindow::onCreate()
 	// 
 
 	/*SLIDE 13*/
-	vertex list[] = {
-		//X - Y - Z
-		{-0.5f, -0.5f, 0.0f,  -0.32f, -0.11f, 0.0f,      0,1,0,  0,1,0}, //POS1
-		{-0.5f, 0.5f, 0.0f,   -0.11f, 0.78f, 0.0f,       0,1,0, 0,1,0}, //POS2
-		{0.5f, -0.5f, 0.0f,    0.75f, -0.73f, 0.0f,      0,1,0, 1,0,0}, //POS3
-		{0.5f, 0.5f, 0.0f,     0.88f, 0.77f, 0.0f,       0,1,0, 0,0,1}, //POS4
-	};
+	//vertex list[] = {
+	//	//X - Y - Z
+	//	{-0.6f, -0.6f, 0.0f,  -0.42f, -0.21f, 0.0f,      0,1,0,  0,1,0}, //POS1
+	//	{-0.6f,  0.4f, 0.0f,  -0.21f,  0.68f, 0.0f,      0,1,0,  0,1,0}, //POS2
+	//	{ 0.4f, -0.6f, 0.0f,   0.65f, -0.83f, 0.0f,      0,1,0,  1,0,0}, //POS3
+	//	{ 0.4f,  0.4f, 0.0f,   0.78f,  0.67f, 0.0f,      0,1,0,  0,0,1}, //POS4
+	//};
 	
-
-	/*SLIDE 14
 	
 	vertex list[] = {
 		//X - Y - Z
@@ -61,7 +60,6 @@ void AppWindow::onCreate()
 		{0.5f, -0.5f, 0.0f,    0.8f, -0.2f, 0.0f,      0,1,0, 1,0,0}, //POS3
 		{0.5f, 0.5f, 0.0f,     -0.3f, -0.3f, 0.0f,       0,1,0, 0,0,1}, //POS4
 	};
-	*/
 
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
@@ -105,9 +103,8 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	const float baseSpeed = 500.0f;
-	const float maxSpeed = 5000.0f;
-	const float accelerationRate = 250.0f;
+	const float maxSpeed = 10000.0f; //speed goal for speed increase before it decreases speed
+	const float accelerationRate = 1000.0f;
 	const float deltaTime = static_cast<float>(EngineTime::getDeltaTime());
 	
 	if (oscillate_enabled)
@@ -122,8 +119,8 @@ void AppWindow::onUpdate()
 		}
 		else {
 			m_current_speed -= accelerationRate * deltaTime;
-			if (m_current_speed <= baseSpeed) {
-				m_current_speed = baseSpeed;
+			if (m_current_speed <= this->baseSpeed) {
+				m_current_speed = this->baseSpeed;
 				m_is_accelerating = true;
 			}
 		}
