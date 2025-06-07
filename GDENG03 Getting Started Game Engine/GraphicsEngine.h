@@ -34,7 +34,7 @@ public:
 	void releaseCompiledShader();
 
 public:
-	static GraphicsEngine* get();
+	static GraphicsEngine* getInstance();
 
 private:
 	DeviceContext* m_imm_device_context;
