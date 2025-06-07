@@ -28,9 +28,8 @@ private:
 	VertexShader* m_vertex_shader;
 	PixelShader* m_pixel_shader;
 
-	// Replaced single cube with an array for 100 cubes
-	static const int CUBE_COUNT = 100;
-	Cube* m_cubes[CUBE_COUNT];
+	static const int cubeCount = 100;
+	Cube* m_cubes[cubeCount];
 
 private:
 	float m_old_delta;
@@ -38,5 +37,9 @@ private:
 	float m_delta_time;
 
 	float m_delta_pos;
-	float m_delta_scale;
+	// float m_delta_scale; // Removed
+
+	// Added rotation speed bounds
+	float m_min_rot_speed = 0.5f;
+	float m_max_rot_speed = 2.0f;
 };

@@ -53,7 +53,7 @@ void AppWindow::onCreate()
 	this->m_vertex_shader = GraphicsEngine::getInstance()->createVertexShader(shader_byte_code, size_shader);
 
 	// Loop to create and configure each of the 100 cubes
-	for (int i = 0; i < CUBE_COUNT; i++)
+	for (int i = 0; i < cubeCount; i++)
 	{
 		this->m_cubes[i] = new Cube("MyCube", shader_byte_code, size_shader);
 
@@ -65,6 +65,12 @@ void AppWindow::onCreate()
 		// Set a smaller, random scale for each cube
 		float scale = (((float)rand()) / RAND_MAX) * 0.05f + 0.02f; // Scale between 0.02 and 0.07
 		this->m_cubes[i]->setScale(scale, scale, scale);
+
+		// Set a random rotation speed for each cube
+		float rot_x_speed = m_min_rot_speed + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (m_max_rot_speed - m_min_rot_speed)));
+		float rot_y_speed = m_min_rot_speed + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (m_max_rot_speed - m_min_rot_speed)));
+		float rot_z_speed = m_min_rot_speed + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (m_max_rot_speed - m_min_rot_speed)));
+		this->m_cubes[i]->setRotationSpeed(Vector3D(rot_x_speed, rot_y_speed, rot_z_speed));
 	}
 
 
@@ -93,7 +99,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
 	// Loop to draw all 100 cubes
-	for (int i = 0; i < CUBE_COUNT; i++)
+	for (int i = 0; i < cubeCount; i++)
 	{
 		this->m_cubes[i]->draw(rc.right - rc.left, rc.bottom - rc.top, this->m_vertex_shader, this->m_pixel_shader);
 	}
@@ -116,7 +122,7 @@ void AppWindow::onDestroy()
 	this->m_pixel_shader->release();
 
 	// Loop to release the memory for all 100 cubes
-	for (int i = 0; i < CUBE_COUNT; i++)
+	for (int i = 0; i < cubeCount; i++)
 	{
 		delete this->m_cubes[i];
 	}
@@ -126,12 +132,9 @@ void AppWindow::onDestroy()
 
 void AppWindow::update()
 {
-	this->m_delta_scale += this->m_delta_time * 0.5f;
-
 	// Loop to update the rotation of all 100 cubes
-	for (int i = 0; i < CUBE_COUNT; i++)
+	for (int i = 0; i < cubeCount; i++)
 	{
-		this->m_cubes[i]->setRotation(this->m_delta_scale, this->m_delta_scale, this->m_delta_scale);
 		this->m_cubes[i]->update(this->m_delta_time);
 	}
 }
