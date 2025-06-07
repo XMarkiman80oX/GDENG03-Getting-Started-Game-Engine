@@ -7,7 +7,6 @@
 struct vertex 
 {
 	Vector3D position;
-	Vector3D position1;
 	Vector3D color;
 	Vector3D color1;
 };
@@ -46,16 +45,59 @@ void AppWindow::onCreate()
 
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
-	vertex list[] = {
+	vertex vertexList[] = {
 		//X - Y - Z
-		{Vector3D( - 0.5f, -0.5f, 0.0f),  Vector3D(-0.32f, -0.11f, 0.0f),      Vector3D(0,1,0),  Vector3D(0,1,0)}, //POS1
-		{Vector3D(-0.5f, 0.5f, 0.0f),   Vector3D(-0.11f, 0.78f, 0.0f),       Vector3D(0,1,0), Vector3D(0,1,0)}, //POS2
-		{Vector3D(0.5f, -0.5f, 0.0f),    Vector3D(0.75f, -0.73f, 0.0f),      Vector3D(0,1,0), Vector3D(1,0,0)}, //POS3
-		{Vector3D(0.5f, 0.5f, 0.0f),     Vector3D(0.88f, 0.77f, 0.0f),       Vector3D(0,1,0), Vector3D(0,0,1)}, //POS4
+		/***************FRONT FACE****************/
+		{Vector3D( -0.5f, -0.5f, -0.5f), //POS1
+			Vector3D(1,0,0), Vector3D(0.2f,0,0)}, 
+		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
+			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
+		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
+			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
+		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
+			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
+		/******************************************/
+
+		/***************BACK FACE****************/
+		{Vector3D(0.5f, -0.5f, 0.5f), //POS1
+			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+		{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
+			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+		{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
+			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+		{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
+			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+		/******************************************/
 	};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(list);
+	UINT size_list = ARRAYSIZE(vertexList);
+
+	/*----------------INDEX BUFFER PART----------------*/
+	unsigned int index_list[] = {
+		//FRONT SIDE
+		0,1,2, // 1st Triangle
+		2,3,0, //2nd Triangle
+		//BACK SIDE
+		4,5,6,
+		6,7,4,
+		//TOP SIDE
+		1,6,5,
+		5,2,1,
+		//BOTTOM SIDE
+		7,0,3,
+		3,4,7,
+		//RIGHT SIDE
+		3,2,5,
+		5,4,3,
+		//LEFT SIDE
+		7,6,1,
+		1,0,7
+	};
+	this->m_index_buffer = GraphicsEngine::get()->createIndexBuffer();
+	UINT size_index_list = ARRAYSIZE(index_list);
+	this->m_index_buffer->load(index_list, size_index_list);
+	/*------------------------------------------------*/
 
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
@@ -64,7 +106,7 @@ void AppWindow::onCreate()
 	
 	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
 	
-	this->m_vertex_buffer->load(list, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	this->m_vertex_buffer->load(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
 	/*------------------------------------------------*/
@@ -98,16 +140,18 @@ void AppWindow::onUpdate()
 	
 	this->updateQuadPosition();
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_vertex_shader, m_constant_buffer);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(m_pixel_shader, m_constant_buffer);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(m_vertex_buffer->getSizeVertexList(), 0);
+	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
+
+	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0,0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
@@ -121,6 +165,8 @@ void AppWindow::onDestroy()
 {
 	Window::onDestroy();
 	this->m_vertex_buffer->release();
+	this->m_index_buffer->release();
+	this->m_constant_buffer->release();
 	this->m_swap_chain->release();
 
 	this->m_vertex_shader->release();
@@ -134,7 +180,7 @@ void AppWindow::updateQuadPosition()
 	cc.m_time = ::GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
 								system started in milliseconds*/
 
-	float movementRate = 1.0f/10.0f;
+	float movementRate = 1.0f/0.55f;
 	//This means we reach one unit per 1/movementRate seconds (reciprocal)
 	this->m_delta_pos += m_delta_time * movementRate;
 
@@ -144,16 +190,31 @@ void AppWindow::updateQuadPosition()
 	Matrix4x4 temp;
 	this->m_delta_scale += this->m_delta_time * movementRate;
 	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2.0f, -2.0f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), this->m_delta_pos));
-	cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
+	/*cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
 	
 	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0.0f), Vector3D(1.5f, 1.5f, 0.0f), this->m_delta_pos));
 	
+	cc.m_world *= temp;*/
+
+	cc.m_world.setScale(Vector3D(1, 1, 1));
+
+	temp.setIdentity();
+	temp.setRotationZ(this->m_delta_scale);
 	cc.m_world *= temp;
 
+	temp.setIdentity();
+	temp.setRotationY(this->m_delta_scale);
+	cc.m_world *= temp;
+
+	temp.setIdentity();
+	temp.setRotationX(this->m_delta_scale);
+	cc.m_world *= temp;
+
+	float cubeSizeMultiplier = 1 / 300.0f;
 	cc.m_view.setIdentity();
 	cc.m_proj.setOrthogonalProjectionMatrix(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left)/400.0f,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top)/400.0f,
+		(this->getClientWindowRect().right - this->getClientWindowRect().left)*cubeSizeMultiplier,
+		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
 		-4.0f,
 		4.0f
 	);

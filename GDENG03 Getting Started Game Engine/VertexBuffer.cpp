@@ -1,12 +1,13 @@
 #include "VertexBuffer.h"
 #include "GraphicsEngine.h"
+#include "IndexBuffer.h"
 
 VertexBuffer::VertexBuffer()
 	: m_buffer(0), m_layout(0)
 {
 }
 
-bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list, 
+bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	//These are necessary so that the input signature of our shader 
 	// can be validated against the array of attributes just created
 	//...To be discussed further later on
@@ -49,9 +50,8 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	{
 		//SEMANTIC NAME - SEMANTIC INDEX - FORMAT - INPUT SLOT - ALIGNED BYTE OFFSET - INPUT SLOT CLASS - INSTANCE DATA STEP RATE
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0}, //only rgb, not rgba
-		{"COLOR", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}, //only rgb, not rgba
+		{"COLOR", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	UINT size_layout = ARRAYSIZE(layout);//returns the number of attributes
 	

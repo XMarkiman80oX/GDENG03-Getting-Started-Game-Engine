@@ -2,7 +2,6 @@ struct VS_INPUT
 {
     float4 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
                                 // identifies that this attribute corresponds to "up vertex position"
-    float4 position1 : POSITION1; 
     float3 color : COLOR;
     float3 color1 : COLOR1;
 };
