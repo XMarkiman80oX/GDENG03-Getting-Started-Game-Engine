@@ -30,4 +30,8 @@ private:
 	float m_time_accumulator = 0.0f;
 	float m_current_speed = 20.0f; // Start at base speed
 	bool m_is_accelerating = true;
+
+	//Disable for slide 14
+	//Enables acceleration and decelaration for slide 13
+	bool oscillate_enabled = true;
 };

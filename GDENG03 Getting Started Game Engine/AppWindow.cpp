@@ -40,6 +40,9 @@ void AppWindow::onCreate()
 
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
+	// 
+
+	/*SLIDE 13*/
 	vertex list[] = {
 		//X - Y - Z
 		{-0.5f, -0.5f, 0.0f,  -0.32f, -0.11f, 0.0f,      0,1,0,  0,1,0}, //POS1
@@ -47,6 +50,19 @@ void AppWindow::onCreate()
 		{0.5f, -0.5f, 0.0f,    0.75f, -0.73f, 0.0f,      0,1,0, 1,0,0}, //POS3
 		{0.5f, 0.5f, 0.0f,     0.88f, 0.77f, 0.0f,       0,1,0, 0,0,1}, //POS4
 	};
+	
+
+	/*SLIDE 14
+	
+	vertex list[] = {
+		//X - Y - Z
+		{-0.5f, -0.5f, 0.0f,  -0.1f, -0.8f, 0.0f,      0,1,0,  0,1,0}, //POS1
+		{-0.5f, 0.5f, 0.0f,   -0.8f, -0.1f, 0.0f,       0,1,0, 0,1,0}, //POS2
+		{0.5f, -0.5f, 0.0f,    0.8f, -0.2f, 0.0f,      0,1,0, 1,0,0}, //POS3
+		{0.5f, 0.5f, 0.0f,     -0.3f, -0.3f, 0.0f,       0,1,0, 0,0,1}, //POS4
+	};
+	*/
+
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(list);
@@ -93,20 +109,29 @@ void AppWindow::onUpdate()
 	const float maxSpeed = 5000.0f;
 	const float accelerationRate = 250.0f;
 	const float deltaTime = static_cast<float>(EngineTime::getDeltaTime());
-
-	if (m_is_accelerating) {
-		m_current_speed += accelerationRate * deltaTime;
-		if (m_current_speed >= maxSpeed) {
-			m_current_speed = maxSpeed;
-			m_is_accelerating = false;
+	
+	if (oscillate_enabled)
+	{
+		// Oscillation logic: accelerate and decelerate
+		if (m_is_accelerating) {
+			m_current_speed += accelerationRate * deltaTime;
+			if (m_current_speed >= maxSpeed) {
+				m_current_speed = maxSpeed;
+				m_is_accelerating = false;
+			}
+		}
+		else {
+			m_current_speed -= accelerationRate * deltaTime;
+			if (m_current_speed <= baseSpeed) {
+				m_current_speed = baseSpeed;
+				m_is_accelerating = true;
+			}
 		}
 	}
-	else { // Decelerating
-		m_current_speed -= accelerationRate * deltaTime;
-		if (m_current_speed <= baseSpeed) {
-			m_current_speed = baseSpeed;
-			m_is_accelerating = true;
-		}
+	else
+	{
+		// Constant speed logic
+		m_current_speed = baseSpeed;
 	}
 
 	m_time_accumulator += m_current_speed * deltaTime;
