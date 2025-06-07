@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include "Vector3D.h"
 #include "Matrix4x4.h"
+#include <time.h> // Required for seeding the random number generator
 
 
 struct vertex
@@ -28,6 +29,8 @@ struct constant
 
 AppWindow::AppWindow()
 {
+	// Seed the random number generator to ensure different positions/scales each run
+	srand((unsigned int)time(NULL));
 }
 
 AppWindow::~AppWindow()
@@ -47,9 +50,22 @@ void AppWindow::onCreate()
 	size_t size_shader = 0;
 	/*----------------VERTEX SHADER PART----------------*/
 	GraphicsEngine::getInstance()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-
 	this->m_vertex_shader = GraphicsEngine::getInstance()->createVertexShader(shader_byte_code, size_shader);
-	this->m_cube = new Cube("MyCube", shader_byte_code, size_shader);
+
+	// Loop to create and configure each of the 100 cubes
+	for (int i = 0; i < CUBE_COUNT; i++)
+	{
+		this->m_cubes[i] = new Cube("MyCube", shader_byte_code, size_shader);
+
+		// Set a random position to scatter the cubes across the screen
+		float x = (((float)rand()) / RAND_MAX) * 2.5f - 1.25f;
+		float y = (((float)rand()) / RAND_MAX) * 2.0f - 1.0f;
+		this->m_cubes[i]->setPosition(x, y, 0.0f);
+
+		// Set a smaller, random scale for each cube
+		float scale = (((float)rand()) / RAND_MAX) * 0.05f + 0.02f; // Scale between 0.02 and 0.07
+		this->m_cubes[i]->setScale(scale, scale, scale);
+	}
 
 
 	GraphicsEngine::getInstance()->releaseCompiledShader();
@@ -57,9 +73,7 @@ void AppWindow::onCreate()
 
 	/*----------------PIXEL SHADER PART----------------*/
 	GraphicsEngine::getInstance()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-
 	this->m_pixel_shader = GraphicsEngine::getInstance()->createPixelShader(shader_byte_code, size_shader);
-
 	GraphicsEngine::getInstance()->releaseCompiledShader();
 	/*------------------------------------------------*/
 }
@@ -73,12 +87,17 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	this->updateQuadPosition();
+	this->update();
 
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
-	this->m_cube->draw(rc.right - rc.left, rc.bottom - rc.top, this->m_vertex_shader, this->m_pixel_shader);
+	// Loop to draw all 100 cubes
+	for (int i = 0; i < CUBE_COUNT; i++)
+	{
+		this->m_cubes[i]->draw(rc.right - rc.left, rc.bottom - rc.top, this->m_vertex_shader, this->m_pixel_shader);
+	}
+
 
 	m_swap_chain->present(true);
 
@@ -95,12 +114,24 @@ void AppWindow::onDestroy()
 	this->m_swap_chain->release();
 	this->m_vertex_shader->release();
 	this->m_pixel_shader->release();
-	this->m_cube->~Cube();
+
+	// Loop to release the memory for all 100 cubes
+	for (int i = 0; i < CUBE_COUNT; i++)
+	{
+		delete this->m_cubes[i];
+	}
+
 	GraphicsEngine::getInstance()->release();
 }
 
-void AppWindow::updateQuadPosition()
+void AppWindow::update()
 {
 	this->m_delta_scale += this->m_delta_time * 0.5f;
-	this->m_cube->setRotation(this->m_delta_scale, this->m_delta_scale, this->m_delta_scale);
+
+	// Loop to update the rotation of all 100 cubes
+	for (int i = 0; i < CUBE_COUNT; i++)
+	{
+		this->m_cubes[i]->setRotation(this->m_delta_scale, this->m_delta_scale, this->m_delta_scale);
+		this->m_cubes[i]->update(this->m_delta_time);
+	}
 }

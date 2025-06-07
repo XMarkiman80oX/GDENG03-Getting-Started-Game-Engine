@@ -117,7 +117,7 @@ void Cube::draw(int width, int height, VertexShader* vertexShader, PixelShader* 
 
 	cbData.m_world = allMatrix;
 	cbData.m_view.setIdentity();
-	cbData.m_proj.setOrthogonalProjectionMatrix(width/400.0f, height/400.0f, -4.0f, 4.0f);
+	cbData.m_proj.setOrthogonalProjectionMatrix(width/200.0f, height/200.0f, -4.0f, 4.0f);
 
 	this->constantBuffer->update(deviceContextInst, &cbData);
 	deviceContextInst->setConstantBuffer(vertexShader, this->constantBuffer);
