@@ -23,18 +23,18 @@ void Circle::GenerateVertices()
     circleVertices.clear();
 
     vec3 animationTargetOffsetForAllVertices;
-    animationTargetOffsetForAllVertices.randomizeVector(true); //
+    animationTargetOffsetForAllVertices.randomizeVector(true); 
 
-    float effectiveRadiusForClamping = this->radius * 0.8f; //
-    if (std::abs(animationTargetOffsetForAllVertices.x) == 1.0f) { //
-        animationTargetOffsetForAllVertices.x -= effectiveRadiusForClamping * animationTargetOffsetForAllVertices.x; //
+    float effectiveRadiusForClamping = this->radius * 0.8f; 
+    if (std::abs(animationTargetOffsetForAllVertices.x) == 1.0f) { 
+        animationTargetOffsetForAllVertices.x -= effectiveRadiusForClamping * animationTargetOffsetForAllVertices.x; 
     }
-    if (std::abs(animationTargetOffsetForAllVertices.y) == 1.0f) { //
-        animationTargetOffsetForAllVertices.y -= effectiveRadiusForClamping * animationTargetOffsetForAllVertices.y; //
+    if (std::abs(animationTargetOffsetForAllVertices.y) == 1.0f) { 
+        animationTargetOffsetForAllVertices.y -= effectiveRadiusForClamping * animationTargetOffsetForAllVertices.y; 
     }
 
-    vec3 centerVertexPos = this->position; //
-    float deltaAngle = 2.0f * (float)M_PI / segmentCount; //
+    vec3 centerVertexPos = this->position; 
+    float deltaAngle = 2.0f * (float)M_PI / segmentCount; 
 
 
 
@@ -51,7 +51,7 @@ void Circle::GenerateVertices()
         // Current point on circumference (Pi)
         float x_offset1 = this->radius * cos(angle1);
         float y_offset1 = this->radius * sin(angle1);
-        float corrected_x_offset1 = x_offset1 / this->screenAspectRatio; //
+        float corrected_x_offset1 = x_offset1 / this->screenAspectRatio; 
         vec3 p1 = vec3(
             centerVertexPos.x + corrected_x_offset1,
             centerVertexPos.y + y_offset1,
@@ -62,7 +62,7 @@ void Circle::GenerateVertices()
         // For the last segment, P(i+1) will be P0 (cos(2*PI), sin(2*PI))
         float x_offset2 = this->radius * cos(angle2);
         float y_offset2 = this->radius * sin(angle2);
-        float corrected_x_offset2 = x_offset2 / this->screenAspectRatio; //
+        float corrected_x_offset2 = x_offset2 / this->screenAspectRatio; 
         vec3 p2 = vec3(
             centerVertexPos.x + corrected_x_offset2,
             centerVertexPos.y + y_offset2,
