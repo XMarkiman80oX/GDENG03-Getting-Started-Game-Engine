@@ -6,6 +6,9 @@ public:
 	Vector3D(float x, float y, float z): x(x),y(y),z(z) {
 
 	}
+	Vector3D(float uniformXYZ) : x(uniformXYZ), y(uniformXYZ), z(uniformXYZ) {
+
+	}
 	Vector3D(): x(0),y(0),z(0) {
 
 	}

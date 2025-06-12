@@ -181,6 +181,16 @@ void AppWindow::onDestroy()
 	GraphicsEngine::get()->release();
 }
 
+void AppWindow::onFocus()
+{
+	InputSystem::getInstance()->addListener(this);
+}
+
+void AppWindow::onKillFocus()
+{
+	InputSystem::getInstance()->removeListener(this);
+}
+
 void AppWindow::updateQuadPosition()
 {
 	constant cc;
@@ -203,7 +213,7 @@ void AppWindow::updateQuadPosition()
 	
 	cc.m_world *= temp;*/
 
-	cc.m_world.setScale(Vector3D(1, 1, 1));
+	cc.m_world.setScale(this->cubeScale);
 
 	temp.setIdentity();
 	temp.setRotationZ(0.0f);
@@ -229,19 +239,48 @@ void AppWindow::updateQuadPosition()
 	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 }
 
+void AppWindow::onLeftMouseDown(const Point& mousePosition)
+{
+	//means xyz are all uniform
+	this->cubeScale = Vector3D(0.5f);
+}
+
+void AppWindow::onLeftMouseUp(const Point& mousePosition)
+{
+	this->cubeScale = Vector3D(1.0f);
+}
+
+void AppWindow::onRightMouseDown(const Point& mousePosition)
+{
+	this->cubeScale = Vector3D(2.0f);
+}
+
+void AppWindow::onRightMouseUp(const Point& mousePosition)
+{
+	this->cubeScale = Vector3D(1.0f);
+}
+
+void AppWindow::onMouseMove(const Point& deltaMousePosition)
+{
+	this->m_rotation_x -= this->rotationSpeedMultiplier* deltaMousePosition.y * this->m_delta_time;
+	this->m_rotation_y -= this->rotationSpeedMultiplier* deltaMousePosition.x * this->m_delta_time;
+}
+
 void AppWindow::onKeyDown(int key)
 {
-	if (key == 'W') {
-		this->m_rotation_x += rotationSpeedMultiplier * this->m_delta_time;
-	}
-	else if (key == 'S') {
-		this->m_rotation_x -= rotationSpeedMultiplier * this->m_delta_time;
-	}
-	else if (key == 'A') {
-		this->m_rotation_y += rotationSpeedMultiplier * this->m_delta_time;
-	}
-	else if (key == 'D') {
-		this->m_rotation_y -= rotationSpeedMultiplier * this->m_delta_time;
+	switch (key) {
+		case 'W':
+			this->m_rotation_x += rotationSpeedMultiplier * this->m_delta_time;
+			break;
+		case 'S':
+			this->m_rotation_x -= rotationSpeedMultiplier * this->m_delta_time;
+			break;
+		case 'A':
+			this->m_rotation_y += rotationSpeedMultiplier * this->m_delta_time;
+			break;
+		case 'D':
+			this->m_rotation_y -= rotationSpeedMultiplier * this->m_delta_time;
+			break;
 	}
 }
 

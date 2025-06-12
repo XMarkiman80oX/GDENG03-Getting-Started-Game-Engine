@@ -9,6 +9,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "InputListener.h"
+#include "Vector3D.h"	
 
 class AppWindow : public Window, public InputListener
 {
@@ -20,9 +21,23 @@ public:
 	virtual void onCreate() override;
 	virtual void onUpdate() override;
 	virtual void onDestroy() override;
+	virtual void onFocus() override;
+	virtual void onKillFocus() override;
 	// Inherited via InputListener
 	void onKeyDown(int key) override;
 	void onKeyUp(int key) override;
+
+	// Inherited via InputListener
+	void onMouseMove(const Point& deltaMousePosition) override;
+
+	// Inherited via InputListener
+	void onLeftMouseDown(const Point& mousePosition) override;
+
+	void onLeftMouseUp(const Point& mousePosition) override;
+
+	void onRightMouseDown(const Point& mousePosition) override;
+
+	void onRightMouseUp(const Point& mousePosition) override;
 
 private:
 	void updateQuadPosition();
@@ -46,5 +61,7 @@ private:
 	float m_rotation_y = 0.0f;
 
 	const float rotationSpeedMultiplier = 3.14f;
+
+	Vector3D cubeScale = Vector3D(1.0f);
 };
 

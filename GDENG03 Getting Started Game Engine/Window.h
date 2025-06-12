@@ -28,6 +28,9 @@ public:
 	virtual void onCreate() = 0;
 	virtual void onUpdate() = 0;
 	virtual void onDestroy();
+	//So that mouse doesn't keep getting registered when OOF
+	virtual void onFocus();
+	virtual void onKillFocus();
 	~Window();
 
 protected:
