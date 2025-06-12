@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include "Vector3D.h"
 #include "Matrix4x4.h"
+#include "InputSystem.h"
 
 
 struct vertex 
@@ -37,6 +38,9 @@ AppWindow::~AppWindow()
 void AppWindow::onCreate()
 {
 	//Window::onCreate();
+	//We need to add AppWindow as a listener to the Input System
+	InputSystem::getInstance()->addListener(this);
+
 	GraphicsEngine::get()->init();
 	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
 
@@ -133,6 +137,9 @@ void AppWindow::onUpdate()
 {
 	//Window::onUpdate();
 	//change color here
+	//Inputs get processed here
+	InputSystem::getInstance()->update();
+
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
 		0,0.3f,0.4f,1);
 	RECT rc = this->getClientWindowRect();
@@ -199,15 +206,15 @@ void AppWindow::updateQuadPosition()
 	cc.m_world.setScale(Vector3D(1, 1, 1));
 
 	temp.setIdentity();
-	temp.setRotationZ(this->m_delta_scale);
+	temp.setRotationZ(0.0f);
 	cc.m_world *= temp;
 
 	temp.setIdentity();
-	temp.setRotationY(this->m_delta_scale);
+	temp.setRotationY(this->m_rotation_y);
 	cc.m_world *= temp;
 
 	temp.setIdentity();
-	temp.setRotationX(this->m_delta_scale);
+	temp.setRotationX(this->m_rotation_x);
 	cc.m_world *= temp;
 
 	float cubeSizeMultiplier = 1 / 300.0f;
@@ -220,4 +227,24 @@ void AppWindow::updateQuadPosition()
 	);
 
 	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+}
+
+void AppWindow::onKeyDown(int key)
+{
+	if (key == 'W') {
+		this->m_rotation_x += 0.707 * this->m_delta_time;
+	}
+	else if (key == 'S') {
+		this->m_rotation_x -= 0.707 * this->m_delta_time;
+	}
+	else if (key == 'A') {
+		this->m_rotation_y += 0.707 * this->m_delta_time;
+	}
+	else if (key == 'D') {
+		this->m_rotation_y -= 0.707 * this->m_delta_time;
+	}
+}
+
+void AppWindow::onKeyUp(int key)
+{
 }
