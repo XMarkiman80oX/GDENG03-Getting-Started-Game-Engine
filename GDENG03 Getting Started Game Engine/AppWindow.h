@@ -44,5 +44,7 @@ private:
 
 	float m_rotation_x = 0.0f;
 	float m_rotation_y = 0.0f;
+
+	const float rotationSpeedMultiplier = 3.14f;
 };
 

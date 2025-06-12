@@ -232,16 +232,16 @@ void AppWindow::updateQuadPosition()
 void AppWindow::onKeyDown(int key)
 {
 	if (key == 'W') {
-		this->m_rotation_x += 0.707 * this->m_delta_time;
+		this->m_rotation_x += rotationSpeedMultiplier * this->m_delta_time;
 	}
 	else if (key == 'S') {
-		this->m_rotation_x -= 0.707 * this->m_delta_time;
+		this->m_rotation_x -= rotationSpeedMultiplier * this->m_delta_time;
 	}
 	else if (key == 'A') {
-		this->m_rotation_y += 0.707 * this->m_delta_time;
+		this->m_rotation_y += rotationSpeedMultiplier * this->m_delta_time;
 	}
 	else if (key == 'D') {
-		this->m_rotation_y -= 0.707 * this->m_delta_time;
+		this->m_rotation_y -= rotationSpeedMultiplier * this->m_delta_time;
 	}
 }
 
