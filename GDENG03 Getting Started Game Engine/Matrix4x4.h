@@ -22,6 +22,9 @@ public:
 	Vector3D getXDirection() {
 		return Vector3D(this->m_mat[0][0], this->m_mat[0][1], this->m_mat[0][2]);
 	}
+	Vector3D getYDirection() {
+		return Vector3D(this->m_mat[1][0], this->m_mat[1][1], this->m_mat[1][2]);
+	}
 	Vector3D getTranslation() {
 		return Vector3D(this->m_mat[3][0], this->m_mat[3][1], this->m_mat[3][2]);
 	}

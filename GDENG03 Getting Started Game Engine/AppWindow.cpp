@@ -52,33 +52,38 @@ void AppWindow::onCreate()
 	m_depth_buffer = new DepthBuffer();
 	m_depth_buffer->init(rc.right - rc.left, rc.bottom - rc.top);
 
-	this->worldCamera.setTranslation(Vector3D(0,0,-2));
+	this->worldCamera.setTranslation(Vector3D(0, 0, -2));
 
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
 	vertex vertexList[] = {
 		//X - Y - Z
 		/***************FRONT FACE****************/
-		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
+		{Vector3D(-0.5f, -0.75f, -0.5f), //POS1
 			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
+		{Vector3D(-0.5f, 0.25f, -0.5f),    //POS2
 			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
+		{Vector3D(0.5f, 0.25f, -0.5f),    //POS3
 			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
+		{Vector3D(0.5f, -0.75f, -0.5f),     //POS4
 			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
 			/******************************************/
 
 			/***************BACK FACE****************/
-			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
+			{Vector3D(0.5f, -0.75f, 0.5f), //POS1
 				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
+			{Vector3D(0.5f, 0.25f, 0.5f),    //POS2
 				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
+			{Vector3D(-0.5f, 0.25f, 0.5f),    //POS3
 				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
+			{Vector3D(-0.5f, -0.75f, 0.5f),     //POS4
 				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
 				/******************************************/
+		/***************PLANE****************/
+		{Vector3D(-10.0f, -0.5f, -10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 8
+		{Vector3D(-10.0f, -0.5f, 10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 9
+		{Vector3D(10.0f, -0.5f, 10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 10
+		{Vector3D(10.0f, -0.5f, -10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 11
 	};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
@@ -103,7 +108,10 @@ void AppWindow::onCreate()
 		5,4,3,
 		//LEFT SIDE
 		7,6,1,
-		1,0,7
+		1,0,7,
+		//PLANE
+		8,9,10,
+		10,11,8
 	};
 	this->m_index_buffer = GraphicsEngine::get()->createIndexBuffer();
 	UINT size_index_list = ARRAYSIZE(index_list);
@@ -251,9 +259,9 @@ void AppWindow::update()
 
 	//moving through the z axis
 	//float value entails how much units is moved
-	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward*0.3f);
-	
-	newPos = newPos + worldCam.getXDirection() * (this->rightward*0.3f);
+	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward * 0.3f);
+
+	newPos = newPos + worldCam.getXDirection() * (this->rightward * 0.3f);
 
 	//setting our camera backwards two points along the x axis
 	worldCam.setTranslation(newPos);
@@ -269,8 +277,8 @@ void AppWindow::update()
 	);
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-	
-	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width/(float)height, 0.1f, 100.0f);
+
+	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
 	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 }
 
@@ -299,23 +307,23 @@ void AppWindow::onMouseMove(const Point& mousePosition)
 {
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-	
-	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width/2.0f)) * this->m_delta_time;
-	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height/2.0f)) * this->m_delta_time;
-	
+
+	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width / 2.0f)) * this->m_delta_time;
+	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height / 2.0f)) * this->m_delta_time;
+
 	if (!this->invertedIsOn)
 	{
 		this->rotationX -= incrementerY;
 		this->rotationY -= incrementerX;
 	}
-	else 
+	else
 	{
 		this->rotationX += incrementerY;
 		this->rotationY += incrementerX;
 	}
-	
+
 	//So it clamps to the mouse's initial position in the window
-	InputSystem::getInstance()->setCursorPosition(Point(width/2.0f, height/2.0f));
+	InputSystem::getInstance()->setCursorPosition(Point(width / 2.0f, height / 2.0f));
 }
 
 void AppWindow::onKeyDown(int key)
