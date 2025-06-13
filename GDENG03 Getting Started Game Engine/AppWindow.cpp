@@ -80,10 +80,16 @@ void AppWindow::onCreate()
 				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
 				/******************************************/
 		/***************PLANE****************/
+		//TOP FACE
 		{Vector3D(-10.0f, -0.5f, -10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 8
 		{Vector3D(-10.0f, -0.5f, 10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 9
 		{Vector3D(10.0f, -0.5f, 10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 10
 		{Vector3D(10.0f, -0.5f, -10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 11
+		//BOTTOM FACE
+		{Vector3D(-10.0f, -0.6f, -10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 12
+		{Vector3D(-10.0f, -0.6f, 10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 13
+		{Vector3D(10.0f, -0.6f, 10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 14
+		{Vector3D(10.0f, -0.6f, -10.0f), Vector3D(0.8f,0.8f,0.8f), Vector3D(0.8f,0.8f,0.8f)}, // 15
 	};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
@@ -110,8 +116,24 @@ void AppWindow::onCreate()
 		7,6,1,
 		1,0,7,
 		//PLANE
+		//Top face
 		8,9,10,
-		10,11,8
+		10,11,8,
+		//Bottom face
+		12,15,14,
+		12,14,13,
+		//Front face
+		13,14,10,
+		13,10,9,
+		//Back face
+		15,12,8,
+		15,8,11,
+		//Left face
+		12,13,9,
+		12,9,8,
+		//Right face
+		14,15,11,
+		14,11,10
 	};
 	this->m_index_buffer = GraphicsEngine::get()->createIndexBuffer();
 	UINT size_index_list = ARRAYSIZE(index_list);
