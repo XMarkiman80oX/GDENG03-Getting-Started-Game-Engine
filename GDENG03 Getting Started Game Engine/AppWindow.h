@@ -29,7 +29,7 @@ public:
 	void onKeyUp(int key) override;
 
 	// Inherited via InputListener
-	void onMouseMove(const Point& deltaMousePosition) override;
+	void onMouseMove(const Point& mousePosition) override;
 
 	// Inherited via InputListener
 	void onLeftMouseDown(const Point& mousePosition) override;

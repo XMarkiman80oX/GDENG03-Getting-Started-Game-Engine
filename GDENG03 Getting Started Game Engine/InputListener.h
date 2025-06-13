@@ -16,7 +16,7 @@ public:
 
 	//FOR MOUSE
 	//delta is the position or variation of the position of mouse cursor
-	virtual void onMouseMove(const Point& deltaMousePosition) = 0;
+	virtual void onMouseMove(const Point& mousePosition) = 0;
 	
 	virtual void onLeftMouseDown(const Point& mousePosition) = 0;
 	virtual void onLeftMouseUp(const Point& mousePosition) = 0;

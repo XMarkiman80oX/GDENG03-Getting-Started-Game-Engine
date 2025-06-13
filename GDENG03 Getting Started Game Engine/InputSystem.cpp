@@ -22,6 +22,16 @@ void InputSystem::removeListener(InputListener* listener)
 		this->setListeners.erase(it);
 }
 
+void InputSystem::setCursorPosition(const Point& pos)
+{
+	::SetCursorPos(pos.x, pos.y);
+}
+
+void InputSystem::showCursor(bool show)
+{
+	::ShowCursor(show);
+}
+
 void InputSystem::update()
 {
 	this->processMouseInput();
@@ -70,7 +80,7 @@ void InputSystem::processMouseInput()
 	if (currentMousePosition.x != oldMousePosition.x || currentMousePosition.y != oldMousePosition.y) {
 		//THERE IS MOUSE MOVE EVENT
 		//Therefore, we have to notify to all the listneres to this particular event
-		this->processMouseMovement(Point(currentMousePosition.x - oldMousePosition.x, currentMousePosition.y - oldMousePosition.y));
+		this->processMouseMovement(Point(currentMousePosition.x, currentMousePosition.y));
 	}
 	//so that during the next update call we have a true and valid position
 	this->oldMousePosition = Point(currentMousePosition.x, currentMousePosition.y);

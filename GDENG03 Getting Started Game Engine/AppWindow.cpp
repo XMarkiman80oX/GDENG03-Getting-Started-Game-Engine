@@ -40,6 +40,7 @@ void AppWindow::onCreate()
 	//Window::onCreate();
 	//We need to add AppWindow as a listener to the Input System
 	InputSystem::getInstance()->addListener(this);
+	InputSystem::getInstance()->showCursor(false);
 
 	GraphicsEngine::get()->init();
 	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
@@ -289,19 +290,27 @@ void AppWindow::onRightMouseUp(const Point& mousePosition)
 	this->cubeScale = Vector3D(1.0f);
 }
 
-void AppWindow::onMouseMove(const Point& deltaMousePosition)
+void AppWindow::onMouseMove(const Point& mousePosition)
 {
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+	
+	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width/2.0f)) * this->m_delta_time;
+	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height/2.0f)) * this->m_delta_time;
+	
 	if (!this->invertedIsOn)
 	{
-		this->rotationX -= this->rotationSpeedMultiplier * deltaMousePosition.y * this->m_delta_time;
-		this->rotationY -= this->rotationSpeedMultiplier * deltaMousePosition.x * this->m_delta_time;
+		this->rotationX -= incrementerY;
+		this->rotationY -= incrementerX;
 	}
 	else 
 	{
-		this->rotationX += this->rotationSpeedMultiplier * deltaMousePosition.y * this->m_delta_time;
-		this->rotationY += this->rotationSpeedMultiplier * deltaMousePosition.x * this->m_delta_time;
+		this->rotationX += incrementerY;
+		this->rotationY += incrementerX;
 	}
 	
+	//So it clamps to the mouse's initial position in the window
+	InputSystem::getInstance()->setCursorPosition(Point(width/2.0f, height/2.0f));
 }
 
 void AppWindow::onKeyDown(int key)
@@ -317,12 +326,10 @@ void AppWindow::onKeyDown(int key)
 		break;
 	case 'A':
 		//this->rotationY += rotationSpeedMultiplier * this->m_delta_time;
-
 		this->rightward = -1.0f;
 		break;
 	case 'D':
 		//this->rotationY -= rotationSpeedMultiplier * this->m_delta_time;
-
 		this->rightward = 1.0f;
 		break;
 	}
