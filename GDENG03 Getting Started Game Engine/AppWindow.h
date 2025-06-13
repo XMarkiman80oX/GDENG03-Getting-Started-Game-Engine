@@ -12,6 +12,10 @@
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
 #include "DepthBuffer.h"	
+#include "BaseGameObject.h"
+#include "Cube.h"
+#include "Plane.h"
+#include <vector>
 
 class AppWindow : public Window, public InputListener
 {
@@ -37,9 +41,6 @@ public:
 	void onLeftMouseUp(const Point& mousePosition) override;
 	void onRightMouseDown(const Point& mousePosition) override;
 	void onRightMouseUp(const Point& mousePosition) override;
-
-private:
-	void update();
 
 private:
 	SwapChain* m_swap_chain;
@@ -72,5 +73,10 @@ private:
 
 	bool invertedIsOn = false;
 	bool cursorIsVisible = false;
+
+private:
+	std::vector<BaseGameObject*> m_go_list;
+	Cube* cube;
+	Plane* plane;
 
 };
