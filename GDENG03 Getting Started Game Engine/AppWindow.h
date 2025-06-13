@@ -62,6 +62,7 @@ private:
 
 	//Represents the sign of direction
 	float forward = 0.0f;
+	float rightward = 0.0f;
 	Matrix4x4 worldCamera;
 
 	const float rotationSpeedMultiplier = 0.14f;

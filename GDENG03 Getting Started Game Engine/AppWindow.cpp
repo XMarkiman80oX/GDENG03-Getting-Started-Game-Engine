@@ -246,6 +246,8 @@ void AppWindow::update()
 	//moving through the z axis
 	//float value entails how much units is moved
 	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward*0.3f);
+	
+	newPos = newPos + worldCam.getXDirection() * (this->rightward*0.3f);
 
 	//setting our camera backwards two points along the x axis
 	worldCam.setTranslation(newPos);
@@ -314,10 +316,14 @@ void AppWindow::onKeyDown(int key)
 		this->forward = -1.0f;
 		break;
 	case 'A':
-		this->rotationY += rotationSpeedMultiplier * this->m_delta_time;
+		//this->rotationY += rotationSpeedMultiplier * this->m_delta_time;
+
+		this->rightward = -1.0f;
 		break;
 	case 'D':
-		this->rotationY -= rotationSpeedMultiplier * this->m_delta_time;
+		//this->rotationY -= rotationSpeedMultiplier * this->m_delta_time;
+
+		this->rightward = 1.0f;
 		break;
 	}
 }
@@ -326,4 +332,5 @@ void AppWindow::onKeyUp(int key)
 {
 	//0.0f since we want to stop our camera
 	this->forward = 0.0f;
+	this->rightward = 0.0f;
 }
