@@ -21,20 +21,21 @@ public:
 public:
 	SwapChain* createSwapChain();
 	DeviceContext* getImmediateDeviceContext();
-	VertexBuffer* createVertexBuffer(); 
+	VertexBuffer* createVertexBuffer();
 	ConstantBuffer* createConstantBuffer();
 	IndexBuffer* createIndexBuffer();
-	VertexShader* createVertexShader(const void* shader_byte_code, size_t byte_code_size); 
+	VertexShader* createVertexShader(const void* shader_byte_code, size_t byte_code_size);
 	PixelShader* createPixelShader(const void* shader_byte_code, size_t byte_code_size);
 
 public:
 	bool compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
 	bool compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
-	
+
 	void releaseCompiledShader();
 
 public:
 	static GraphicsEngine* get();
+	ID3D11Device* getDevice();
 
 private:
 	DeviceContext* m_imm_device_context;
@@ -64,4 +65,3 @@ private:
 	friend class VertexShader;
 	friend class PixelShader;
 };
-

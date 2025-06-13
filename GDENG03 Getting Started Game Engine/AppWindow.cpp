@@ -5,7 +5,7 @@
 #include "InputSystem.h"
 
 
-struct vertex 
+struct vertex
 {
 	Vector3D position;
 	Vector3D color;
@@ -18,7 +18,7 @@ struct vertex
 	of further 8 bytes. That's what "__declspec(align(16))" does.
 */
 __declspec(align(16))
-struct constant 
+struct constant
 {
 	Matrix4x4 m_world;
 	Matrix4x4 m_view;
@@ -52,26 +52,26 @@ void AppWindow::onCreate()
 	vertex vertexList[] = {
 		//X - Y - Z
 		/***************FRONT FACE****************/
-		{Vector3D( -0.5f, -0.5f, -0.5f), //POS1
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)}, 
+		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
+			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
 		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
 			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
 		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
 			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
 		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
 			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-		/******************************************/
+			/******************************************/
 
-		/***************BACK FACE****************/
-		{Vector3D(0.5f, -0.5f, 0.5f), //POS1
-			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-		{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-		{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-		/******************************************/
+			/***************BACK FACE****************/
+			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
+				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
+				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
+				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
+				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+				/******************************************/
 	};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
@@ -107,9 +107,9 @@ void AppWindow::onCreate()
 	size_t size_shader = 0;
 	/*----------------VERTEX SHADER PART----------------*/
 	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	
+
 	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
-	
+
 	this->m_vertex_buffer->load(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
 	GraphicsEngine::get()->releaseCompiledShader();
@@ -141,11 +141,11 @@ void AppWindow::onUpdate()
 	InputSystem::getInstance()->update();
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0,0.3f,0.4f,1);
+		0, 0.3f, 0.4f, 1);
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
-	
-	this->updateQuadPosition();
+
+	this->update();
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
 	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
@@ -158,14 +158,14 @@ void AppWindow::onUpdate()
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0,0);
+	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = ::GetTickCount();
 
 	//if the old delta has no value, set it to 0 so we dont have a new delta that equals to the new delta one
-	this->m_delta_time = (this->m_old_delta)?((this->m_new_delta - this->m_old_delta)/1000.0f) :0;
+	this->m_delta_time = (this->m_old_delta) ? ((this->m_new_delta - this->m_old_delta) / 1000.0f) : 0;
 }
 
 void AppWindow::onDestroy()
@@ -191,46 +191,63 @@ void AppWindow::onKillFocus()
 	InputSystem::getInstance()->removeListener(this);
 }
 
-void AppWindow::updateQuadPosition()
+void AppWindow::update()
 {
 	constant cc;
 	cc.m_time = ::GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
 								system started in milliseconds*/
 
-	float movementRate = 1.0f/0.55f;
+	float movementRate = 1.0f / 0.55f;
 	//This means we reach one unit per 1/movementRate seconds (reciprocal)
 	this->m_delta_pos += m_delta_time * movementRate;
 
-	if (this->m_delta_pos > 1.0f) 
+	if (this->m_delta_pos > 1.0f)
 		m_delta_pos = 0;
-	
+
 	Matrix4x4 temp;
 	this->m_delta_scale += this->m_delta_time * movementRate;
 	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2.0f, -2.0f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), this->m_delta_pos));
 	/*cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
-	
+
 	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0.0f), Vector3D(1.5f, 1.5f, 0.0f), this->m_delta_pos));
-	
+
 	cc.m_world *= temp;*/
 
-	cc.m_world.setScale(this->cubeScale);
+	//cc.m_world.setScale(this->cubeScale);
 
-	temp.setIdentity();
-	temp.setRotationZ(0.0f);
-	cc.m_world *= temp;
+	//temp.setIdentity();
+	//temp.setRotationZ(0.0f);
+	//cc.m_world *= temp;
 
-	temp.setIdentity();
-	temp.setRotationY(this->m_rotation_y);
-	cc.m_world *= temp;
+	//temp.setIdentity();
+	//temp.setRotationY(this->rotationY);
+	//cc.m_world *= temp;
 
-	temp.setIdentity();
-	temp.setRotationX(this->m_rotation_x);
-	cc.m_world *= temp;
+	//temp.setIdentity();
+	//temp.setRotationX(this->rotationX);
+	//cc.m_world *= temp;
 
+	cc.m_world.setIdentity();
 	float cubeSizeMultiplier = 1 / 300.0f;
-	cc.m_view.setIdentity();
+
+	Matrix4x4 worldCamera;
+	worldCamera.setIdentity();
+
+	temp.setIdentity();
+	temp.setRotationX(rotationX);
+	worldCamera *= temp;
+
+	temp.setIdentity();
+	temp.setRotationY(rotationY);
+	worldCamera *= temp;
+
+	//setting our camera backwards two points along the x axis
+	worldCamera.setTranslation(Vector3D(0.0f, 0.0f, -2.0f));
+	worldCamera.setInverse();
+
+	cc.m_view = worldCamera;
 	cc.m_proj.setOrthogonalProjectionMatrix(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left)*cubeSizeMultiplier,
+		(this->getClientWindowRect().right - this->getClientWindowRect().left) * cubeSizeMultiplier,
 		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
 		-4.0f,
 		4.0f
@@ -262,25 +279,25 @@ void AppWindow::onRightMouseUp(const Point& mousePosition)
 
 void AppWindow::onMouseMove(const Point& deltaMousePosition)
 {
-	this->m_rotation_x -= this->rotationSpeedMultiplier* deltaMousePosition.y * this->m_delta_time;
-	this->m_rotation_y -= this->rotationSpeedMultiplier* deltaMousePosition.x * this->m_delta_time;
+	this->rotationX -= this->rotationSpeedMultiplier * deltaMousePosition.y * this->m_delta_time;
+	this->rotationY -= this->rotationSpeedMultiplier * deltaMousePosition.x * this->m_delta_time;
 }
 
 void AppWindow::onKeyDown(int key)
 {
 	switch (key) {
-		case 'W':
-			this->m_rotation_x += rotationSpeedMultiplier * this->m_delta_time;
-			break;
-		case 'S':
-			this->m_rotation_x -= rotationSpeedMultiplier * this->m_delta_time;
-			break;
-		case 'A':
-			this->m_rotation_y += rotationSpeedMultiplier * this->m_delta_time;
-			break;
-		case 'D':
-			this->m_rotation_y -= rotationSpeedMultiplier * this->m_delta_time;
-			break;
+	case 'W':
+		this->rotationX += rotationSpeedMultiplier * this->m_delta_time;
+		break;
+	case 'S':
+		this->rotationX -= rotationSpeedMultiplier * this->m_delta_time;
+		break;
+	case 'A':
+		this->rotationY += rotationSpeedMultiplier * this->m_delta_time;
+		break;
+	case 'D':
+		this->rotationY -= rotationSpeedMultiplier * this->m_delta_time;
+		break;
 	}
 }
 

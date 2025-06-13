@@ -17,14 +17,14 @@ bool GraphicsEngine::init()
 {
 	/* -"allows us to create the device from which we will get access to all the necessary
 	* resources necessary to draw on the screen"
-	*  -"The driver is what allows directX to exectute the throw in functions"
-	*  - We have to loop through some driver types until the creation of the device will be successful
+	* -"The driver is what allows directX to exectute the throw in functions"
+	* - We have to loop through some driver types until the creation of the device will be successful
 	* hence why the vector
 	*/
 	D3D_DRIVER_TYPE driver_types[] =
 	{
 		//Arranged best to worst
-		D3D_DRIVER_TYPE_HARDWARE, /*Where the drawing calls are executed mainly on the gpu 
+		D3D_DRIVER_TYPE_HARDWARE, /*Where the drawing calls are executed mainly on the gpu
 										to guarantee the best performance
 									*/
 		D3D_DRIVER_TYPE_WARP, /* Where the draw and calls are all executed on the CPU
@@ -60,7 +60,7 @@ bool GraphicsEngine::init()
 	this->m_imm_device_context = new DeviceContext(m_imm_context);
 
 	/*
-	*	If m_d3d_device supports IDXGIDevice, QueryInterface will 
+	*	If m_d3d_device supports IDXGIDevice, QueryInterface will
 	* return a pointer to it and that pointer will be stored in m_dxgi_device
 	*/
 	m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&m_dxgi_device);
@@ -77,13 +77,13 @@ bool GraphicsEngine::init()
 	*/
 	m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)&m_dxgi_factory);
 	/*
-	* DXGI (DirectX Graphics Infrastructure) provides low-level access to display devices, 
-	such as video cards and monitors, and is responsible for tasks like 
+	* DXGI (DirectX Graphics Infrastructure) provides low-level access to display devices,
+	such as video cards and monitors, and is responsible for tasks like
 	presenting rendered frames to the screen, managing full-screen transitions, and creating swap chains.
 
 	* -"By accessing the IDXGIDevice, IDXGIAdapter, and IDXGIFactory,
-	you can manage these resources and handle things like 
-	creating swap chains, querying GPU information, 
+	you can manage these resources and handle things like
+	creating swap chains, querying GPU information,
 	and handling display modes (windowed vs fullscreen)."
 	*/
 
@@ -166,17 +166,17 @@ PixelShader* GraphicsEngine::createPixelShader(const void* shader_byte_code, siz
 bool GraphicsEngine::compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
 	ID3DBlob* error_blob = nullptr;
-	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, 
+	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr,
 		entry_point_name //the name of the function given by vertex shader hlsl
 		, "vs_5_0", //indicates the version of the set of shader features with which we want to 
-					//compile our shader code. "vs" for vertex shader.
+		//compile our shader code. "vs" for vertex shader.
 		0, 0, //useless as of the moment
 		&this->m_blob, //output param
-						//data structure in which we replaced the buffer with the compiled shader and its size in the memory
+		//data structure in which we replaced the buffer with the compiled shader and its size in the memory
 		&error_blob))) //output param
-						//includes all the warning and error messages in case the compilation fails
+		//includes all the warning and error messages in case the compilation fails
 	{
-		if(error_blob)error_blob->Release();
+		if (error_blob)error_blob->Release();
 		return false;
 	}
 
@@ -214,4 +214,9 @@ GraphicsEngine* GraphicsEngine::get()
 {
 	static GraphicsEngine engine;
 	return &engine;
+}
+
+ID3D11Device* GraphicsEngine::getDevice()
+{
+	return this->m_d3d_device;
 }

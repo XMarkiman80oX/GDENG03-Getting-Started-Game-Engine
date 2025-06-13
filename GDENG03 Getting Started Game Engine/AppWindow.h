@@ -32,15 +32,12 @@ public:
 
 	// Inherited via InputListener
 	void onLeftMouseDown(const Point& mousePosition) override;
-
 	void onLeftMouseUp(const Point& mousePosition) override;
-
 	void onRightMouseDown(const Point& mousePosition) override;
-
 	void onRightMouseUp(const Point& mousePosition) override;
 
 private:
-	void updateQuadPosition();
+	void update();
 
 private:
 	SwapChain* m_swap_chain;
@@ -57,11 +54,10 @@ private:
 	float m_delta_pos;
 	float m_delta_scale;
 
-	float m_rotation_x = 0.0f;
-	float m_rotation_y = 0.0f;
+	float rotationX = 0.0f;
+	float rotationY = 0.0f;
 
 	const float rotationSpeedMultiplier = 3.14f;
 
 	Vector3D cubeScale = Vector3D(1.0f);
 };
-

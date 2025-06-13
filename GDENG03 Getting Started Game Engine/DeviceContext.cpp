@@ -27,7 +27,7 @@ void DeviceContext::setVertexBuffer(VertexBuffer* vertex_buffer)
 	//You're passing the pointer to the buffer and indicating how many buffers will be set.
 	//Indicates we only pass one buffer (param 2) and that we have to pass the pointer to the buffer (param 3)
 	this->m_device_context->IASetVertexBuffers(0, 1, &vertex_buffer->m_buffer, &stride, &offset);
-	
+
 	//We're setting the input layout here.
 	this->m_device_context->IASetInputLayout(vertex_buffer->m_layout);
 }
@@ -52,7 +52,7 @@ void DeviceContext::drawTriangleList(UINT vertex_count, UINT start_vertex_index)
 	//We're letting directx know that we're passing a list of triangles
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->Draw(vertex_count, //how many vertices we want to draw
-								start_vertex_index); //then from what vertex we want to start in
+		start_vertex_index); //then from what vertex we want to start in
 }
 
 /*

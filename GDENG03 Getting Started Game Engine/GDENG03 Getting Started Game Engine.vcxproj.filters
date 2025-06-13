@@ -37,6 +37,9 @@
     <Filter Include="GameEngine\GraphicsEngine\IndexBuffer">
       <UniqueIdentifier>{aebf512b-b052-4231-897b-ff87fb165462}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\DepthBuffer">
+      <UniqueIdentifier>{32b603f7-931d-4d0d-95cd-6398ffcd149d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -71,6 +74,10 @@
     </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>GameEngine\GraphicsEngine\IndexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="DepthBuffer.cpp">
+      <Filter>GameEngine\GraphicsEngine\DepthBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +116,13 @@
     </ClInclude>
     <ClInclude Include="IndexBuffer.h">
       <Filter>GameEngine\GraphicsEngine\IndexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputListener.h" />
+    <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="Vector4D.h" />
+    <ClInclude Include="DepthBuffer.h">
+      <Filter>GameEngine\GraphicsEngine\DepthBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
