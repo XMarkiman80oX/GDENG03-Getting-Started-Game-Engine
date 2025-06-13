@@ -5,18 +5,21 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "DepthBuffer.h" 
 
 DeviceContext::DeviceContext(ID3D11DeviceContext* device_context)
 	: m_device_context(device_context)
 {
 }
 
-void DeviceContext::clearRenderTargetColor(SwapChain* swap_chain, float red, float green, float blue, float alpha)
+void DeviceContext::clearRenderTargetColor(SwapChain* swap_chain, DepthBuffer* depth_buffer, float red, float green, float blue, float alpha)
 {
 	FLOAT clear_color[] = { red, green, blue, alpha };
 	m_device_context->ClearRenderTargetView(swap_chain->m_rtv, clear_color);
-	//Will allow us to set which render target we want to draw on, in this case it's the back buffer. 
-	m_device_context->OMSetRenderTargets(1, &swap_chain->m_rtv, NULL);
+	// Clear the depth buffer
+	m_device_context->ClearDepthStencilView(depth_buffer->m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	// Set the render targets
+	m_device_context->OMSetRenderTargets(1, &swap_chain->m_rtv, depth_buffer->m_depth_stencil_view);
 }
 
 void DeviceContext::setVertexBuffer(VertexBuffer* vertex_buffer)

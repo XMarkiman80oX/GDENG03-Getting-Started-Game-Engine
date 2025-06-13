@@ -46,7 +46,11 @@ void AppWindow::onCreate()
 	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
 
 	RECT rc = this->getClientWindowRect();
-	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
+	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
+
+	// Create and initialize the depth buffer
+	m_depth_buffer = new DepthBuffer();
+	m_depth_buffer->init(rc.right - rc.left, rc.bottom - rc.top);
 
 	this->worldCamera.setTranslation(Vector3D(0,0,-2));
 
@@ -144,7 +148,7 @@ void AppWindow::onUpdate()
 	InputSystem::getInstance()->update();
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0, 0.3f, 0.4f, 1);
+		this->m_depth_buffer, 0, 0.3f, 0.4f, 1);
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
@@ -177,6 +181,7 @@ void AppWindow::onDestroy()
 	this->m_vertex_buffer->release();
 	this->m_index_buffer->release();
 	this->m_constant_buffer->release();
+	this->m_depth_buffer->release(); // Release the depth buffer
 	this->m_swap_chain->release();
 
 	this->m_vertex_shader->release();

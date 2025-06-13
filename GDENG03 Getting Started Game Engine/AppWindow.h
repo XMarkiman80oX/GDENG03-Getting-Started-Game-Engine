@@ -11,6 +11,7 @@
 #include "InputListener.h"
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
+#include "DepthBuffer.h"	
 
 class AppWindow : public Window, public InputListener
 {
@@ -47,6 +48,8 @@ private:
 	PixelShader* m_pixel_shader;
 	ConstantBuffer* m_constant_buffer;
 	IndexBuffer* m_index_buffer;
+	DepthBuffer* m_depth_buffer;
+
 private:
 	float m_old_delta;
 	float m_new_delta;
