@@ -68,5 +68,6 @@ private:
 	const float rotationSpeedMultiplier = 0.14f;
 
 	bool invertedIsOn = false;
+	bool cursorIsVisible = false;
 
 };

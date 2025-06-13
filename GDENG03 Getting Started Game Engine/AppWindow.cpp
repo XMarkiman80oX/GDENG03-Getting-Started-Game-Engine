@@ -40,7 +40,7 @@ void AppWindow::onCreate()
 	//Window::onCreate();
 	//We need to add AppWindow as a listener to the Input System
 	InputSystem::getInstance()->addListener(this);
-	InputSystem::getInstance()->showCursor(false);
+	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
 	GraphicsEngine::get()->init();
 	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
