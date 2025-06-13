@@ -25,6 +25,12 @@ public:
 		this->z = v1.x * (v2.y * v3.w - v3.y * v2.w) - v1.y * (v2.x * v3.w - v3.x * v2.w) + v1.w * (v2.x * v3.y - v3.x * v2.y);
 		this->w = -(v1.x * (v2.y * v3.z - v3.y * v2.z) - v1.y * (v2.x * v3.z - v3.x * v2.z) + v1.z * (v2.x * v3.y - v3.x * v2.y));
 	}
+	Vector4D operator * (float num) {
+		return Vector4D(x * num, y * num, z * num, w*num);
+	}
+	Vector4D operator + (Vector4D vec) {
+		return Vector4D(x + vec.x, y + vec.y, z + vec.z, w + vec.w);
+	}
 public:
 	float x, y, z, w;
 };

@@ -10,6 +10,7 @@
 #include "PixelShader.h"
 #include "InputListener.h"
 #include "Vector3D.h"	
+#include "Matrix4x4.h"	
 
 class AppWindow : public Window, public InputListener
 {
@@ -57,7 +58,14 @@ private:
 	float rotationX = 0.0f;
 	float rotationY = 0.0f;
 
-	const float rotationSpeedMultiplier = 3.14f;
-
 	Vector3D cubeScale = Vector3D(1.0f);
+
+	//Represents the sign of direction
+	float forward = 0.0f;
+	Matrix4x4 worldCamera;
+
+	const float rotationSpeedMultiplier = 0.14f;
+
+	bool invertedIsOn = false;
+
 };

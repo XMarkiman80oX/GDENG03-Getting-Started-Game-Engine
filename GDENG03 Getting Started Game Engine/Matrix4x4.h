@@ -14,7 +14,16 @@ public:
 
 	}
 	void setMatrix(const Matrix4x4& other) {
-		memcpy(this->m_mat, other.m_mat, sizeof(float) * 16);
+		::memcpy(m_mat, other.m_mat, sizeof(float) * 16);
+	}
+	Vector3D getZDirection() {
+		return Vector3D(this->m_mat[2][0], this->m_mat[2][1], this->m_mat[2][2]);
+	}
+	Vector3D getXDirection() {
+		return Vector3D(this->m_mat[0][0], this->m_mat[0][1], this->m_mat[0][2]);
+	}
+	Vector3D getTranslation() {
+		return Vector3D(this->m_mat[3][0], this->m_mat[3][1], this->m_mat[3][2]);
 	}
 	void setIdentity() {
 		::memset(this->m_mat, 0, sizeof(float) * 16);
@@ -58,6 +67,16 @@ public:
 		this->m_mat[2][2] = 1.0f/(far_plane - near_plane);
 		this->m_mat[3][2] = -(near_plane/(far_plane - near_plane));
 	}
+	void setPerspectiveFOVLH(float fov, float aspect, float znear, float zfar) {
+		
+		float yscale = 1.0f/tan(fov/2.0f);
+		float xscale = yscale / aspect;
+		this->m_mat[0][0] = xscale;
+		this->m_mat[1][1] = yscale;
+		this->m_mat[2][2] = zfar / (zfar - znear);
+		this->m_mat[2][3] =1.0f;
+		this->m_mat[3][2] =(-znear*zfar)/(zfar-znear);
+	}
 	float getDeterminant() {
 		Vector4D minor, v1, v2, v3;
 		float det;
@@ -74,55 +93,38 @@ public:
 			this->m_mat[3][3] * minor.w);
 		return det;
 	}
-	void setInverse() {
-		Matrix4x4 cofactors;
-		int p, q, n, m;
+	void setInverse()
+	{
+		int a, i, j;
+		Matrix4x4 out;
+		Vector4D v, vec[3];
+		float det = 0.0f;
 
-		for (p = 0; p < 4; p++) {
-			for (q = 0; q < 4; q++) {
-				float minor[3][3];
-				int i = 0;
-				for (n = 0; n < 4; n++) {
-					if (n == p) continue;
-					int j = 0;
-					for (m = 0; m < 4; m++) {
-						if (m == q) continue;
-						minor[i][j] = m_mat[n][m];
-						j++;
-					}
-					i++;
+		det = this->getDeterminant();
+		if (!det) return;
+		for (i = 0; i < 4; i++)
+		{
+			for (j = 0; j < 4; j++)
+			{
+				if (j != i)
+				{
+					a = j;
+					if (j > i) a = a - 1;
+					vec[a].x = (this->m_mat[j][0]);
+					vec[a].y = (this->m_mat[j][1]);
+					vec[a].z = (this->m_mat[j][2]);
+					vec[a].w = (this->m_mat[j][3]);
 				}
-
-				float det_minor = minor[0][0] * (minor[1][1] * minor[2][2] - minor[1][2] * minor[2][1]) -
-					minor[0][1] * (minor[1][0] * minor[2][2] - minor[1][2] * minor[2][0]) +
-					minor[0][2] * (minor[1][0] * minor[2][1] - minor[1][1] * minor[2][0]);
-
-				cofactors.m_mat[p][q] = ((p + q) % 2 == 1 ? -1.0f : 1.0f) * det_minor;
 			}
+			v.cross(vec[0], vec[1], vec[2]);
+
+			out.m_mat[0][i] = pow(-1.0f, i) * v.x / det;
+			out.m_mat[1][i] = pow(-1.0f, i) * v.y / det;
+			out.m_mat[2][i] = pow(-1.0f, i) * v.z / det;
+			out.m_mat[3][i] = pow(-1.0f, i) * v.w / det;
 		}
 
-		float det = m_mat[0][0] * cofactors.m_mat[0][0] +
-			m_mat[0][1] * cofactors.m_mat[0][1] +
-			m_mat[0][2] * cofactors.m_mat[0][2] +
-			m_mat[0][3] * cofactors.m_mat[0][3];
-
-		if (abs(det) < 1e-6) {
-			return;
-		}
-
-		float inv_det = 1.0f / det;
-		Matrix4x4 adjugate;
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				adjugate.m_mat[i][j] = cofactors.m_mat[j][i];
-			}
-		}
-
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				m_mat[i][j] = adjugate.m_mat[i][j] * inv_det;
-			}
-		}
+		this->setMatrix(out);
 	}
 	void operator *= (const Matrix4x4& matrix) {
 		Matrix4x4 out;

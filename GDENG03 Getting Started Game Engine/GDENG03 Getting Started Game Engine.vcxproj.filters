@@ -40,6 +40,9 @@
     <Filter Include="GameEngine\GraphicsEngine\DepthBuffer">
       <UniqueIdentifier>{32b603f7-931d-4d0d-95cd-6398ffcd149d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\InputSystem">
+      <UniqueIdentifier>{376b09f1-e713-4eed-8d4f-7fff4fc2b2dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -75,9 +78,11 @@
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>GameEngine\GraphicsEngine\IndexBuffer</Filter>
     </ClCompile>
-    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="DepthBuffer.cpp">
       <Filter>GameEngine\GraphicsEngine\DepthBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem.cpp">
+      <Filter>GameEngine\InputSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,12 +122,20 @@
     <ClInclude Include="IndexBuffer.h">
       <Filter>GameEngine\GraphicsEngine\IndexBuffer</Filter>
     </ClInclude>
-    <ClInclude Include="InputListener.h" />
-    <ClInclude Include="InputSystem.h" />
-    <ClInclude Include="Point.h" />
-    <ClInclude Include="Vector4D.h" />
     <ClInclude Include="DepthBuffer.h">
       <Filter>GameEngine\GraphicsEngine\DepthBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputListener.h">
+      <Filter>GameEngine\InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem.h">
+      <Filter>GameEngine\InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4D.h">
+      <Filter>GameEngine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>GameEngine\InputSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -47,6 +47,8 @@ void AppWindow::onCreate()
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
+	this->worldCamera.setTranslation(Vector3D(0,0,-2));
+
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
 	vertex vertexList[] = {
@@ -230,29 +232,37 @@ void AppWindow::update()
 	cc.m_world.setIdentity();
 	float cubeSizeMultiplier = 1 / 300.0f;
 
-	Matrix4x4 worldCamera;
-	worldCamera.setIdentity();
+	Matrix4x4 worldCam;
+	worldCam.setIdentity();
 
 	temp.setIdentity();
 	temp.setRotationX(rotationX);
-	worldCamera *= temp;
+	worldCam *= temp;
 
 	temp.setIdentity();
 	temp.setRotationY(rotationY);
-	worldCamera *= temp;
+	worldCam *= temp;
+
+	//moving through the z axis
+	//float value entails how much units is moved
+	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward*0.3f);
 
 	//setting our camera backwards two points along the x axis
-	worldCamera.setTranslation(Vector3D(0.0f, 0.0f, -2.0f));
-	worldCamera.setInverse();
+	worldCam.setTranslation(newPos);
+	this->worldCamera = worldCam;
+	worldCam.setInverse();
 
-	cc.m_view = worldCamera;
+	cc.m_view = worldCam;
 	cc.m_proj.setOrthogonalProjectionMatrix(
 		(this->getClientWindowRect().right - this->getClientWindowRect().left) * cubeSizeMultiplier,
 		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
 		-4.0f,
 		4.0f
 	);
-
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+	
+	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width/(float)height, 0.1f, 100.0f);
 	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
 }
 
@@ -279,18 +289,29 @@ void AppWindow::onRightMouseUp(const Point& mousePosition)
 
 void AppWindow::onMouseMove(const Point& deltaMousePosition)
 {
-	this->rotationX -= this->rotationSpeedMultiplier * deltaMousePosition.y * this->m_delta_time;
-	this->rotationY -= this->rotationSpeedMultiplier * deltaMousePosition.x * this->m_delta_time;
+	if (!this->invertedIsOn)
+	{
+		this->rotationX -= this->rotationSpeedMultiplier * deltaMousePosition.y * this->m_delta_time;
+		this->rotationY -= this->rotationSpeedMultiplier * deltaMousePosition.x * this->m_delta_time;
+	}
+	else 
+	{
+		this->rotationX += this->rotationSpeedMultiplier * deltaMousePosition.y * this->m_delta_time;
+		this->rotationY += this->rotationSpeedMultiplier * deltaMousePosition.x * this->m_delta_time;
+	}
+	
 }
 
 void AppWindow::onKeyDown(int key)
 {
 	switch (key) {
 	case 'W':
-		this->rotationX += rotationSpeedMultiplier * this->m_delta_time;
+		//this->rotationX += rotationSpeedMultiplier * this->m_delta_time;
+		this->forward = 1.0f;
 		break;
 	case 'S':
-		this->rotationX -= rotationSpeedMultiplier * this->m_delta_time;
+		//this->rotationX -= rotationSpeedMultiplier * this->m_delta_time;
+		this->forward = -1.0f;
 		break;
 	case 'A':
 		this->rotationY += rotationSpeedMultiplier * this->m_delta_time;
@@ -303,4 +324,6 @@ void AppWindow::onKeyDown(int key)
 
 void AppWindow::onKeyUp(int key)
 {
+	//0.0f since we want to stop our camera
+	this->forward = 0.0f;
 }
