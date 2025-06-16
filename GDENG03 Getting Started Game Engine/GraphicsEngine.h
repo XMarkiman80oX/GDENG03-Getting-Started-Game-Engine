@@ -34,7 +34,7 @@ public:
 	void releaseCompiledShader();
 
 public:
-	static GraphicsEngine* get();
+	static GraphicsEngine* getInstance();
 	ID3D11Device* getDevice();
 
 private:
