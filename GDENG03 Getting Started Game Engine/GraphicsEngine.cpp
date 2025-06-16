@@ -210,7 +210,7 @@ void GraphicsEngine::releaseCompiledShader()
 }
 
 
-GraphicsEngine* GraphicsEngine::getInstance()
+GraphicsEngine* GraphicsEngine::get()
 {
 	static GraphicsEngine engine;
 	return &engine;

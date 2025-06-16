@@ -32,7 +32,7 @@ bool IndexBuffer::load(void* list_indices, UINT size_list)
 	m_size_list = size_list;
 
 	//This is where the vertex buffer is created
-	if (FAILED(GraphicsEngine::getInstance()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
+	if (FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
 		return false;
 
 

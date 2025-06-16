@@ -141,12 +141,6 @@ public:
 
 		::memcpy(m_mat, out.m_mat, sizeof(float) * 16);
 	}
-
-	Matrix4x4 operator * (const Matrix4x4& matrix) {
-		Matrix4x4 result = *this;
-		result *= matrix;
-		return result;
-	}
 public:
 	float m_mat[4][4] = {};
 };

@@ -26,13 +26,13 @@ bool DepthBuffer::init(UINT width, UINT height)
     depth_stencil_desc.CPUAccessFlags = 0;
     depth_stencil_desc.MiscFlags = 0;
 
-    HRESULT hr = GraphicsEngine::getInstance()->getDevice()->CreateTexture2D(&depth_stencil_desc, nullptr, &m_depth_stencil_buffer);
+    HRESULT hr = GraphicsEngine::get()->getDevice()->CreateTexture2D(&depth_stencil_desc, nullptr, &m_depth_stencil_buffer);
     if (FAILED(hr))
     {
         return false;
     }
 
-    hr = GraphicsEngine::getInstance()->getDevice()->CreateDepthStencilView(m_depth_stencil_buffer, nullptr, &m_depth_stencil_view);
+    hr = GraphicsEngine::get()->getDevice()->CreateDepthStencilView(m_depth_stencil_buffer, nullptr, &m_depth_stencil_view);
     if (FAILED(hr))
     {
         return false;

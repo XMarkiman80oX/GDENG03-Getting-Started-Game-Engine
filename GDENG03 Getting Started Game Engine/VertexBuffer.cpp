@@ -42,7 +42,7 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	m_size_list = size_list;
 
 	//This is where the vertex buffer is created
-	if(FAILED(GraphicsEngine::getInstance()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
+	if(FAILED(GraphicsEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
 		return false;
 
 	//This is a descriptor object, where we add all the info about the attributes composed in our vertex type
@@ -56,7 +56,7 @@ bool VertexBuffer::load(void* list_vertices, UINT size_vertex, UINT size_list,
 	UINT size_layout = ARRAYSIZE(layout);//returns the number of attributes
 	
 	//Helps us define the attributes of our vertex type
-	if (FAILED(GraphicsEngine::getInstance()->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &m_layout)))
+	if (FAILED(GraphicsEngine::get()->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &m_layout)))
 		return false;
 	
 

@@ -19,7 +19,7 @@ VertexShader::~VertexShader()
 bool VertexShader::init(const void *shader_byte_code, size_t byte_code_size)
 {
     //Remember the last parameter is the attribute of this class, so CreateVertexShader outputs to this attribute to have a reference to the VertexShader
-    if(!SUCCEEDED(GraphicsEngine::getInstance()->m_d3d_device->CreateVertexShader(shader_byte_code, byte_code_size, nullptr, &this->m_vertex_shader)))
+    if(!SUCCEEDED(GraphicsEngine::get()->m_d3d_device->CreateVertexShader(shader_byte_code, byte_code_size, nullptr, &this->m_vertex_shader)))
         return false;
 
     return true;
