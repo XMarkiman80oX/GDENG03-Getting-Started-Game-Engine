@@ -69,9 +69,6 @@ public:
 	void onRightMouseUp(const Point& mousePosition) override;
 
 private:
-	void update();
-
-private:
 	SwapChain* m_swap_chain;
 	VertexBuffer* m_vertex_buffer;
 	VertexShader* m_vertex_shader;
