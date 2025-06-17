@@ -43,6 +43,18 @@
     <Filter Include="GameEngine\InputSystem">
       <UniqueIdentifier>{376b09f1-e713-4eed-8d4f-7fff4fc2b2dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects">
+      <UniqueIdentifier>{28b3f2d4-bbbc-4b9a-b2db-cb3b684f630f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Cube">
+      <UniqueIdentifier>{f8920fb2-2259-47c3-af4d-3518cccb763d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Plane">
+      <UniqueIdentifier>{c9e2a740-90f2-4e86-acb3-6f209729c66e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\WorldCamera">
+      <UniqueIdentifier>{e8981e25-eac8-4d9b-9a07-688a04ffd0c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -83,6 +95,18 @@
     </ClCompile>
     <ClCompile Include="InputSystem.cpp">
       <Filter>GameEngine\InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseGameObject.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Plane</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldCamera.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\WorldCamera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +160,18 @@
     </ClInclude>
     <ClInclude Include="Point.h">
       <Filter>GameEngine\InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseGameObject.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Plane</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldCamera.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\WorldCamera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -44,16 +44,20 @@ Plane::~Plane()
     if (m_index_buffer) m_index_buffer->release();
 }
 
-void Plane::update(float deltaTime)
+void Plane::update(float deltaTime, RECT windowRect)
 {
     //The plane is static for now, so no updates are needed.
 }
 
-void Plane::draw(int width, int height, VertexShader* vertexShader, PixelShader* pixelShader)
+void Plane::draw(int width, int height)
 {
     // The constant buffer is expected to be set by the main render loop in AppWindow
     // before this draw call.
     GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexBuffer(m_vertex_buffer);
     GraphicsEngine::getInstance()->getImmediateDeviceContext()->setIndexBuffer(m_index_buffer);
     GraphicsEngine::getInstance()->getImmediateDeviceContext()->drawIndexedTriangleList(m_index_buffer->getSizeIndexList(), 0, 0);
+}
+
+void Plane::initializeObject(void* shaderByteCode, size_t sizeShader)
+{
 }

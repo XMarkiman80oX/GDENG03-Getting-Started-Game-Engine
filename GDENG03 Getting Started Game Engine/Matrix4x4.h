@@ -7,7 +7,7 @@
 class Matrix4x4 {
 public:
 	Matrix4x4() {
-
+		this->setIdentity();
 	}
 
 	~Matrix4x4() {

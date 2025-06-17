@@ -12,9 +12,39 @@
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
 #include "DepthBuffer.h"	
+#include "WorldCamera.h"	
+#include "Cube.h"	
 
 class AppWindow : public Window, public InputListener
 {
+private:
+	float m_old_delta;
+	float m_new_delta;
+	float m_delta_time;
+
+	float m_delta_pos;
+	float m_delta_scale;
+
+	float rotationX = 0.0f;
+	float rotationY = 0.0f;
+
+	Vector3D cubeScale = Vector3D(1.0f);
+
+	//Represents the sign of direction
+	float forward = 0.0f;
+	float rightward = 0.0f;
+
+	const float rotationSpeedMultiplier = 0.14f;
+
+	bool invertedIsOn = false;
+	bool cursorIsVisible = false;
+
+	Cube* baseCube = nullptr;
+
+public:
+	static AppWindow* getInstance();
+	RECT getScreenSize();
+
 public:
 	AppWindow();
 	~AppWindow();
@@ -49,28 +79,5 @@ private:
 	ConstantBuffer* m_constant_buffer;
 	IndexBuffer* m_index_buffer;
 	DepthBuffer* m_depth_buffer;
-
-private:
-	float m_old_delta;
-	float m_new_delta;
-	float m_delta_time;
-
-	float m_delta_pos;
-	float m_delta_scale;
-
-	float rotationX = 0.0f;
-	float rotationY = 0.0f;
-
-	Vector3D cubeScale = Vector3D(1.0f);
-
-	//Represents the sign of direction
-	float forward = 0.0f;
-	float rightward = 0.0f;
-	Matrix4x4 worldCamera;
-
-	const float rotationSpeedMultiplier = 0.14f;
-
-	bool invertedIsOn = false;
-	bool cursorIsVisible = false;
 
 };

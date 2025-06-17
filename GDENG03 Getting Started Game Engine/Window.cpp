@@ -127,6 +127,7 @@ RECT Window::getClientWindowRect()
 
 }
 
+
 void Window::setHWND(HWND hwnd)
 {
     this->m_hwnd = hwnd;

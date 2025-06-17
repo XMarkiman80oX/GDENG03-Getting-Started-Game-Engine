@@ -3,6 +3,7 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
+#include "Cube.h"
 
 
 struct vertex
@@ -27,6 +28,7 @@ struct constant
 	unsigned int m_time;
 };
 
+
 AppWindow::AppWindow()
 {
 }
@@ -35,8 +37,21 @@ AppWindow::~AppWindow()
 {
 }
 
+AppWindow* AppWindow::getInstance() 
+{
+	static AppWindow appWindow;
+	return &appWindow;
+}
+
+RECT AppWindow::getScreenSize()
+{
+	return this->getClientWindowRect();
+}
+
 void AppWindow::onCreate()
 {
+	void* shader_byte_code = nullptr;
+	size_t size_shader = 0;
 	//Window::onCreate();
 	//We need to add AppWindow as a listener to the Input System
 	InputSystem::getInstance()->addListener(this);
@@ -52,91 +67,73 @@ void AppWindow::onCreate()
 	m_depth_buffer = new DepthBuffer();
 	m_depth_buffer->init(rc.right - rc.left, rc.bottom - rc.top);
 
-	this->worldCamera.setTranslation(Vector3D(0,0,-2));
+	WorldCamera::getInstance()->getWorldCamera().setTranslation(Vector3D(0, 0, -2));
 
+	this->baseCube = new Cube("Marco's Cube", shader_byte_code, size_shader);
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
-	vertex vertexList[] = {
-		//X - Y - Z
-		/***************FRONT FACE****************/
-		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-			/******************************************/
+	//vertex vertexList[] = {
+	//	//X - Y - Z
+	//	/***************FRONT FACE****************/
+	//	{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
+	//		Vector3D(1,0,0), Vector3D(0.2f,0,0)},
+	//	{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
+	//		Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
+	//	{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
+	//		Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
+	//	{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
+	//		Vector3D(1,0,0), Vector3D(0.2f,0,0)},
+	//		/******************************************/
 
-			/***************BACK FACE****************/
-			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-				/******************************************/
-	};
+	//		/***************BACK FACE****************/
+	//		{Vector3D(0.5f, -0.5f, 0.5f), //POS1
+	//			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+	//		{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
+	//			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+	//		{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
+	//			Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+	//		{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
+	//			Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+	//			/******************************************/
+	//};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-	this->m_vertex_buffer = GraphicsEngine::getInstance()->createVertexBuffer();
-	UINT size_list = ARRAYSIZE(vertexList);
+	//this->m_vertex_buffer = GraphicsEngine::getInstance()->createVertexBuffer();
+	//UINT size_list = ARRAYSIZE(vertexList);
 
 	/*----------------INDEX BUFFER PART----------------*/
-	unsigned int index_list[] = {
-		//FRONT SIDE
-		0,1,2, // 1st Triangle
-		2,3,0, //2nd Triangle
-		//BACK SIDE
-		4,5,6,
-		6,7,4,
-		//TOP SIDE
-		1,6,5,
-		5,2,1,
-		//BOTTOM SIDE
-		7,0,3,
-		3,4,7,
-		//RIGHT SIDE
-		3,2,5,
-		5,4,3,
-		//LEFT SIDE
-		7,6,1,
-		1,0,7
-	};
-	this->m_index_buffer = GraphicsEngine::getInstance()->createIndexBuffer();
-	UINT size_index_list = ARRAYSIZE(index_list);
-	this->m_index_buffer->load(index_list, size_index_list);
+	//unsigned int index_list[] = {
+	//	//FRONT SIDE
+	//	0,1,2, // 1st Triangle
+	//	2,3,0, //2nd Triangle
+	//	//BACK SIDE
+	//	4,5,6,
+	//	6,7,4,
+	//	//TOP SIDE
+	//	1,6,5,
+	//	5,2,1,
+	//	//BOTTOM SIDE
+	//	7,0,3,
+	//	3,4,7,
+	//	//RIGHT SIDE
+	//	3,2,5,
+	//	5,4,3,
+	//	//LEFT SIDE
+	//	7,6,1,
+	//	1,0,7
+	//};
+	//this->m_index_buffer = GraphicsEngine::getInstance()->createIndexBuffer();
+	//UINT size_index_list = ARRAYSIZE(index_list);
+	//this->m_index_buffer->load(index_list, size_index_list);
 	/*------------------------------------------------*/
 
-	void* shader_byte_code = nullptr;
-	size_t size_shader = 0;
-	/*----------------VERTEX SHADER PART----------------*/
-	GraphicsEngine::getInstance()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
 
-	this->m_vertex_shader = GraphicsEngine::getInstance()->createVertexShader(shader_byte_code, size_shader);
+	///*----------------CONSTANT BUFFER PART----------------*/
+	//constant cc;
+	//cc.m_time = 0;
 
-	this->m_vertex_buffer->load(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
-
-	GraphicsEngine::getInstance()->releaseCompiledShader();
-	/*------------------------------------------------*/
-
-	/*----------------PIXEL SHADER PART----------------*/
-	GraphicsEngine::getInstance()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-
-	this->m_pixel_shader = GraphicsEngine::getInstance()->createPixelShader(shader_byte_code, size_shader);
-
-	GraphicsEngine::getInstance()->releaseCompiledShader();
-	/*------------------------------------------------*/
-
-	/*----------------CONSTANT BUFFER PART----------------*/
-	constant cc;
-	cc.m_time = 0;
-
-	this->m_constant_buffer = GraphicsEngine::getInstance()->createConstantBuffer();
-	this->m_constant_buffer->load(&cc, sizeof(constant));
-	/*------------------------------------------------*/
+	//this->m_constant_buffer = GraphicsEngine::getInstance()->createConstantBuffer();
+	//this->m_constant_buffer->load(&cc, sizeof(constant));
+	///*------------------------------------------------*/
 
 }
 
@@ -152,20 +149,22 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	this->update();
+	this->baseCube->update(this->m_delta_time, this->getClientWindowRect());
 
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
+	//GraphicsEngine::getInstance()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
+	//GraphicsEngine::getInstance()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
 
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
+	/*GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
+	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);*/
+
+	this->baseCube->draw(rc.right - rc.left, rc.bottom - rc.top);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
+	//GraphicsEngine::getInstance()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
 
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
+	//GraphicsEngine::getInstance()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
 
-	GraphicsEngine::getInstance()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
+	//GraphicsEngine::getInstance()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
@@ -183,9 +182,9 @@ void AppWindow::onDestroy()
 	this->m_constant_buffer->release();
 	this->m_depth_buffer->release(); // Release the depth buffer
 	this->m_swap_chain->release();
-
 	this->m_vertex_shader->release();
 	this->m_pixel_shader->release();
+	delete this->baseCube;
 	GraphicsEngine::getInstance()->release();
 }
 
@@ -201,77 +200,77 @@ void AppWindow::onKillFocus()
 
 void AppWindow::update()
 {
-	constant cc;
-	cc.m_time = ::GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
-								system started in milliseconds*/
+	//constantBufferData cc;
+	//cc.m_time = ::GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
+	//							system started in milliseconds*/
 
-	float movementRate = 1.0f / 0.55f;
-	//This means we reach one unit per 1/movementRate seconds (reciprocal)
-	this->m_delta_pos += m_delta_time * movementRate;
+	//float movementRate = 1.0f / 0.55f;
+	////This means we reach one unit per 1/movementRate seconds (reciprocal)
+	//this->deltaPos += deltaTime * movementRate;
 
-	if (this->m_delta_pos > 1.0f)
-		m_delta_pos = 0;
+	//if (this->deltaPos > 1.0f)
+	//	deltaPos = 0;
 
-	Matrix4x4 temp;
-	this->m_delta_scale += this->m_delta_time * movementRate;
-	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2.0f, -2.0f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), this->m_delta_pos));
-	/*cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
+	//Matrix4x4 temp;
+	//this->deltaPos += deltaTime * movementRate;
+	////cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2.0f, -2.0f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), this->m_delta_pos));
+	///*cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
 
-	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0.0f), Vector3D(1.5f, 1.5f, 0.0f), this->m_delta_pos));
+	//temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0.0f), Vector3D(1.5f, 1.5f, 0.0f), this->m_delta_pos));
 
-	cc.m_world *= temp;*/
+	//cc.m_world *= temp;*/
 
-	//cc.m_world.setScale(this->cubeScale);
+	////cc.m_world.setScale(this->cubeScale);
 
-	//temp.setIdentity();
-	//temp.setRotationZ(0.0f);
-	//cc.m_world *= temp;
+	////temp.setIdentity();
+	////temp.setRotationZ(0.0f);
+	////cc.m_world *= temp;
 
-	//temp.setIdentity();
-	//temp.setRotationY(this->rotationY);
-	//cc.m_world *= temp;
+	////temp.setIdentity();
+	////temp.setRotationY(this->rotationY);
+	////cc.m_world *= temp;
+
+	////temp.setIdentity();
+	////temp.setRotationX(this->rotationX);
+	////cc.m_world *= temp;
+
+	//cc.m_world.setIdentity();
+	//float cubeSizeMultiplier = 1 / 300.0f;
+
+	//Matrix4x4 worldCam;
+	//worldCam.setIdentity();
 
 	//temp.setIdentity();
 	//temp.setRotationX(this->rotationX);
-	//cc.m_world *= temp;
+	//worldCam *= temp;
 
-	cc.m_world.setIdentity();
-	float cubeSizeMultiplier = 1 / 300.0f;
+	//temp.setIdentity();
+	//temp.setRotationY(this->rotationY);
+	//worldCam *= temp;
 
-	Matrix4x4 worldCam;
-	worldCam.setIdentity();
+	////moving through the z axis
+	////float value entails how much units is moved
+	//Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward * 0.3f);
 
-	temp.setIdentity();
-	temp.setRotationX(rotationX);
-	worldCam *= temp;
+	//newPos = newPos + worldCam.getXDirection() * (this->rightward * 0.3f);
 
-	temp.setIdentity();
-	temp.setRotationY(rotationY);
-	worldCam *= temp;
+	////setting our camera backwards two points along the x axis
+	//worldCam.setTranslation(newPos);
+	//this->worldCamera = worldCam;
+	//worldCam.setInverse();
 
-	//moving through the z axis
-	//float value entails how much units is moved
-	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward*0.3f);
-	
-	newPos = newPos + worldCam.getXDirection() * (this->rightward*0.3f);
+	//cc.m_view = worldCam;
+	//cc.m_proj.setOrthogonalProjectionMatrix(
+	//	(this->getClientWindowRect().right - this->getClientWindowRect().left) * cubeSizeMultiplier,
+	//	(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
+	//	-4.0f,
+	//	4.0f
+	//);
+	//int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	//int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	//setting our camera backwards two points along the x axis
-	worldCam.setTranslation(newPos);
-	this->worldCamera = worldCam;
-	worldCam.setInverse();
-
-	cc.m_view = worldCam;
-	cc.m_proj.setOrthogonalProjectionMatrix(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left) * cubeSizeMultiplier,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
-		-4.0f,
-		4.0f
-	);
-	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
-	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-	
-	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width/(float)height, 0.1f, 100.0f);
-	this->m_constant_buffer->update(GraphicsEngine::getInstance()->getImmediateDeviceContext(), &cc);
+	//cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
+	//this->constantBuffer->update(GraphicsEngine::getInstance()->getImmediateDeviceContext(), &cc);
 }
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)
