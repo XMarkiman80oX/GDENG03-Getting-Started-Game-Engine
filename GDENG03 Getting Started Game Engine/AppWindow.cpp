@@ -3,7 +3,9 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
-
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 
 struct vertex
 {
@@ -37,6 +39,8 @@ AppWindow::~AppWindow()
 
 void AppWindow::onCreate()
 {
+
+
 	//Window::onCreate();
 	//We need to add AppWindow as a listener to the Input System
 	InputSystem::getInstance()->addListener(this);
@@ -168,10 +172,23 @@ void AppWindow::onCreate()
 	this->m_constant_buffer->load(&cc, sizeof(constant));
 	/*------------------------------------------------*/
 
+
+	// Application init: create a dear imgui context, setup some options, load fonts
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	// TODO: Set optional io.ConfigFlags values, e.g. 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard' to enable keyboard controls.
+	// TODO: Fill optional fields of the io structure later.
+	// TODO: Load TTF/OTF fonts if you don't want to use the default font.
+
+	// Initialize helper Platform and Renderer bindings (here we are using imgui_impl_win32.cpp and imgui_impl_dx11.cpp)
+	ImGui_ImplWin32_Init(this->m_hwnd);
+	ImGui_ImplDX11_Init(GraphicsEngine::get()->getDevice(), GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext());
+
 }
 
 void AppWindow::onUpdate()
 {
+	static bool show_demo_window = true;
 	//Window::onUpdate();
 	//change color here
 	//Inputs get processed here
@@ -203,6 +220,20 @@ void AppWindow::onUpdate()
 
 	//if the old delta has no value, set it to 0 so we dont have a new delta that equals to the new delta one
 	this->m_delta_time = (this->m_old_delta) ? ((this->m_new_delta - this->m_old_delta) / 1000.0f) : 0;
+
+	// Feed inputs to dear imgui, start new frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	// Any application code here
+	ImGui::Text("Hello, world!");
+
+	// Render dear imgui into screen
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	ImGui::ShowDemoWindow();
+	//g_pSwapChain->Present(1, 0);
 }
 
 void AppWindow::onDestroy()
@@ -217,6 +248,11 @@ void AppWindow::onDestroy()
 	this->m_vertex_shader->release();
 	this->m_pixel_shader->release();
 	GraphicsEngine::get()->release();
+
+	// Shutdown
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void AppWindow::onFocus()
