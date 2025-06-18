@@ -3,6 +3,8 @@
 #include "Vector3D.h"
 #include "Vector4D.h"
 #include "cstring"
+#include <iostream>
+
 
 class Matrix4x4 {
 public:
@@ -145,6 +147,27 @@ public:
 		Matrix4x4 result = *this;
 		result *= matrix;
 		return result;
+	}
+	bool operator == (const Matrix4x4& other) {
+		bool isEqual = true;
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				if (other.m_mat[i][j] != this->m_mat[i][j]) isEqual = false;
+			}
+		}
+
+		return isEqual;
+	}
+	void printMatrix() {
+		std::cout << std::endl;
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				std::cout << this->m_mat[i][j] << " ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
 	}
 public:
 	float m_mat[4][4] = {};

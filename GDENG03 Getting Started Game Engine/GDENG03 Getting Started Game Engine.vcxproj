@@ -136,6 +136,7 @@
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DepthBuffer.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
+    <ClCompile Include="EngineTime.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -152,9 +153,11 @@
     <ClInclude Include="AppWindow.h" />
     <ClInclude Include="BaseGameObject.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="ConstantBufferData.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DepthBuffer.h" />
     <ClInclude Include="DeviceContext.h" />
+    <ClInclude Include="EngineTime.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputListener.h" />

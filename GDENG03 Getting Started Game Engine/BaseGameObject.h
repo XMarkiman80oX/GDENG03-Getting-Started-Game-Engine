@@ -1,6 +1,7 @@
 #include "Matrix4x4.h"
 #include "string"
 #include <Windows.h>
+#include "ConstantBufferData.h"
 
 class VertexShader;
 class PixelShader;
@@ -12,16 +13,6 @@ protected:
 		Vector3D position;
 		Vector3D color;
 		Vector3D color1;
-	};
-
-	__declspec(align(16))
-	struct constantBufferData
-	{
-		Matrix4x4 m_world;
-		Matrix4x4 m_view;
-		Matrix4x4 m_proj;
-
-		unsigned int m_time;
 	};
 
 protected: //Inherited to other primitives
@@ -36,7 +27,7 @@ public: //Constructors
 	~BaseGameObject();
 
 public: //ABSTRACT CLASSES
-	virtual void update(float deltaTime, RECT windowRect) = 0;
+	virtual void update(RECT windowRect) = 0;
 	virtual void draw(int width, int height) = 0;
 	virtual void initializeObject(void* shaderByteCode, size_t sizeShader) = 0;
 

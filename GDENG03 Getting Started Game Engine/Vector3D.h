@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class Vector3D
 {
@@ -33,6 +34,9 @@ public:
 	}
 	Vector3D operator + (Vector3D vec) {
 		return Vector3D(x + vec.x, y + vec.y, z + vec.z);
+	}
+	void printVector() {
+		std::cout << "(" << this->x << ", " << this->y << ", " << this->z << ")"<<std::endl;
 	}
 public:
 	float x, y, z;

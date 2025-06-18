@@ -18,23 +18,12 @@
 class AppWindow : public Window, public InputListener
 {
 private:
-	float m_old_delta;
-	float m_new_delta;
-	float m_delta_time;
+	//float oldDelta;
+	float newDelta;
+	float deltaTime;
 
-	float m_delta_pos;
-	float m_delta_scale;
-
-	float rotationX = 0.0f;
-	float rotationY = 0.0f;
-
-	Vector3D cubeScale = Vector3D(1.0f);
-
-	//Represents the sign of direction
-	float forward = 0.0f;
-	float rightward = 0.0f;
-
-	const float rotationSpeedMultiplier = 0.14f;
+	float deltaPosition;
+	float deltaScale;
 
 	bool invertedIsOn = false;
 	bool cursorIsVisible = false;
@@ -43,7 +32,6 @@ private:
 
 public:
 	static AppWindow* getInstance();
-	RECT getScreenSize();
 
 public:
 	AppWindow();
@@ -55,6 +43,7 @@ public:
 	virtual void onDestroy() override;
 	virtual void onFocus() override;
 	virtual void onKillFocus() override;
+
 	// Inherited via InputListener
 	void onKeyDown(int key) override;
 	void onKeyUp(int key) override;

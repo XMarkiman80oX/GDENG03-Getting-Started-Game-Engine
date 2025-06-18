@@ -55,6 +55,9 @@
     <Filter Include="GameEngine\GraphicsEngine\GameObjects\WorldCamera">
       <UniqueIdentifier>{e8981e25-eac8-4d9b-9a07-688a04ffd0c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\EngineTime">
+      <UniqueIdentifier>{2fa58720-fab7-4af1-b586-5c29978aced7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="WorldCamera.cpp">
       <Filter>GameEngine\GraphicsEngine\GameObjects\WorldCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineTime.cpp">
+      <Filter>GameEngine\EngineTime</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +179,10 @@
     <ClInclude Include="WorldCamera.h">
       <Filter>GameEngine\GraphicsEngine\GameObjects\WorldCamera</Filter>
     </ClInclude>
+    <ClInclude Include="EngineTime.h">
+      <Filter>GameEngine\EngineTime</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferData.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

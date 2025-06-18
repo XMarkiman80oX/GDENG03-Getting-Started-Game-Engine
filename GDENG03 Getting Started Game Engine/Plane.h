@@ -9,7 +9,7 @@ public:
     Plane(std::string name);
     ~Plane();
 
-    void update(float deltaTime, RECT windowRect) override;
+    void update(RECT windowRect) override;
     void draw(int width, int height) override;
 
 private:

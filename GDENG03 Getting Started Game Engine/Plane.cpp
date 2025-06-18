@@ -44,7 +44,7 @@ Plane::~Plane()
     if (m_index_buffer) m_index_buffer->release();
 }
 
-void Plane::update(float deltaTime, RECT windowRect)
+void Plane::update(RECT windowRect)
 {
     //The plane is static for now, so no updates are needed.
 }
