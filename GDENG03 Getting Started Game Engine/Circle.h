@@ -107,21 +107,21 @@ class Circle
 private:
 	vec3 color;
 	float screenAspectRatio;
-	vec3 position; // Center position of the circle
+	vec3 position; 
 	float radius;
 	int segmentCount;
 	std::vector<newVertex> circleVertices;
 
-	vec3 velocity; // Each circle has its own velocity
+	vec3 velocity; 
 
 public:
 	Circle(int segmentCount, float radius, vec3 position, vec3 color, float screenAspectRatio);
 	~Circle();
 
 	void GenerateVertices();
-	void initializeVelocity(); // Replaces randomizeMovementTarget
+	void initializeVelocity(); 
 	void setScreenAspectRatio(float newAspectRatio);
-	void update(float deltaTime); // New method for movement
+	void update(float deltaTime);
 
 public:
 	std::vector<newVertex> GetCircleVertices();
