@@ -46,6 +46,16 @@ void BaseGameObject::setRotation(Vector3D rot)
 	this->localRotation = rot;
 }
 
+void BaseGameObject::setSelected(bool isSelected)
+{
+	this->isSelected = isSelected;
+
+	if(this->isSelected)
+		std::cout << this->name << " was Selected" << std::endl;
+	/*else 
+		std::cout << this->name << " was Deselected" << std::endl;*/
+}
+
 Vector3D BaseGameObject::getLocalRotation()
 {
 	return this->localRotation;

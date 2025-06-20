@@ -75,14 +75,19 @@ void AppWindow::onCreate()
 	//Initialize Objects Here
 	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader);
 	Sphere* marcosSphere = new Sphere("Sphere", shader_byte_code, size_shader);
+	Sphere* marcosSphere2 = new Sphere("Sphere 2", shader_byte_code, size_shader);
 
 	//Set their positions/rotations/scale as needed
 	marcosSphere->setPosition(Vector3D(2.0f, 0.0f, 0.0f));
 	marcosSphere->setScale(Vector3D(0.5f, 0.5f, 0.5f));
 
+	marcosSphere2->setPosition(Vector3D(4.0f, 0.0f, 0.0f));
+	marcosSphere2->setScale(Vector3D(0.5f, 0.5f, 0.5f));
+
 	//Place in vector
 	this->objectsInWorld.push_back(marcosCube);
 	this->objectsInWorld.push_back(marcosSphere);
+	this->objectsInWorld.push_back(marcosSphere2);
 
 }
 
@@ -158,6 +163,22 @@ void AppWindow::destroyGameObjects()
 	this->objectsInWorld.clear();
 }
 
+void AppWindow::selectNextObject()
+{
+	this->objectSelectedIndex++;
+
+	//Make sure it doesn't go over the amount of objects in this->objectsInWorld
+	if (this->objectSelectedIndex > this->objectsInWorld.size() - 1)
+		this->objectSelectedIndex = 0;
+
+	//Set All Selected Objects to false first before toggling it on
+	for (BaseGameObject* object : this->objectsInWorld) {
+		this->objectsInWorld[this->objectSelectedIndex]->setSelected(false);
+	}
+
+	this->objectsInWorld[this->objectSelectedIndex]->setSelected(true);
+}
+
 void AppWindow::onMouseMove(const Point& mousePosition)
 {
 }
@@ -168,4 +189,9 @@ void AppWindow::onKeyDown(int key)
 
 void AppWindow::onKeyUp(int key)
 {
+	switch (key) {
+	case VK_SPACE:
+		this->selectNextObject();
+		break;
+	}
 }

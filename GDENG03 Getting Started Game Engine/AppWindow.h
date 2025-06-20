@@ -32,6 +32,8 @@ private:
 
 	std::vector<BaseGameObject*> objectsInWorld = {};
 
+	int objectSelectedIndex = 0;
+
 public:
 	static AppWindow* getInstance();
 
@@ -72,4 +74,5 @@ private:
 private:
 	void updateGameObjects(RECT clientWindowRect);
 	void destroyGameObjects();
+	void selectNextObject();
 };

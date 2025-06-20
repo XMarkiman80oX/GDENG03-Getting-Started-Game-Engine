@@ -23,6 +23,9 @@ protected: //Inherited to other primitives
 	Vector3D localRotation;
 	Vector3D localMatrix;
 
+	//If this object is selected, then keybinds will only work on this object
+	bool isSelected = false;
+
 public: //Constructors
 	BaseGameObject(std::string name);
 	~BaseGameObject();
@@ -44,8 +47,11 @@ public: //Setters
 	void setRotation(float x, float y, float z);
 	void setRotation(Vector3D rot);
 
+	void setSelected(bool isSelected);
+
 public: //Getters
 	Vector3D getLocalRotation();
 	std::string getName();
+
 };
 
