@@ -45,7 +45,16 @@ void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
             float y = radius * cos(phi);
             float z = radius * sin(theta) * sin(phi);
 
-            vertices.push_back({ Vector3D(x, y, z), Vector3D(1.0f, 0.0f, 0.0f), Vector3D(0.5f, 0.0f, 0.0f) });
+            // Determine color based on the x-coordinate
+            Vector3D color;
+            if (x < 0) {
+                color = Vector3D(1.0f, 0.0f, 0.0f); // Red
+            }
+            else {
+                color = Vector3D(0.0f, 0.0f, 1.0f); // Blue
+            }
+            // The second color is for interpolation purposes
+            vertices.push_back({ Vector3D(x, y, z), color, color });
         }
     }
 
