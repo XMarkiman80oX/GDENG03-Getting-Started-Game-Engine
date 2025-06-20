@@ -71,11 +71,18 @@ void AppWindow::onCreate()
 
 	std::cout << "windowRect.bottom: " << rc.bottom;
 	std::cout << ", windowRect.top " << rc.top << std::endl;
-	this->baseCube = new Cube("Marco's Cube", shader_byte_code, size_shader);
-	this->m_sphere = new Sphere("Sphere", shader_byte_code, size_shader);
-	this->m_sphere->setPosition(Vector3D(2.0f, 0.0f, 0.0f));
-	this->m_sphere->setScale(Vector3D(0.5f, 0.5f, 0.5f));
 
+	//Initialize Objects Here
+	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader);
+	Sphere* marcosSphere = new Sphere("Sphere", shader_byte_code, size_shader);
+
+	//Set their positions/rotations/scale as needed
+	marcosSphere->setPosition(Vector3D(2.0f, 0.0f, 0.0f));
+	marcosSphere->setScale(Vector3D(0.5f, 0.5f, 0.5f));
+
+	//Place in vector
+	this->objectsInWorld.push_back(marcosCube);
+	this->objectsInWorld.push_back(marcosSphere);
 
 }
 
@@ -91,12 +98,10 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	this->baseCube->update(rc);
+
 	WorldCamera::getInstance()->updateCamera();
 
-	this->baseCube->draw(rc.right - rc.left, rc.bottom - rc.top);
-	m_sphere->draw(rc.right - rc.left, rc.bottom - rc.top);
-
+	this->updateGameObjects(rc);
 
 	m_swap_chain->present(true);
 }
@@ -106,8 +111,7 @@ void AppWindow::onDestroy()
 	Window::onDestroy();
 	this->m_depth_buffer->release(); // Release the depth buffer
 	this->m_swap_chain->release();
-	delete this->baseCube;
-	delete this->m_sphere;
+	this->destroyGameObjects();
 	GraphicsEngine::getInstance()->release();
 }
 
@@ -138,6 +142,20 @@ void AppWindow::onRightMouseDown(const Point& mousePosition)
 
 void AppWindow::onRightMouseUp(const Point& mousePosition)
 {
+}
+
+void AppWindow::updateGameObjects(RECT clientWindowRect)
+{
+	for(BaseGameObject* object : this->objectsInWorld)
+	{
+		object->update(clientWindowRect);
+		object->draw(clientWindowRect.right - clientWindowRect.left, clientWindowRect.bottom - clientWindowRect.top);
+	}
+}
+
+void AppWindow::destroyGameObjects()
+{
+	this->objectsInWorld.clear();
 }
 
 void AppWindow::onMouseMove(const Point& mousePosition)

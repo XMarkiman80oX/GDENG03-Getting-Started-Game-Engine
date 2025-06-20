@@ -15,6 +15,7 @@
 #include "WorldCamera.h"	
 #include "Cube.h"
 #include "Sphere.h"
+#include <vector>
 
 class AppWindow : public Window, public InputListener
 {
@@ -29,9 +30,7 @@ private:
 	bool invertedIsOn = false;
 	bool cursorIsVisible = false;
 
-	Cube* baseCube = nullptr;
-	Sphere* m_sphere = nullptr;
-
+	std::vector<BaseGameObject*> objectsInWorld = {};
 
 public:
 	static AppWindow* getInstance();
@@ -69,4 +68,8 @@ private:
 	IndexBuffer* m_index_buffer;
 	DepthBuffer* m_depth_buffer;
 
+//HELPER FUNCTIONS
+private:
+	void updateGameObjects(RECT clientWindowRect);
+	void destroyGameObjects();
 };
