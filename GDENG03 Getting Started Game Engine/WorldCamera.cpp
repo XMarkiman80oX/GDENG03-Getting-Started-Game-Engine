@@ -32,7 +32,7 @@ void WorldCamera::initialize(RECT windowRect)
     int height = (windowRect.bottom - windowRect.top);
     this->m_proj.setPerspectiveFOVLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
 
-    InputSystem::getInstance()->addListener(this);
+    //InputSystem::getInstance()->addListener(this);
 }
 
 Matrix4x4 WorldCamera::getWorldCamera()

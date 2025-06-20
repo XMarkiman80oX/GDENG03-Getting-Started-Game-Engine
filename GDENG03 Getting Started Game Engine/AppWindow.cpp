@@ -86,6 +86,8 @@ void AppWindow::onCreate()
 
 	//Place in vector
 	this->objectsInWorld.push_back(marcosCube);
+
+	this->initializeFirstSelected();
 	/*this->objectsInWorld.push_back(marcosSphere);
 	this->objectsInWorld.push_back(marcosSphere2);*/
 
@@ -123,18 +125,17 @@ void AppWindow::onDestroy()
 void AppWindow::onFocus()
 {
 	InputSystem::getInstance()->addListener(this);
-	InputSystem::getInstance()->addListener(WorldCamera::getInstance());
+	//InputSystem::getInstance()->addListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onKillFocus()
 {
 	InputSystem::getInstance()->removeListener(this);
-	InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
+	//InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)
 {
-	//means xyz are all uniform
 }
 
 void AppWindow::onLeftMouseUp(const Point& mousePosition)
@@ -161,6 +162,11 @@ void AppWindow::updateGameObjects(RECT clientWindowRect)
 void AppWindow::destroyGameObjects()
 {
 	this->objectsInWorld.clear();
+}
+
+void AppWindow::initializeFirstSelected()
+{
+	this->objectsInWorld[0]->setSelected(true);
 }
 
 void AppWindow::selectNextObject()

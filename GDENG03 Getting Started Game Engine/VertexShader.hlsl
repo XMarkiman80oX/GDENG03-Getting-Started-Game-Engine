@@ -1,6 +1,6 @@
 struct VS_INPUT
 {
-    float4 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
+    float4 position : POSITION; // the " : POSITION" semantic part of the hlsl language
                                 // identifies that this attribute corresponds to "up vertex position"
     float3 color : COLOR;
     float3 color1 : COLOR1;
@@ -28,13 +28,14 @@ cbuffer constant : register(b0)
 
 VS_OUTPUT main(VS_INPUT input)
 {
-    VS_OUTPUT output = (VS_OUTPUT) 0; //This creates a VS_OUTPUT object
-    //output.position = lerp(input.position /*initial position*/, input.position1/*new position*/, 
-    //                        sin(m_time / 1000.0f) + 1.0f / 2.0f /*- delta time
-    //                                                              - + 1/2 because delta only accepts [0,1],
-    //                                                              by default it's [-1,1] (if only +1, it's going to be
-    //                                                              [0,2])*/
-    //                        );
+    VS_OUTPUT output = (VS_OUTPUT) 0; 
+    
+    float t = (sin((float) m_time / 1000.0f) + 1.0f) / 2.0f;
+    
+    float scale = lerp(1.0f, 0.25f, t);
+    
+    input.position.xyz *= scale;
+
     //WORLD SPACE
     output.position = mul(input.position, m_world);
     //VIEW SPACE

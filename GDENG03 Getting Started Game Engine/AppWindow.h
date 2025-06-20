@@ -74,5 +74,6 @@ private:
 private:
 	void updateGameObjects(RECT clientWindowRect);
 	void destroyGameObjects();
+	void initializeFirstSelected();
 	void selectNextObject();
 };

@@ -22,7 +22,7 @@ void Cube::update(RECT windowRect)
 	// This function is now only responsible for updating animation variables if needed.
 	// The constant buffer update is moved to the draw call for correctness.
 	float movementRate = 1.0f / 0.55f;
-	this->deltaPos += deltaTime * movementRate;
+	this->deltaPos += EngineTime::getDeltaTime() * movementRate;
 
 	if (this->deltaPos > 1.0f)
 		deltaPos = 0;
@@ -42,17 +42,17 @@ void Cube::draw(int width, int height)
 		this->deltaPos = 0.0f;
 	}
 	else {
-		this->deltaPos += this->deltaTime * 0.1f;
+		this->deltaPos += EngineTime::getDeltaTime() * 0.1f;
 	}
 
 	Matrix4x4 allMatrix;
-	allMatrix.setIdentity(); // Initialize the matrix
+	allMatrix.setIdentity();
 
 	Matrix4x4 translationMatrix;
 	translationMatrix.setTranslation(this->getLocalPosition());
 
 	Matrix4x4 scaleMatrix;
-	scaleMatrix.setScale(this->getLocalScale());
+	scaleMatrix.setIdentity();
 
 	Vector3D rotation = this->getLocalRotation();
 	Matrix4x4 zMatrix, yMatrix, xMatrix;
@@ -67,16 +67,14 @@ void Cube::draw(int width, int height)
 	Matrix4x4 rotationMatrix;
 	rotationMatrix = xMatrix * yMatrix * zMatrix;
 
-	// Apply transformations: Scale -> Rotate -> Translate
 	allMatrix *= scaleMatrix;
 	allMatrix *= rotationMatrix;
 	allMatrix *= translationMatrix;
 
 	cbData.m_world = allMatrix;
 
-	// Use the WorldCamera's view and projection matrices
 	cbData.m_view = WorldCamera::getInstance()->getViewMatrix();
-	cbData.m_proj = WorldCamera::getInstance()->getProjectionMatrix(); // Corrected this line
+	cbData.m_proj = WorldCamera::getInstance()->getProjectionMatrix(); 
 
 	this->constantBuffer->update(deviceContextInst, &cbData);
 	deviceContextInst->setConstantBuffer(vertexShader, this->constantBuffer);
@@ -176,4 +174,31 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 
 	this->constantBuffer = GraphicsEngine::getInstance()->createConstantBuffer();
 	this->constantBuffer->load(&cc, sizeof(constantBufferData));
+}
+
+void Cube::onKeyDown(int key)
+{
+	float moveSpeed = EngineTime::getDeltaTime() * this->speed;
+
+	switch (key) {
+		case 'W':
+			this->setPosition(this->getLocalPosition() + Vector3D(0.0f, moveSpeed, 0.0f));
+			break;
+
+		case 'A':
+			this->setPosition(this->getLocalPosition() + Vector3D(-moveSpeed, 0.0f, 0.0f));
+			break;
+
+		case 'S':
+			this->setPosition(this->getLocalPosition() + Vector3D(0.0f, -moveSpeed, 0.0f));
+			break;
+
+		case 'D':
+			this->setPosition(this->getLocalPosition() + Vector3D(moveSpeed, 0.0f, 0.0f));
+			break;
+	}
+}
+
+void Cube::onKeyUp(int key)
+{
 }

@@ -8,13 +8,13 @@
 #include "string"
 #include "Vector3D.h"
 #include "InputListener.h"
+#include "EngineTime.h"
 
 class Cube : public BaseGameObject
 {
 private:
 	float ticks = 0.0f;
 	float deltaPos = 0.0f;
-	float deltaTime = 0.0f;
 	float speed = 10.0f;
 
 	Vector3D m_rotation_speed;
@@ -37,4 +37,9 @@ private:
 	PixelShader* pixelShader;
 	IndexBuffer* indexBuffer;
 	ConstantBuffer* constantBuffer;
+
+private:
+	void onKeyDown(int key) override;
+
+	void onKeyUp(int key) override;
 };

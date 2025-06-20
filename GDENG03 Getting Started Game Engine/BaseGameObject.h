@@ -58,19 +58,19 @@ public: //Getters
 
 
 	// Inherited via InputListener
-	void onKeyDown(int key) override;
+	virtual void onKeyDown(int key) override;
 
-	void onKeyUp(int key) override;
+	virtual void onKeyUp(int key) override;
 
-	void onMouseMove(const Point& mousePosition) override;
+	virtual void onMouseMove(const Point& mousePosition) override;
 
-	void onLeftMouseDown(const Point& mousePosition) override;
+	virtual void onLeftMouseDown(const Point& mousePosition) override;
 
-	void onLeftMouseUp(const Point& mousePosition) override;
+	virtual void onLeftMouseUp(const Point& mousePosition) override;
 
-	void onRightMouseDown(const Point& mousePosition) override;
+	virtual void onRightMouseDown(const Point& mousePosition) override;
 
-	void onRightMouseUp(const Point& mousePosition) override;
+	virtual void onRightMouseUp(const Point& mousePosition) override;
 
 };
 
