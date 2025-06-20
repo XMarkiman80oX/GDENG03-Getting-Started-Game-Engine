@@ -112,19 +112,19 @@ private:
 	int segmentCount;
 	std::vector<newVertex> circleVertices;
 
-	vec3 currentAnimationTargetOffset; // Each circle has its own movement target offset
+	vec3 velocity; // Each circle has its own velocity
 
 public:
 	Circle(int segmentCount, float radius, vec3 position, vec3 color, float screenAspectRatio);
 	~Circle();
 
 	void GenerateVertices();
-	void randomizeMovementTarget();
-	void setScreenAspectRatio(float newAspectRatio); // New method
+	void initializeVelocity(); // Replaces randomizeMovementTarget
+	void setScreenAspectRatio(float newAspectRatio);
+	void update(float deltaTime); // New method for movement
 
 public:
-	std::vector<newVertex> GetCircleVertices(); //
-	// Add a getter for position if needed for other logic, though not strictly for this request
-	vec3 getPosition() const { return position; }
+	std::vector<newVertex> GetCircleVertices();
+	vec3 getPosition();
 };
 

@@ -28,13 +28,12 @@ private:
 	PixelShader* m_pixel_shader;
 	ConstantBuffer* m_constant_buffer;
 
-	DWORD start_time;
 	float duration;
 
 	float aspectRatio;
 
 private:
-	void SpawnCircle(vec3 position, vec3 color, bool isFirstTime);
 	void loadBuffersAndShaders();
+	float randomizeFromRange(float lowerBound, float upperBound);
 };
 

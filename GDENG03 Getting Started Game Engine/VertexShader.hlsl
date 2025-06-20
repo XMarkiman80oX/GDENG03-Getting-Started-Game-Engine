@@ -24,7 +24,7 @@ VS_OUTPUT main(VS_INPUT input)
     
     float deltaTime = m_time / m_duration;
     //output.position = lerp(input.position, input.position1, sin(m_time / 1000.0f) + 1.0f / 2.0f);
-    output.position = lerp(input.position, input.position1, sin(deltaTime) + 1.0f/2.0f);
+    output.position = input.position;
     
     output.color = input.color;
     

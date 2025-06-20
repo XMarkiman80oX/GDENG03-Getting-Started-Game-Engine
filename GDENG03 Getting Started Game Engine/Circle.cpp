@@ -1,23 +1,23 @@
 #include "Circle.h"
 #include "vector"
-#include "cmath"        // For cos, sin, std::abs
-#include "algorithm"    // For std::max, std::min
+#include "cmath"
+#include "algorithm"
 #include "DirectXMath.h"
 
 #ifndef M_PI
-#define M_PI (3.14159265358979323846)
+#define M_PI (3.1415)
 #endif
 
-// Constructor remains the same
+// Constructor updated to call initializeVelocity
 Circle::Circle(int segmentCount, float radius, vec3 position, vec3 color, float screenAspectRatio)
 {
     this->segmentCount = segmentCount;
     this->radius = radius;
     this->position = position;
     this->color = color;
-    this->screenAspectRatio = screenAspectRatio; // screenAspectRatio is stored
+    this->screenAspectRatio = screenAspectRatio;
 
-    this->randomizeMovementTarget();
+    this->initializeVelocity(); // Set initial random velocity
     this->GenerateVertices();
 }
 
@@ -27,55 +27,49 @@ Circle::~Circle()
 
 void Circle::setScreenAspectRatio(float newAspectRatio)
 {
-    // Check if the aspect ratio has meaningfully changed
     if (std::abs(this->screenAspectRatio - newAspectRatio) > 0.001f)
     {
-        this->screenAspectRatio = newAspectRatio; //
-
-        // The clamping of the movement target depends on the aspect ratio.
-        // Re-calculate the movement target with the new aspect ratio.
-        this->randomizeMovementTarget(); //
-
-        // The shape of the circle (corrected_x_offset) also depends on the aspect ratio.
-        // Regenerate vertices to reflect the new shape and new target.
-        this->GenerateVertices(); //
+        this->screenAspectRatio = newAspectRatio;
+        this->GenerateVertices();
     }
 }
 
-void Circle::randomizeMovementTarget()
+//Randomizes velocity
+void Circle::initializeVelocity()
 {
-    vec3 random_step_direction;
-    // randomizeVector(true) creates an offset where components are typically {-1, 0, 1}
-    // or values like (1, 0.5) etc. This determines the direction and magnitude of the raw step.
-    random_step_direction.randomizeVector(true);
+    vec3 random_direction;
+    // Get a random direction with components between -0.5 and 0.5
+    random_direction.randomizeVector(false, -1.5f, 5.5f);
+    this->velocity = random_direction;
 
-    // Calculate the potential new center position of the circle
-    vec3 potential_target_center = this->position + random_step_direction;
+    this->velocity.printVector();
+}
 
-    // Get the effective radius of the circle in X and Y NDC space
-    // this->radius is assumed to be in units that match the Y NDC scale (-1 to 1)
-    // For the X axis, it needs to be adjusted by the screen aspect ratio
+//For handling movement and bouncing
+void Circle::update(float deltaTime)
+{
     float effectiveRadiusX = this->radius / this->screenAspectRatio;
     float effectiveRadiusY = this->radius;
 
-    // Clamp the potential_target_center so the circle's bounding box stays within [-1, 1]
-    // For X-axis:
-    float minX = -1.0f + effectiveRadiusX;
-    float maxX = 1.0f - effectiveRadiusX;
-    potential_target_center.x = std::max(minX, std::min(potential_target_center.x, maxX));
+    if ((this->position.x + effectiveRadiusX > 1.0f && this->velocity.x > 0) ||
+        (this->position.x - effectiveRadiusX < -1.0f && this->velocity.x < 0))
+    {
+        this->velocity.x *= -1.0f;
+    }
 
-    // For Y-axis:
-    float minY = -1.0f + effectiveRadiusY;
-    float maxY = 1.0f - effectiveRadiusY;
-    potential_target_center.y = std::max(minY, std::min(potential_target_center.y, maxY));
+    if ((this->position.y + effectiveRadiusY > 1.0f && this->velocity.y > 0) ||
+        (this->position.y - effectiveRadiusY < -1.0f && this->velocity.y < 0))
+    {
+        this->velocity.y *= -1.0f;
+    }
 
-    potential_target_center.z = 0; // Keep z at 0
+    this->position.x += this->velocity.x * deltaTime;
+    this->position.y += this->velocity.y * deltaTime;
 
-    // The actual animation offset is the difference between the clamped target and current position
-    this->currentAnimationTargetOffset = potential_target_center - this->position;
+    // Regenerate vertices at the new position
+    this->GenerateVertices();
 }
 
-// GenerateVertices remains the same as in the previous step, using this->currentAnimationTargetOffset
 void Circle::GenerateVertices()
 {
     circleVertices.clear();
@@ -98,17 +92,18 @@ void Circle::GenerateVertices()
         float corrected_x_offset2 = x_offset2 / this->screenAspectRatio;
         vec3 p2 = vec3(centerVertexPos.x + corrected_x_offset2, centerVertexPos.y + y_offset2, 0.0f);
 
-        // newPositionDistance is vertex.position (relative to origin) + this->currentAnimationTargetOffset (which is now clamped)
-        // More accurately, the shader will use the vertex's original position and this->currentAnimationTargetOffset
-        // to determine the target. The 'position' field in newVertex is the original vertex position.
-        // The 'newPositionDistance' field in newVertex is 'vertex_original_position + this->currentAnimationTargetOffset'.
-        circleVertices.push_back({ centerVertexPos, centerVertexPos + this->currentAnimationTargetOffset, this->color });
-        circleVertices.push_back({ p1, p1 + this->currentAnimationTargetOffset, this->color });
-        circleVertices.push_back({ p2, p2 + this->currentAnimationTargetOffset, this->color });
+        circleVertices.push_back({ centerVertexPos, centerVertexPos, this->color });
+        circleVertices.push_back({ p1, p1, this->color });
+        circleVertices.push_back({ p2, p2, this->color });
     }
 }
 
 std::vector<newVertex> Circle::GetCircleVertices()
 {
-    return this->circleVertices; //
+    return this->circleVertices;
+}
+
+vec3 Circle::getPosition()
+{
+    return this->position;
 }
