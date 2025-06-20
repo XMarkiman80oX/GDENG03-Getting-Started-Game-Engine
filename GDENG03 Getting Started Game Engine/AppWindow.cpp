@@ -125,13 +125,13 @@ void AppWindow::onDestroy()
 void AppWindow::onFocus()
 {
 	InputSystem::getInstance()->addListener(this);
-	//InputSystem::getInstance()->addListener(WorldCamera::getInstance());
+	InputSystem::getInstance()->addListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onKillFocus()
 {
 	InputSystem::getInstance()->removeListener(this);
-	//InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
+	InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)
