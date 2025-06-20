@@ -3,10 +3,13 @@
 #include "string"
 #include <Windows.h>
 #include "ConstantBufferData.h"
+#include "InputListener.h"
+#include "InputSystem.h"
 
 class VertexShader;
 class PixelShader;
-class BaseGameObject
+
+class BaseGameObject : public InputListener
 {
 protected:
 	struct vertex
@@ -52,6 +55,22 @@ public: //Setters
 public: //Getters
 	Vector3D getLocalRotation();
 	std::string getName();
+
+
+	// Inherited via InputListener
+	void onKeyDown(int key) override;
+
+	void onKeyUp(int key) override;
+
+	void onMouseMove(const Point& mousePosition) override;
+
+	void onLeftMouseDown(const Point& mousePosition) override;
+
+	void onLeftMouseUp(const Point& mousePosition) override;
+
+	void onRightMouseDown(const Point& mousePosition) override;
+
+	void onRightMouseUp(const Point& mousePosition) override;
 
 };
 

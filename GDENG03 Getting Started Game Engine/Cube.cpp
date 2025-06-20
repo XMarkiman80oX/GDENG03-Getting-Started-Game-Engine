@@ -52,7 +52,7 @@ void Cube::draw(int width, int height)
 	translationMatrix.setTranslation(this->getLocalPosition());
 
 	Matrix4x4 scaleMatrix;
-	scaleMatrix.setScale(this->cubeScale);
+	scaleMatrix.setScale(this->getLocalScale());
 
 	Vector3D rotation = this->getLocalRotation();
 	Matrix4x4 zMatrix, yMatrix, xMatrix;
@@ -100,16 +100,19 @@ void Cube::setRotationSpeed(Vector3D speed)
 
 void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 {
-	InputSystem::getInstance()->addListener(this);
+	Vector3D identity = Vector3D(0.0f);
+
+	if(this->getLocalScale() == identity)
+		this->setScale(1.0f);
 	vertex vertexList[] = {
 		//X - Y - Z
 		/***************FRONT FACE****************/
 		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
 			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
 		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
+			Vector3D(0,1,0), Vector3D(0.2f,0.2f,0)},
 		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
+			Vector3D(0,0,1), Vector3D(0.2f,0.2f,0)},
 		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
 			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
 			/******************************************/
@@ -118,11 +121,11 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
 				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
 			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+				Vector3D(0,0,1), Vector3D(0,0.2f,0.2f)},
 			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
+				Vector3D(1,0,0), Vector3D(0,0.2f,0.2f)},
 			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
+				Vector3D(1,0,0), Vector3D(0,0.2f,0)},
 				/******************************************/
 	};
 
@@ -173,36 +176,4 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 
 	this->constantBuffer = GraphicsEngine::getInstance()->createConstantBuffer();
 	this->constantBuffer->load(&cc, sizeof(constantBufferData));
-}
-
-void Cube::onKeyDown(int key)
-{
-}
-
-void Cube::onKeyUp(int key)
-{
-}
-
-void Cube::onMouseMove(const Point& mousePosition)
-{
-}
-
-void Cube::onLeftMouseDown(const Point& mousePosition)
-{
-	this->cubeScale = Vector3D(0.5f);
-}
-
-void Cube::onLeftMouseUp(const Point& mousePosition)
-{
-	this->cubeScale = Vector3D(1.0f);
-}
-
-void Cube::onRightMouseDown(const Point& mousePosition)
-{
-	this->cubeScale = Vector3D(2.0f);
-}
-
-void Cube::onRightMouseUp(const Point& mousePosition)
-{
-	this->cubeScale = Vector3D(1.0f);
 }

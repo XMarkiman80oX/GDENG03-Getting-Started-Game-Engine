@@ -32,8 +32,17 @@ public:
 	Vector3D operator * (float num) {
 		return Vector3D(x * num, y * num, z * num);
 	}
-	Vector3D operator + (Vector3D vec) {
-		return Vector3D(x + vec.x, y + vec.y, z + vec.z);
+	Vector3D operator + (Vector3D other) {
+		return Vector3D(x + other.x, y + other.y, z + other.z);
+	}
+	bool operator == (Vector3D other) {
+		bool isEqual = true;
+
+		if (other.x != this->x) isEqual = false;
+		if (other.y != this->y) isEqual = false;
+		if (other.z != this->z) isEqual = false;
+
+		return isEqual;
 	}
 	void printVector() {
 		std::cout << "(" << this->x << ", " << this->y << ", " << this->z << ")"<<std::endl;

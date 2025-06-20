@@ -86,8 +86,8 @@ void AppWindow::onCreate()
 
 	//Place in vector
 	this->objectsInWorld.push_back(marcosCube);
-	this->objectsInWorld.push_back(marcosSphere);
-	this->objectsInWorld.push_back(marcosSphere2);
+	/*this->objectsInWorld.push_back(marcosSphere);
+	this->objectsInWorld.push_back(marcosSphere2);*/
 
 }
 

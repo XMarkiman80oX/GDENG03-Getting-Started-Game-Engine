@@ -2,6 +2,10 @@
 
 BaseGameObject::BaseGameObject(std::string name) {
 	this->name = name;
+
+	//Assumes all game objects have an input component
+	//
+	InputSystem::getInstance()->addListener(this);
 }
 BaseGameObject::~BaseGameObject() {
 }
@@ -14,6 +18,11 @@ void BaseGameObject::setPosition(float x, float y, float z)
 void BaseGameObject::setPosition(Vector3D pos)
 {
 	this->localPosition = pos;
+}
+
+void BaseGameObject::initializeObject(void* shaderByteCode, size_t sizeShader)
+{
+	InputSystem::getInstance()->addListener(this);
 }
 
 Vector3D BaseGameObject::getLocalPosition()
@@ -64,4 +73,49 @@ Vector3D BaseGameObject::getLocalRotation()
 std::string BaseGameObject::getName()
 {
 	return this->name;
+}
+
+
+void BaseGameObject::onKeyDown(int key)
+{
+}
+
+void BaseGameObject::onKeyUp(int key)
+{
+}
+
+void BaseGameObject::onMouseMove(const Point& mousePosition)
+{
+}
+
+void BaseGameObject::onLeftMouseDown(const Point& mousePosition)
+{
+	if (this->isSelected)
+	{
+		this->setScale(Vector3D(0.5f));
+	}
+}
+
+void BaseGameObject::onLeftMouseUp(const Point& mousePosition)
+{
+	if (this->isSelected) 
+	{
+		this->setScale(Vector3D(1.0f));
+	}
+}
+
+void BaseGameObject::onRightMouseDown(const Point& mousePosition)
+{
+	if (this->isSelected)
+	{
+		this->setScale(Vector3D(2.0f));
+	}
+}
+
+void BaseGameObject::onRightMouseUp(const Point& mousePosition)
+{
+	if (this->isSelected)
+	{
+		this->setScale(Vector3D(1.0f));
+	}
 }

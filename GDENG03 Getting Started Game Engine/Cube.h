@@ -9,7 +9,7 @@
 #include "Vector3D.h"
 #include "InputListener.h"
 
-class Cube : public BaseGameObject, public InputListener
+class Cube : public BaseGameObject
 {
 private:
 	float ticks = 0.0f;
@@ -17,7 +17,6 @@ private:
 	float deltaTime = 0.0f;
 	float speed = 10.0f;
 
-	Vector3D cubeScale = Vector3D(1.0f);
 	Vector3D m_rotation_speed;
 
 public:
@@ -38,13 +37,4 @@ private:
 	PixelShader* pixelShader;
 	IndexBuffer* indexBuffer;
 	ConstantBuffer* constantBuffer;
-
-	// Inherited via InputListener
-	void onKeyDown(int key) override;
-	void onKeyUp(int key) override;
-	void onMouseMove(const Point& mousePosition) override;
-	void onLeftMouseDown(const Point& mousePosition) override;
-	void onLeftMouseUp(const Point& mousePosition) override;
-	void onRightMouseDown(const Point& mousePosition) override;
-	void onRightMouseUp(const Point& mousePosition) override;
 };
