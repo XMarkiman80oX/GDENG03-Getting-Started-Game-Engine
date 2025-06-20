@@ -8,7 +8,7 @@ struct Config
 		RAINBOW
 	};
 
-	static const int NUMBER_OF_CUBES = 1;
+	static const int NUMBER_OF_CUBES = 50;
 	static const bool RANDOMIZE_OBJECT_POSITIONS = true;
 	static const bool ENABLE_CUBE_MOVEMENT = false; //Enables the movement of the Cube via WASD (For Item #1)
 	static const cubeColor CUBE_COLOR = WHITE; //Selects the color of the cube to be rendered (USE THE GIVEN ENUM, 'cubeColor')

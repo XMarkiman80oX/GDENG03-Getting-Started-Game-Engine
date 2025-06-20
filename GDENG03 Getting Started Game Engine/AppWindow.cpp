@@ -79,18 +79,32 @@ void AppWindow::onCreate()
 		Cube* marcosCube = new Cube("Marco's Cube " + i+1, shader_byte_code, size_shader);
 
 		//Get Randomized x, y and z values
-		float x = this->randomizeFromRange(-1.0f, 1.0f);
-		float y = this->randomizeFromRange(-1.0f, 1.0f);
-		float z = this->randomizeFromRange(-1.0f, 1.0f);
+		float x = this->randomizeFromRange(-5.0f, 5.0f);
+		float y = this->randomizeFromRange(-5.0f, 5.0f);
+		float z = this->randomizeFromRange(-5.0f, 5.0f);
 
-		if (!Config::RANDOMIZE_OBJECT_POSITIONS)
+		if (!Config::RANDOMIZE_OBJECT_POSITIONS) {
 			x = 0; y = 0; z = 0;
+		}
 
 		//Set Randomized Positions
 		marcosCube->setPosition(x, y, z);
+		marcosCube->getLocalPosition().printVector();
 		//Place in vector
 		this->objectsInWorld.push_back(marcosCube);
 	}
+
+	/*Cube* marcosCube = new Cube("Marco's Cube ", shader_byte_code, size_shader);
+	Cube* marcosCube2 = new Cube("Marco's Cube 2", shader_byte_code, size_shader);
+	Cube* marcosCube3 = new Cube("Marco's Cube 3", shader_byte_code, size_shader);
+
+	marcosCube->setPosition(1.0f, 0.0f, 0.0f);
+	marcosCube3->setPosition(0.5f, 1.0f, 0.0f);
+	marcosCube2->setPosition(0.0f, 0.0f, 1.0f);
+
+	this->objectsInWorld.push_back(marcosCube);
+	this->objectsInWorld.push_back(marcosCube2);
+	this->objectsInWorld.push_back(marcosCube3);*/
 
 	this->initializeFirstAsSelected();
 
@@ -159,11 +173,16 @@ void AppWindow::onRightMouseUp(const Point& mousePosition)
 
 void AppWindow::updateGameObjects(RECT clientWindowRect)
 {
-	for(BaseGameObject* object : this->objectsInWorld)
-	{
-		object->update(clientWindowRect);
-		object->draw(clientWindowRect.right - clientWindowRect.left, clientWindowRect.bottom - clientWindowRect.top);
+	if (!this->objectsInWorld.empty()) {
+
+		for (BaseGameObject* object : this->objectsInWorld)
+		{
+			object->update(clientWindowRect);
+			object->draw(clientWindowRect.right - clientWindowRect.left, clientWindowRect.bottom - clientWindowRect.top);
+		}
 	}
+	else
+		this->onDestroy();
 }
 
 void AppWindow::destroyGameObjects()
@@ -173,7 +192,10 @@ void AppWindow::destroyGameObjects()
 
 void AppWindow::initializeFirstAsSelected()
 {
-	this->objectsInWorld[0]->setSelected(true);
+	if(!this->objectsInWorld.empty())
+		this->objectsInWorld[0]->setSelected(true);
+	else
+		this->onDestroy();
 }
 
 void AppWindow::selectNextObject()
