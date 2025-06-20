@@ -15,6 +15,7 @@
 #include "WorldCamera.h"	
 #include "Cube.h"
 #include "Sphere.h"
+#include "Config.h"
 #include <vector>
 
 class AppWindow : public Window, public InputListener
@@ -74,6 +75,7 @@ private:
 private:
 	void updateGameObjects(RECT clientWindowRect);
 	void destroyGameObjects();
-	void initializeFirstSelected();
+	void initializeFirstAsSelected();
 	void selectNextObject();
+	float randomizeFromRange(float lowerBound, float upperBound);
 };

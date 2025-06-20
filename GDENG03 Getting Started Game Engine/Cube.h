@@ -8,7 +8,6 @@
 #include "string"
 #include "Vector3D.h"
 #include "InputListener.h"
-#include "EngineTime.h"
 
 class Cube : public BaseGameObject
 {
@@ -17,7 +16,6 @@ private:
 	float deltaPos = 0.0f;
 	float speed = 10.0f;
 
-	Vector3D m_rotation_speed;
 
 public:
 	Cube(std::string name, void* shaderByteCode, size_t sizeShader);

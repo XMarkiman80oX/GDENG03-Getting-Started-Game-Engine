@@ -5,9 +5,12 @@
 #include "ConstantBufferData.h"
 #include "InputListener.h"
 #include "InputSystem.h"
+#include "EngineTime.h"
+#include "Config.h"
 
 class VertexShader;
 class PixelShader;
+
 
 class BaseGameObject : public InputListener
 {
@@ -19,6 +22,12 @@ protected:
 		Vector3D color1;
 	};
 
+	enum Axis {
+		NONE = -1,
+		X,
+		Y,
+		Z
+	};
 protected: //Inherited to other primitives
 	std::string name;
 	Vector3D localPosition;
@@ -26,8 +35,12 @@ protected: //Inherited to other primitives
 	Vector3D localRotation;
 	Vector3D localMatrix;
 
+	Vector3D rotationSpeed = Vector3D(10.0f);
 	//If this object is selected, then keybinds will only work on this object
 	bool isSelected = false;
+
+protected: //HELPER FUNCTIONS
+	void rotateAround(Axis givenAxis);
 
 public: //Constructors
 	BaseGameObject(std::string name);

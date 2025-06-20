@@ -194,6 +194,9 @@
     <ClInclude Include="ConstantBufferData.h">
       <Filter>GameEngine</Filter>
     </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>GameEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

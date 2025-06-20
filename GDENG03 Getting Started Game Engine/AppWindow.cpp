@@ -5,6 +5,7 @@
 #include "InputSystem.h"
 #include "Cube.h"
 #include "Sphere.h"
+#include <random>
 
 struct vertex
 {
@@ -73,23 +74,25 @@ void AppWindow::onCreate()
 	std::cout << ", windowRect.top " << rc.top << std::endl;
 
 	//Initialize Objects Here
-	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader);
-	Sphere* marcosSphere = new Sphere("Sphere", shader_byte_code, size_shader);
-	Sphere* marcosSphere2 = new Sphere("Sphere 2", shader_byte_code, size_shader);
+	for (int i = 0; i < Config::NUMBER_OF_CUBES; i++)
+	{
+		Cube* marcosCube = new Cube("Marco's Cube " + i+1, shader_byte_code, size_shader);
 
-	//Set their positions/rotations/scale as needed
-	marcosSphere->setPosition(Vector3D(2.0f, 0.0f, 0.0f));
-	marcosSphere->setScale(Vector3D(0.5f, 0.5f, 0.5f));
+		//Get Randomized x, y and z values
+		float x = this->randomizeFromRange(-1.0f, 1.0f);
+		float y = this->randomizeFromRange(-1.0f, 1.0f);
+		float z = this->randomizeFromRange(-1.0f, 1.0f);
 
-	marcosSphere2->setPosition(Vector3D(4.0f, 0.0f, 0.0f));
-	marcosSphere2->setScale(Vector3D(0.5f, 0.5f, 0.5f));
+		if (!Config::RANDOMIZE_OBJECT_POSITIONS)
+			x = 0; y = 0; z = 0;
 
-	//Place in vector
-	this->objectsInWorld.push_back(marcosCube);
+		//Set Randomized Positions
+		marcosCube->setPosition(x, y, z);
+		//Place in vector
+		this->objectsInWorld.push_back(marcosCube);
+	}
 
-	this->initializeFirstSelected();
-	/*this->objectsInWorld.push_back(marcosSphere);
-	this->objectsInWorld.push_back(marcosSphere2);*/
+	this->initializeFirstAsSelected();
 
 }
 
@@ -125,13 +128,17 @@ void AppWindow::onDestroy()
 void AppWindow::onFocus()
 {
 	InputSystem::getInstance()->addListener(this);
-	InputSystem::getInstance()->addListener(WorldCamera::getInstance());
+
+	if(Config::ENABLE_FPS_CAMERA)
+		InputSystem::getInstance()->addListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onKillFocus()
 {
 	InputSystem::getInstance()->removeListener(this);
-	InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
+
+	if (Config::ENABLE_FPS_CAMERA)
+		InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)
@@ -164,7 +171,7 @@ void AppWindow::destroyGameObjects()
 	this->objectsInWorld.clear();
 }
 
-void AppWindow::initializeFirstSelected()
+void AppWindow::initializeFirstAsSelected()
 {
 	this->objectsInWorld[0]->setSelected(true);
 }
@@ -200,4 +207,12 @@ void AppWindow::onKeyUp(int key)
 		this->selectNextObject();
 		break;
 	}
+}
+float AppWindow::randomizeFromRange(float lowerBound, float upperBound)
+{
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	std::uniform_real_distribution<> randomizedFloat(lowerBound, upperBound);
+
+	return static_cast<float> (randomizedFloat(eng));
 }

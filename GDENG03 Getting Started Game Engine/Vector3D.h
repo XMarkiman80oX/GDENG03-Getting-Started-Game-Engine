@@ -35,6 +35,21 @@ public:
 	Vector3D operator + (Vector3D other) {
 		return Vector3D(x + other.x, y + other.y, z + other.z);
 	}
+	Vector3D& operator=(const Vector3D& other)
+	{
+		// Check for self-assignment
+		if (this == &other) {
+			return *this;
+		}
+
+		// Copy the member variables
+		this->x = other.x;
+		this->y = other.y;
+		this->z = other.z;
+
+		// Return a reference to the current object to allow for chaining
+		return *this;
+	}
 	bool operator == (Vector3D other) {
 		bool isEqual = true;
 

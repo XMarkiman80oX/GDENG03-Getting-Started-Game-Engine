@@ -3,10 +3,12 @@
 #include "SwapChain.h"
 #include "WorldCamera.h"
 #include "InputSystem.h"
+#include "EngineTime.h" // Added for frame-rate independent animation
 
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : BaseGameObject(name)
 {
 	this->initializeObject(shaderByteCode, sizeShader);
+	// Set a default rotation speed
 }
 
 Cube::~Cube()
@@ -19,14 +21,14 @@ Cube::~Cube()
 
 void Cube::update(RECT windowRect)
 {
-	// This function is now only responsible for updating animation variables if needed.
-	// The constant buffer update is moved to the draw call for correctness.
-	float movementRate = 1.0f / 0.55f;
-	this->deltaPos += EngineTime::getDeltaTime() * movementRate;
-
-	if (this->deltaPos > 1.0f)
-		deltaPos = 0;
+	if(Config::ROTATE_AROUND_X)
+		this->rotateAround(Axis::X);
+	if(Config::ROTATE_AROUND_Y)
+		this->rotateAround(Axis::Y);
+	if(Config::ROTATE_AROUND_Z)
+		this->rotateAround(Axis::Z);
 }
+
 void Cube::draw(int width, int height)
 {
 	DeviceContext* deviceContextInst = GraphicsEngine::getInstance()->getImmediateDeviceContext();
@@ -42,7 +44,8 @@ void Cube::draw(int width, int height)
 		this->deltaPos = 0.0f;
 	}
 	else {
-		this->deltaPos += EngineTime::getDeltaTime() * 0.1f;
+		// Use EngineTime for consistency if this animation is needed
+		this->deltaPos += static_cast<float>(EngineTime::getDeltaTime()) * 0.1f;
 	}
 
 	Matrix4x4 allMatrix;
@@ -74,7 +77,7 @@ void Cube::draw(int width, int height)
 	cbData.m_world = allMatrix;
 
 	cbData.m_view = WorldCamera::getInstance()->getViewMatrix();
-	cbData.m_proj = WorldCamera::getInstance()->getProjectionMatrix(); 
+	cbData.m_proj = WorldCamera::getInstance()->getProjectionMatrix();
 
 	this->constantBuffer->update(deviceContextInst, &cbData);
 	deviceContextInst->setConstantBuffer(vertexShader, this->constantBuffer);
@@ -93,38 +96,44 @@ void Cube::setAnimationSpeed(float speed)
 
 void Cube::setRotationSpeed(Vector3D speed)
 {
-	this->m_rotation_speed = speed;
+	this->rotationSpeed = speed;
 }
 
 void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 {
 	Vector3D identity = Vector3D(0.0f);
 
-	if(this->getLocalScale() == identity)
+	if (this->getLocalScale() == identity)
 		this->setScale(1.0f);
+
+	Vector3D red = Vector3D(1.0f, 0.0f, 0.0f);
+	Vector3D green = Vector3D(0.0f, 1.0f, 0.0f);
+	Vector3D blue = Vector3D(0.0f, 0.0f, 1.0f);
+	Vector3D white = Vector3D(1.0f, 1.0f, 1.0f);
+
 	vertex vertexList[] = {
 		//X - Y - Z
 		/***************FRONT FACE****************/
 		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
-			Vector3D(1,1,1), Vector3D(0.2f,0,0)},
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : red, Vector3D(0.2f,0,0)},
 		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-			Vector3D(1,1,1), Vector3D(0.2f,0.2f,0)},
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : green, Vector3D(0.2f,0.2f,0)},
 		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-			Vector3D(1,1,1), Vector3D(0.2f,0.2f,0)},
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : blue, Vector3D(0.2f,0.2f,0)},
 		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
-			Vector3D(1,1,1), Vector3D(0.2f,0,0)},
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : red, Vector3D(0.2f,0,0)},
 			/******************************************/
 
-			/***************BACK FACE****************/
-			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
-				Vector3D(1,1,1), Vector3D(0,0.2f,0)},
-			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-				Vector3D(1,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-				Vector3D(1,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-				Vector3D(1,1,1), Vector3D(0,0.2f,0)},
-				/******************************************/
+		/***************BACK FACE****************/
+		{Vector3D(0.5f, -0.5f, 0.5f), //POS1
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : red, Vector3D(0,0.2f,0)},
+		{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : green, Vector3D(0,0.2f,0.2f)},
+		{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : blue, Vector3D(0,0.2f,0.2f)},
+		{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
+			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : red, Vector3D(0,0.2f,0)},
+			/******************************************/
 	};
 
 	this->vertexBuffer = GraphicsEngine::getInstance()->createVertexBuffer();
@@ -178,9 +187,11 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 
 void Cube::onKeyDown(int key)
 {
-	float moveSpeed = EngineTime::getDeltaTime() * this->speed;
+	if (Config::ENABLE_CUBE_MOVEMENT) {
 
-	switch (key) {
+		// Use EngineTime for correct movement speed
+		float moveSpeed = static_cast<float>(EngineTime::getDeltaTime()) * 5.0f;
+		switch (key) {
 		case 'W':
 			this->setPosition(this->getLocalPosition() + Vector3D(0.0f, moveSpeed, 0.0f));
 			break;
@@ -196,6 +207,7 @@ void Cube::onKeyDown(int key)
 		case 'D':
 			this->setPosition(this->getLocalPosition() + Vector3D(moveSpeed, 0.0f, 0.0f));
 			break;
+		}
 	}
 }
 

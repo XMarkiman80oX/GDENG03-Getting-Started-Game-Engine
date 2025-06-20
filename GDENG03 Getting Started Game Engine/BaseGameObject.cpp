@@ -119,3 +119,22 @@ void BaseGameObject::onRightMouseUp(const Point& mousePosition)
 		this->setScale(Vector3D(1.0f));
 	}
 }
+
+void BaseGameObject::rotateAround(Axis givenAxis)
+{
+	Vector3D currentRotation = this->getLocalRotation();
+
+	switch (givenAxis) {
+		case X:
+			currentRotation.x += this->rotationSpeed.x * EngineTime::getDeltaTime();
+			break;
+		case Y:
+			currentRotation.y += this->rotationSpeed.y * EngineTime::getDeltaTime();
+			break;
+		case Z:
+			currentRotation.z += this->rotationSpeed.z * EngineTime::getDeltaTime();
+			break;
+	}
+
+	this->setRotation(currentRotation);
+}
