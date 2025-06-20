@@ -21,12 +21,8 @@ Cube::~Cube()
 
 void Cube::update(RECT windowRect)
 {
-	if(Config::ROTATE_AROUND_X)
-		this->rotateAround(Axis::X);
-	if(Config::ROTATE_AROUND_Y)
-		this->rotateAround(Axis::Y);
-	if(Config::ROTATE_AROUND_Z)
-		this->rotateAround(Axis::Z);
+	this->rotate();
+	this->animate();
 }
 
 void Cube::draw(int width, int height)
@@ -55,7 +51,7 @@ void Cube::draw(int width, int height)
 	translationMatrix.setTranslation(this->getLocalPosition());
 
 	Matrix4x4 scaleMatrix;
-	scaleMatrix.setIdentity();
+	scaleMatrix.setScale(this->getLocalScale());
 
 	Vector3D rotation = this->getLocalRotation();
 	Matrix4x4 zMatrix, yMatrix, xMatrix;
@@ -77,7 +73,10 @@ void Cube::draw(int width, int height)
 	cbData.m_world = allMatrix;
 
 	cbData.m_view = WorldCamera::getInstance()->getViewMatrix();
-	cbData.m_proj = WorldCamera::getInstance()->getProjectionMatrix();
+	cbData.m_proj = WorldCamera::getInstance()->getProjectionMatrix(); 
+
+	//Disables or Enables Interpolation
+	cbData.m_interpolation_enabled = Config::ENABLE_INTERPOLATING_SCALE;
 
 	this->constantBuffer->update(deviceContextInst, &cbData);
 	deviceContextInst->setConstantBuffer(vertexShader, this->constantBuffer);
@@ -133,7 +132,7 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : blue, Vector3D(0,0.2f,0.2f)},
 		{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
 			Config::CUBE_COLOR == Config::cubeColor::WHITE ? white : red, Vector3D(0,0.2f,0)},
-			/******************************************/
+		/******************************************/
 	};
 
 	this->vertexBuffer = GraphicsEngine::getInstance()->createVertexBuffer();
@@ -183,6 +182,59 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 
 	this->constantBuffer = GraphicsEngine::getInstance()->createConstantBuffer();
 	this->constantBuffer->load(&cc, sizeof(constantBufferData));
+}
+
+void Cube::animate()
+{
+	if (Config::ENABLE_WARPING_ANIM)
+	{
+		std::cout << "HI" << std::endl;
+		float deltaTime = static_cast<float>(EngineTime::getDeltaTime());
+		animationTimer += deltaTime;
+
+		switch (animationState)
+		{
+		case AS_WARPING:
+		{
+			float warpFactor = 1.0f + 0.25f * sin(animationTimer * 15.0f);
+			this->setScale(warpFactor, warpFactor, warpFactor);
+
+			if (animationTimer > 3.0f) // Warp for 3 seconds
+			{
+				animationState = AS_TRANSFORMING;
+				animationTimer = 0.0f;
+			}
+			break;
+		}
+		case AS_TRANSFORMING:
+		{
+			float t = animationTimer / 2.0f; // Transformation takes 2 seconds
+			if (t > 1.0f) t = 1.0f;
+
+			Vector3D currentScale = Vector3D::lerp(initialScale, finalScale, t);
+			this->setScale(currentScale);
+
+			if (t >= 1.0f)
+			{
+				animationState = AS_IDLE;
+			}
+			break;
+		}
+		case AS_IDLE:
+			// Do nothing
+			break;
+		}
+	}
+}
+
+void Cube::rotate()
+{
+	if (Config::ROTATE_AROUND_X)
+		this->rotateAround(Axis::X);
+	if (Config::ROTATE_AROUND_Y)
+		this->rotateAround(Axis::Y);
+	if (Config::ROTATE_AROUND_Z)
+		this->rotateAround(Axis::Z);
 }
 
 void Cube::onKeyDown(int key)

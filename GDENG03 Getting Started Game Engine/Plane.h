@@ -1,21 +1,25 @@
 #pragma once
 #include "BaseGameObject.h"
-#include "VertexBuffer.h"
+#include "ConstantBuffer.h"
+#include "DeviceContext.h"
 #include "IndexBuffer.h"
+#include "PixelShader.h"
+#include "VertexShader.h"
+#include "VertexBuffer.h"
 
-class Plane : public BaseGameObject
-{
+class Plane : public BaseGameObject {
 public:
-    Plane(std::string name);
+    Plane(std::string name, void* shaderByteCode, size_t sizeShader);
     ~Plane();
 
     void update(RECT windowRect) override;
     void draw(int width, int height) override;
+    void initializeObject(void* shaderByteCode, size_t sizeShader) override;
 
 private:
-    VertexBuffer* m_vertex_buffer;
-    IndexBuffer* m_index_buffer;
-
-    // Inherited via BaseGameObject
-    void initializeObject(void* shaderByteCode, size_t sizeShader) override;
+    VertexBuffer* vertexBuffer;
+    VertexShader* vertexShader;
+    PixelShader* pixelShader;
+    IndexBuffer* indexBuffer;
+    ConstantBuffer* constantBuffer;
 };

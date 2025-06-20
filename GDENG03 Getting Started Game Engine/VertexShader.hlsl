@@ -24,15 +24,25 @@ cbuffer constant : register(b0)
     row_major float4x4 m_proj;
     
     unsigned int m_time;
+    unsigned int m_interpolation_enabled;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0; 
     
-    //float t = (sin((float) m_time / 1000.0f) + 1.0f) / 2.0f;
+    float t = (sin((float) m_time / 1000.0f) + 1.0f) / 2.0f;
     
-    float scale = 1.0f;
+    float scale;
+    
+    if (m_interpolation_enabled > 0)
+    {
+        scale = lerp(1.0f, 0.25f, t);
+    }
+    else
+    {
+        scale = 1.0f;
+    }
     
     input.position.xyz *= scale;
 

@@ -3,8 +3,6 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
-#include "Cube.h"
-#include "Sphere.h"
 #include <random>
 
 struct vertex
@@ -74,40 +72,137 @@ void AppWindow::onCreate()
 	std::cout << ", windowRect.top " << rc.top << std::endl;
 
 	//Initialize Objects Here
-	for (int i = 0; i < Config::NUMBER_OF_CUBES; i++)
-	{
-		Cube* marcosCube = new Cube("Marco's Cube " + i+1, shader_byte_code, size_shader);
 
-		//Get Randomized x, y and z values
-		float x = this->randomizeFromRange(-5.0f, 5.0f);
-		float y = this->randomizeFromRange(-5.0f, 5.0f);
-		float z = this->randomizeFromRange(-5.0f, 5.0f);
+	if (!Config::RANDOMIZE_OBJECT_POSITIONS) {
+		if (Config::RENDER_CUBES_WITH_PLANE)
+		{
+			Cube* marcosCube = new Cube("Marco's Cube 1", shader_byte_code, size_shader);
+			Cube* marcosCube2 = new Cube("Marco's Cube 2", shader_byte_code, size_shader);
+			Cube* marcosCube3 = new Cube("Marco's Cube 3", shader_byte_code, size_shader);
+			Plane* marcosPlane = new Plane("Marco's Plane", shader_byte_code, size_shader);
 
-		if (!Config::RANDOMIZE_OBJECT_POSITIONS) {
-			x = 0; y = 0; z = 0;
+			marcosCube->setPosition(Vector3D(0.0f, 0.9f, 0.0f));
+			marcosCube2->setPosition(Vector3D(-1.5f, 2.0f, 0.0f));
+			marcosCube3->setPosition(Vector3D(-1.5f, 3.0f, -2.0f));
+			marcosPlane->setScale(Vector3D(5.0f, 5.0f, 5.0f));
+			marcosPlane->setPosition(Vector3D(1.0f));
+
+			this->objectsInWorld.push_back(marcosCube);
+			this->objectsInWorld.push_back(marcosCube2);
+			this->objectsInWorld.push_back(marcosCube3);
+			this->objectsInWorld.push_back(marcosPlane);
 		}
+		else
+		{
+			Cube* marcosCube = new Cube("Marco's Cube 1", shader_byte_code, size_shader);
+			marcosCube->setPosition(Vector3D(0.0f));
 
-		//Set Randomized Positions
-		marcosCube->setPosition(x, y, z);
-		marcosCube->getLocalPosition().printVector();
-		//Place in vector
-		this->objectsInWorld.push_back(marcosCube);
+			this->objectsInWorld.push_back(marcosCube);
+		}
+		if (Config::RENDER_HOUSE_OF_CARDS)
+		{
+			this->spawnHouseOfCards(shader_byte_code, size_shader);
+		}
 	}
+	else
+	{
+		for (int i = 0; i < Config::NUMBER_OF_RANDOMIZED_CUBES; i++)
+		{
+			Cube* marcosCube = new Cube("Marco's Cube " + i + 1, shader_byte_code, size_shader);
 
-	/*Cube* marcosCube = new Cube("Marco's Cube ", shader_byte_code, size_shader);
-	Cube* marcosCube2 = new Cube("Marco's Cube 2", shader_byte_code, size_shader);
-	Cube* marcosCube3 = new Cube("Marco's Cube 3", shader_byte_code, size_shader);
+			//Get Randomized x, y and z values
+			float x = this->randomizeFromRange(-5.0f, 5.0f);
+			float y = this->randomizeFromRange(-5.0f, 5.0f);
+			float z = this->randomizeFromRange(-5.0f, 5.0f);
 
-	marcosCube->setPosition(1.0f, 0.0f, 0.0f);
-	marcosCube3->setPosition(0.5f, 1.0f, 0.0f);
-	marcosCube2->setPosition(0.0f, 0.0f, 1.0f);
-
-	this->objectsInWorld.push_back(marcosCube);
-	this->objectsInWorld.push_back(marcosCube2);
-	this->objectsInWorld.push_back(marcosCube3);*/
+			//Set Randomized Positions
+			marcosCube->setPosition(x, y, z);
+			//Place in vector
+			this->objectsInWorld.push_back(marcosCube);
+		}
+	}
 
 	this->initializeFirstAsSelected();
 
+}
+
+void AppWindow::spawnHouseOfCards(void* shader_byte_code, size_t size_shader)
+{
+	const float PI = 3.1415926535f;
+
+	const float cardWidth = 1.0f;
+	const float cardHeight = 1.4f;
+	const float cardThickness = 0.05f;
+	const float leanAngle = 15.0f * PI / 180.0f; // 15 degrees lean
+
+	Vector3D cardScale(cardWidth, cardHeight, cardThickness);
+
+	float layer1_y = (cardHeight / 2.0f) * cos(leanAngle);
+	for (int i = 0; i < 3; ++i)
+	{
+		float x_pos = (i - 1) * (cardWidth + 0.05f);
+
+		Cube* leftCard = new Cube("L1_Left_" + std::to_string(i), shader_byte_code, size_shader);
+		leftCard->setScale(cardScale);
+		leftCard->setRotation(0.0f, 0.0f, leanAngle);
+		leftCard->setPosition(x_pos - (cardWidth / 2.0f) * cos(leanAngle), layer1_y, 0.0f);
+		this->objectsInWorld.push_back(leftCard);
+
+		Cube* rightCard = new Cube("L1_Right_" + std::to_string(i), shader_byte_code, size_shader);
+		rightCard->setScale(cardScale);
+		rightCard->setRotation(0.0f, 0.0f, -leanAngle);
+		rightCard->setPosition(x_pos + (cardWidth / 2.0f) * cos(leanAngle), layer1_y, 0.0f);
+		this->objectsInWorld.push_back(rightCard);
+	}
+
+	for (int i = 0; i < 2; ++i)
+	{
+		float x_pos = (i - 0.5f) * (cardWidth + 0.05f);
+		Cube* horizontalCard = new Cube("L1_Horizontal_" + std::to_string(i), shader_byte_code, size_shader);
+		horizontalCard->setScale(cardScale);
+		horizontalCard->setRotation(PI / 2.0f, 0.0f, 0.0f);
+		horizontalCard->setPosition(x_pos, layer1_y * 2.0f, 0.0f);
+		this->objectsInWorld.push_back(horizontalCard);
+	}
+
+	float layer2_y = layer1_y * 2.0f + (cardHeight / 2.0f) * cos(leanAngle);
+	for (int i = 0; i < 2; ++i)
+	{
+		float x_pos = (i - 0.5f) * (cardWidth + 0.05f);
+
+		Cube* leftCard = new Cube("L2_Left_" + std::to_string(i), shader_byte_code, size_shader);
+		leftCard->setScale(cardScale);
+		leftCard->setRotation(0.0f, 0.0f, leanAngle);
+		leftCard->setPosition(x_pos - (cardWidth / 2.0f) * cos(leanAngle), layer2_y, 0.0f);
+		this->objectsInWorld.push_back(leftCard);
+
+		Cube* rightCard = new Cube("L2_Right_" + std::to_string(i), shader_byte_code, size_shader);
+		rightCard->setScale(cardScale);
+		rightCard->setRotation(0.0f, 0.0f, -leanAngle);
+		rightCard->setPosition(x_pos + (cardWidth / 2.0f) * cos(leanAngle), layer2_y, 0.0f);
+		this->objectsInWorld.push_back(rightCard);
+	}
+
+	Cube* topHorizontalCard = new Cube("L2_Horizontal", shader_byte_code, size_shader);
+	topHorizontalCard->setScale(cardScale);
+	topHorizontalCard->setRotation(PI / 2.0f, 0.0f, 0.0f);
+	topHorizontalCard->setPosition(0.0f, layer2_y + layer1_y, 0.0f); 
+	this->objectsInWorld.push_back(topHorizontalCard);
+
+
+	float layer3_y = layer2_y + 2.0f * layer1_y; 
+
+	Cube* final_leftCard = new Cube("L3_Left", shader_byte_code, size_shader);
+	final_leftCard->setScale(cardScale);
+	final_leftCard->setRotation(0.0f, 0.0f, leanAngle);
+	final_leftCard->setPosition(0.0f - (cardWidth / 2.0f) * cos(leanAngle), layer3_y, 0.0f);
+	this->objectsInWorld.push_back(final_leftCard);
+
+	Cube* final_rightCard = new Cube("L3_Right", shader_byte_code, size_shader);
+	final_rightCard->setScale(cardScale);
+	final_rightCard->setRotation(0.0f, 0.0f, -leanAngle);
+	final_rightCard->setPosition(0.0f + (cardWidth / 2.0f) * cos(leanAngle), layer3_y, 0.0f);
+	this->objectsInWorld.push_back(final_rightCard);
 }
 
 void AppWindow::onUpdate()
@@ -143,7 +238,7 @@ void AppWindow::onFocus()
 {
 	InputSystem::getInstance()->addListener(this);
 
-	if(Config::ENABLE_FPS_CAMERA)
+	if (Config::ENABLE_FPS_CAMERA)
 		InputSystem::getInstance()->addListener(WorldCamera::getInstance());
 }
 
@@ -187,12 +282,16 @@ void AppWindow::updateGameObjects(RECT clientWindowRect)
 
 void AppWindow::destroyGameObjects()
 {
+	for (BaseGameObject* object : this->objectsInWorld)
+	{
+		delete object;
+	}
 	this->objectsInWorld.clear();
 }
 
 void AppWindow::initializeFirstAsSelected()
 {
-	if(!this->objectsInWorld.empty())
+	if (!this->objectsInWorld.empty())
 		this->objectsInWorld[0]->setSelected(true);
 	else
 		this->onDestroy();

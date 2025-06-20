@@ -14,6 +14,7 @@
 #include "DepthBuffer.h"	
 #include "WorldCamera.h"	
 #include "Cube.h"
+#include "Plane.h"
 #include "Sphere.h"
 #include "Config.h"
 #include <vector>
@@ -78,4 +79,5 @@ private:
 	void initializeFirstAsSelected();
 	void selectNextObject();
 	float randomizeFromRange(float lowerBound, float upperBound);
+	void spawnHouseOfCards(void* shader_byte_code, size_t size_shader);
 };

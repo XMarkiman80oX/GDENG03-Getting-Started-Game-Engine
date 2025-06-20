@@ -9,4 +9,7 @@ struct constantBufferData
 	Matrix4x4 m_proj;
 
 	unsigned int m_time;
+	unsigned int m_interpolation_enabled;
+
+	float padding[2];
 };
