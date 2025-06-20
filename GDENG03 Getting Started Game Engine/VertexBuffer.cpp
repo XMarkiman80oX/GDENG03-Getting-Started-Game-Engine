@@ -53,7 +53,7 @@ UINT VertexBuffer::getSizeVertexList()
 
 bool VertexBuffer::release()
 {
-	if (this->m_layout) this->m_layout->Release(); // Release layout first
+	if (this->m_layout) this->m_layout->Release(); 
 	if (this->m_buffer) this->m_buffer->Release();
 	delete this;
 	return true;
