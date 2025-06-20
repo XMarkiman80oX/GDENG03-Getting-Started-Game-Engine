@@ -30,9 +30,9 @@ VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output = (VS_OUTPUT) 0; 
     
-    float t = (sin((float) m_time / 1000.0f) + 1.0f) / 2.0f;
+    //float t = (sin((float) m_time / 1000.0f) + 1.0f) / 2.0f;
     
-    float scale = lerp(1.0f, 0.25f, t);
+    float scale = 1.0f;
     
     input.position.xyz *= scale;
 
