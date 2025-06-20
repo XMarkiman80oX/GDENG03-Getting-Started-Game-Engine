@@ -4,7 +4,7 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "Cube.h"
-
+#include "Sphere.h"
 
 struct vertex
 {
@@ -37,7 +37,7 @@ AppWindow::~AppWindow()
 {
 }
 
-AppWindow* AppWindow::getInstance() 
+AppWindow* AppWindow::getInstance()
 {
 	static AppWindow appWindow;
 	return &appWindow;
@@ -72,6 +72,10 @@ void AppWindow::onCreate()
 	std::cout << "windowRect.bottom: " << rc.bottom;
 	std::cout << ", windowRect.top " << rc.top << std::endl;
 	this->baseCube = new Cube("Marco's Cube", shader_byte_code, size_shader);
+	this->m_sphere = new Sphere("Sphere", shader_byte_code, size_shader);
+	this->m_sphere->setPosition(Vector3D(2.0f, 0.0f, 0.0f));
+	this->m_sphere->setScale(Vector3D(0.5f, 0.5f, 0.5f));
+
 
 }
 
@@ -91,14 +95,10 @@ void AppWindow::onUpdate()
 	WorldCamera::getInstance()->updateCamera();
 
 	this->baseCube->draw(rc.right - rc.left, rc.bottom - rc.top);
-	
+	m_sphere->draw(rc.right - rc.left, rc.bottom - rc.top);
+
+
 	m_swap_chain->present(true);
-
-	//this->oldDelta = this->newDelta;
-	//this->newDelta = ::GetTickCount();
-
-	//if the old delta has no value, set it to 0 so we dont have a new delta that equals to the new delta one
-	//this->deltaTime = (this->oldDelta) ? ((this->newDelta - this->oldDelta) / 1000.0f) : 0;
 }
 
 void AppWindow::onDestroy()
@@ -107,6 +107,7 @@ void AppWindow::onDestroy()
 	this->m_depth_buffer->release(); // Release the depth buffer
 	this->m_swap_chain->release();
 	delete this->baseCube;
+	delete this->m_sphere;
 	GraphicsEngine::getInstance()->release();
 }
 

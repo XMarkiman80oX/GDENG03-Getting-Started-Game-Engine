@@ -58,6 +58,9 @@
     <Filter Include="GameEngine\EngineTime">
       <UniqueIdentifier>{2fa58720-fab7-4af1-b586-5c29978aced7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Sphere">
+      <UniqueIdentifier>{70f8df30-2742-4181-b705-6a90c3d2a2c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="EngineTime.cpp">
       <Filter>GameEngine\EngineTime</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +188,12 @@
     <ClInclude Include="EngineTime.h">
       <Filter>GameEngine\EngineTime</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBufferData.h" />
+    <ClInclude Include="Sphere.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferData.h">
+      <Filter>GameEngine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

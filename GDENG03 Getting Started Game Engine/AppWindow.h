@@ -13,7 +13,8 @@
 #include "Matrix4x4.h"	
 #include "DepthBuffer.h"	
 #include "WorldCamera.h"	
-#include "Cube.h"	
+#include "Cube.h"
+#include "Sphere.h"
 
 class AppWindow : public Window, public InputListener
 {
@@ -29,6 +30,8 @@ private:
 	bool cursorIsVisible = false;
 
 	Cube* baseCube = nullptr;
+	Sphere* m_sphere = nullptr;
+
 
 public:
 	static AppWindow* getInstance();
