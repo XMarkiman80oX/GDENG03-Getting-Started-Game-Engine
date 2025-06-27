@@ -50,6 +50,7 @@ protected:
 protected: //HELPER FUNCTIONS
 	void animate();
 	void rotate();
+	bool flipCoin();
 
 protected:
 	void onKeyDown(int key) override;

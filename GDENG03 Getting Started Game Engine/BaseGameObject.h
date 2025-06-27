@@ -40,7 +40,7 @@ protected: //Inherited to other primitives
 	bool isSelected = false;
 
 protected: //HELPER FUNCTIONS
-	void rotateAround(Axis givenAxis);
+	void rotateAround(Axis givenAxis, bool isPositive);
 
 public: //Constructors
 	BaseGameObject(std::string name);

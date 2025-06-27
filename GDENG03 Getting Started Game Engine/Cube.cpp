@@ -3,10 +3,12 @@
 #include "SwapChain.h"
 #include "WorldCamera.h"
 #include "InputSystem.h"
-#include "EngineTime.h" // Added for frame-rate independent animation
+#include "EngineTime.h" 
+#include <random> 
 
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : BaseGameObject(name)
 {
+	InputSystem::getInstance()->addListener(this);
 	this->initializeObject(shaderByteCode, sizeShader);
 	// Set a default rotation speed
 }
@@ -230,39 +232,83 @@ void Cube::animate()
 void Cube::rotate()
 {
 	if (Config::ROTATE_AROUND_X)
-		this->rotateAround(Axis::X);
+		this->rotateAround(Axis::X, true);
 	if (Config::ROTATE_AROUND_Y)
-		this->rotateAround(Axis::Y);
+		this->rotateAround(Axis::Y, true);
 	if (Config::ROTATE_AROUND_Z)
-		this->rotateAround(Axis::Z);
+		this->rotateAround(Axis::Z, true);
+}
+
+bool Cube::flipCoin()
+{
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	std::uniform_int_distribution<> distribution(0, 1);
+
+	std::cout << distribution(eng) << std::endl;
+
+	return static_cast<int> (distribution(eng));
 }
 
 void Cube::onKeyDown(int key)
 {
+	float speedMultiplier = 5.0f;
+	float moveSpeed = EngineTime::getDeltaTime() * speedMultiplier;
+
 	if (Config::ENABLE_CUBE_MOVEMENT) {
+		switch (key)
+		{
+			case 'W':
+				this->setPosition(this->getLocalPosition() + Vector3D(0.0f, moveSpeed, 0.0f));
+				break;
 
-		// Use EngineTime for correct movement speed
-		float moveSpeed = static_cast<float>(EngineTime::getDeltaTime()) * 5.0f;
-		switch (key) {
-		case 'W':
-			this->setPosition(this->getLocalPosition() + Vector3D(0.0f, moveSpeed, 0.0f));
-			break;
+			case 'A':
+				this->setPosition(this->getLocalPosition() + Vector3D(-moveSpeed, 0.0f, 0.0f));
+				break;
 
-		case 'A':
-			this->setPosition(this->getLocalPosition() + Vector3D(-moveSpeed, 0.0f, 0.0f));
-			break;
+			case 'S':
+				this->setPosition(this->getLocalPosition() + Vector3D(0.0f, -moveSpeed, 0.0f));
+				break;
 
-		case 'S':
-			this->setPosition(this->getLocalPosition() + Vector3D(0.0f, -moveSpeed, 0.0f));
-			break;
+			case 'D':
+				this->setPosition(this->getLocalPosition() + Vector3D(moveSpeed, 0.0f, 0.0f));
+				break;
+		}
+	}
+	if (Config::ENABLE_WS_CUBE_ROTATION)
+	{
+		switch (key)
+		{
+			case 'W':
+				if(this->flipCoin())
+					this->rotateAround(Axis::X, true);
 
-		case 'D':
-			this->setPosition(this->getLocalPosition() + Vector3D(moveSpeed, 0.0f, 0.0f));
-			break;
+				if (this->flipCoin())
+					this->rotateAround(Axis::Y, true);
+
+				if (this->flipCoin())
+					this->rotateAround(Axis::Z, true);
+				break;
+
+			case 'A':
+				break;
+
+			case 'S':
+				if (this->flipCoin())
+					this->rotateAround(Axis::X, false);
+
+				if (this->flipCoin())
+					this->rotateAround(Axis::Y, false);
+
+				if (this->flipCoin())
+					this->rotateAround(Axis::Z, false);
+				break;
+
+			case 'D':
+				break;
 		}
 	}
 }
-
 void Cube::onKeyUp(int key)
 {
 }

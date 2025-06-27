@@ -30,7 +30,7 @@ private:
 	float deltaScale;
 
 	bool invertedIsOn = false;
-	bool cursorIsVisible = false;
+	bool cursorIsVisible = true;
 
 	std::vector<BaseGameObject*> objectsInWorld = {};
 

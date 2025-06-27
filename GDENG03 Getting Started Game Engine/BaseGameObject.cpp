@@ -5,7 +5,6 @@ BaseGameObject::BaseGameObject(std::string name) {
 
 	//Assumes all game objects have an input component
 	//
-	InputSystem::getInstance()->addListener(this);
 }
 BaseGameObject::~BaseGameObject() {
 }
@@ -120,20 +119,36 @@ void BaseGameObject::onRightMouseUp(const Point& mousePosition)
 	}
 }
 
-void BaseGameObject::rotateAround(Axis givenAxis)
+void BaseGameObject::rotateAround(Axis givenAxis, bool isPositive)
 {
 	Vector3D currentRotation = this->getLocalRotation();
 
-	switch (givenAxis) {
-		case X:
-			currentRotation.x += this->rotationSpeed.x * EngineTime::getDeltaTime();
-			break;
-		case Y:
-			currentRotation.y += this->rotationSpeed.y * EngineTime::getDeltaTime();
-			break;
-		case Z:
-			currentRotation.z += this->rotationSpeed.z * EngineTime::getDeltaTime();
-			break;
+	if (isPositive) {
+
+		switch (givenAxis) {
+			case X:
+				currentRotation.x += this->rotationSpeed.x * EngineTime::getDeltaTime();
+				break;
+			case Y:
+				currentRotation.y += this->rotationSpeed.y * EngineTime::getDeltaTime();
+				break;
+			case Z:
+				currentRotation.z += this->rotationSpeed.z * EngineTime::getDeltaTime();
+				break;
+		}
+	}
+	else {
+		switch (givenAxis) {
+			case X:
+				currentRotation.x -= this->rotationSpeed.x * EngineTime::getDeltaTime();
+				break;
+			case Y:
+				currentRotation.y -= this->rotationSpeed.y * EngineTime::getDeltaTime();
+				break;
+			case Z:
+				currentRotation.z -= this->rotationSpeed.z * EngineTime::getDeltaTime();
+				break;
+		}
 	}
 
 	this->setRotation(currentRotation);

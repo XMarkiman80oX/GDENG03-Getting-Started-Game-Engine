@@ -77,19 +77,19 @@ void AppWindow::onCreate()
 		if (Config::RENDER_CUBES_WITH_PLANE)
 		{
 			Cube* marcosCube = new Cube("Marco's Cube 1", shader_byte_code, size_shader);
-			Cube* marcosCube2 = new Cube("Marco's Cube 2", shader_byte_code, size_shader);
-			Cube* marcosCube3 = new Cube("Marco's Cube 3", shader_byte_code, size_shader);
+			/*Cube* marcosCube2 = new Cube("Marco's Cube 2", shader_byte_code, size_shader);
+			Cube* marcosCube3 = new Cube("Marco's Cube 3", shader_byte_code, size_shader);*/
 			Plane* marcosPlane = new Plane("Marco's Plane", shader_byte_code, size_shader);
 
 			marcosCube->setPosition(Vector3D(0.0f, 0.9f, 0.0f));
-			marcosCube2->setPosition(Vector3D(-1.5f, 2.0f, 0.0f));
-			marcosCube3->setPosition(Vector3D(-1.5f, 3.0f, -2.0f));
+			/*marcosCube2->setPosition(Vector3D(-1.5f, 2.0f, 0.0f));
+			marcosCube3->setPosition(Vector3D(-1.5f, 3.0f, -2.0f));*/
 			marcosPlane->setScale(Vector3D(5.0f, 5.0f, 5.0f));
 			marcosPlane->setPosition(Vector3D(1.0f));
 
 			this->objectsInWorld.push_back(marcosCube);
-			this->objectsInWorld.push_back(marcosCube2);
-			this->objectsInWorld.push_back(marcosCube3);
+			/*this->objectsInWorld.push_back(marcosCube2);
+			this->objectsInWorld.push_back(marcosCube3);*/
 			this->objectsInWorld.push_back(marcosPlane);
 		}
 		else
