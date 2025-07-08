@@ -5,6 +5,11 @@ SwapChain::SwapChain()
 {
 }
 
+ID3D11RenderTargetView* SwapChain::getRenderTargetView()
+{
+    return this->m_rtv;
+}
+
 bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 {
     ID3D11Device* device = GraphicsEngine::get()->m_d3d_device;

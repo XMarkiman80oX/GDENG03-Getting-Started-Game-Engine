@@ -14,7 +14,8 @@ class DeviceContext
 public:
 	DeviceContext(ID3D11DeviceContext* device_context);
 	// Modified to accept a DepthBuffer
-	void clearRenderTargetColor(SwapChain* swap_chain, DepthBuffer* depth_buffer, float red, float green, float blue, float alpha);
+	 void clearRenderTargetColor(SwapChain* swap_chain, float red, float green, float blue, float alpha);
+	 void clearDepthStencil(DepthBuffer* depth_buffer);
 	void setVertexBuffer(VertexBuffer* vertex_buffer);
 
 	void drawIndexedTriangleList(UINT index_count, UINT start_vertex_index, UINT start_index_location);

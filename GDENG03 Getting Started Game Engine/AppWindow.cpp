@@ -173,14 +173,17 @@ void AppWindow::onCreate()
 	/*------------------------------------------------*/
 
 
-	// Application init: create a dear imgui context, setup some options, load fonts
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	// TODO: Set optional io.ConfigFlags values, e.g. 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard' to enable keyboard controls.
-	// TODO: Fill optional fields of the io structure later.
-	// TODO: Load TTF/OTF fonts if you don't want to use the default font.
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-	// Initialize helper Platform and Renderer bindings (here we are using imgui_impl_win32.cpp and imgui_impl_dx11.cpp)
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
 	ImGui_ImplWin32_Init(this->m_hwnd);
 	ImGui_ImplDX11_Init(GraphicsEngine::get()->getDevice(), GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext());
 
@@ -188,16 +191,52 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
+	// Feed inputs to dear imgui, start new frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	//ImGui::ShowDemoWindow();
+	ImGui::Begin("Credits");
+
+	ImGui::Text("Scene Editor v0.1.2");
+
+	//ImGui::Separator();
+
+	//ImGui::Text("Developed by: Sydrenz Cao");
+	//ImGui::Text("Game Logic by: Sydrenz Cao");
+	//ImGui::Text("Art Direction by: Sydrenz Cao");
+	//ImGui::Text("Painstakingly Debugged by: Sydrenz 'Why isn't this working' Cao");
+	//ImGui::Text("Music Licensing Team: no one lmao");
+	//ImGui::Text("Memory Leaks Supervised by: Definitely not me");
+	//ImGui::Text("Emotional Support provided by: iced tea and the foam of my bed");
+
+	//ImGui::Separator();
+
+	//ImGui::Text("Special Thanks To:");
+	//ImGui::BulletText("Me, for being brave enough to open the project again");
+	//ImGui::BulletText("Future Me, who will look at this code with regret");
+	//ImGui::BulletText("Past Me, for writing zero comments");
+	//ImGui::BulletText("Stack Overflow, but I still did all the typing");
+	//ImGui::BulletText("My computer, which somehow did not crash");
+
+	//ImGui::Separator();
+
+	//if (ImGui::Button("Okay, bye")) {
+	//}
+
+	ImGui::End();
+
 	static bool show_demo_window = true;
 	//Window::onUpdate();
 	//change color here
 	//Inputs get processed here
 	InputSystem::getInstance()->update();
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		this->m_depth_buffer, 0, 0.3f, 0.4f, 1);
+	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
+	GraphicsEngine::get()->getImmediateDeviceContext()->clearDepthStencil(this->m_depth_buffer);
 
 	this->update();
 
@@ -213,7 +252,6 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
 
 	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
-	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = ::GetTickCount();
@@ -221,19 +259,15 @@ void AppWindow::onUpdate()
 	//if the old delta has no value, set it to 0 so we dont have a new delta that equals to the new delta one
 	this->m_delta_time = (this->m_old_delta) ? ((this->m_new_delta - this->m_old_delta) / 1000.0f) : 0;
 
-	// Feed inputs to dear imgui, start new frame
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	// Any application code here
-	ImGui::Text("Hello, world!");
+	ID3D11RenderTargetView* rtv = this->m_swap_chain->getRenderTargetView();
+	GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext()->OMSetRenderTargets(1, &rtv, NULL);
 
 	// Render dear imgui into screen
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	ImGui::ShowDemoWindow();
-	//g_pSwapChain->Present(1, 0);
+
+	m_swap_chain->present(true);
+
 }
 
 void AppWindow::onDestroy()

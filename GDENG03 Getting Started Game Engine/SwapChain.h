@@ -5,6 +5,9 @@ class DeviceContext;
 class SwapChain
 {
 public:
+	ID3D11RenderTargetView* getRenderTargetView();
+
+public:
 	SwapChain();
 	//Initialize SwapChain for a window
 	bool init(HWND hwnd, UINT width, UINT height);
@@ -13,7 +16,6 @@ public:
 
 	bool release();
 	~SwapChain();
-
 private:
 	IDXGISwapChain* m_swap_chain;
 	ID3D11RenderTargetView* m_rtv;
