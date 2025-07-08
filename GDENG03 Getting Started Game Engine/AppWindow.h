@@ -12,6 +12,10 @@
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
 #include "DepthBuffer.h"	
+#include "Texture.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb-master/stb_image.h"
 
 class AppWindow : public Window, public InputListener
 {
@@ -49,6 +53,7 @@ private:
 	ConstantBuffer* m_constant_buffer;
 	IndexBuffer* m_index_buffer;
 	DepthBuffer* m_depth_buffer;
+	Texture* m_texture;
 
 private:
 	float m_old_delta;
@@ -71,6 +76,6 @@ private:
 	const float rotationSpeedMultiplier = 0.14f;
 
 	bool invertedIsOn = false;
-	bool cursorIsVisible = false;
+	bool cursorIsVisible = true;
 
 };

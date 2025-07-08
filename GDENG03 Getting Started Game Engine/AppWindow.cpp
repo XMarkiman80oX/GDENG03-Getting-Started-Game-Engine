@@ -7,6 +7,7 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 
+
 struct vertex
 {
 	Vector3D position;
@@ -39,8 +40,6 @@ AppWindow::~AppWindow()
 
 void AppWindow::onCreate()
 {
-
-
 	//Window::onCreate();
 	//We need to add AppWindow as a listener to the Input System
 	InputSystem::getInstance()->addListener(this);
@@ -187,6 +186,11 @@ void AppWindow::onCreate()
 	ImGui_ImplWin32_Init(this->m_hwnd);
 	ImGui_ImplDX11_Init(GraphicsEngine::get()->getDevice(), GraphicsEngine::get()->getImmediateDeviceContext()->getDeviceContext());
 
+	/*------------------------------------------------*/
+
+	// Load the PNG here
+	this->m_texture = new Texture("Icons/De_La_Salle_University_Seal.svg.png");
+
 }
 
 void AppWindow::onUpdate()
@@ -197,6 +201,15 @@ void AppWindow::onUpdate()
 	ImGui::NewFrame();
 
 	//ImGui::ShowDemoWindow();
+	if (this->m_texture)
+	{
+		ImGui::Begin("My Image");
+		ImGui::Image(
+			(void*)this->m_texture->getShaderResourceView(),
+			ImVec2((float)this->m_texture->getWidth(), (float)this->m_texture->getHeight())
+		);
+		ImGui::End();
+	}
 	ImGui::Begin("Credits");
 
 	ImGui::Text("Scene Editor v1.0");
@@ -402,7 +415,7 @@ void AppWindow::onMouseMove(const Point& mousePosition)
 	}
 
 	//So it clamps to the mouse's initial position in the window
-	InputSystem::getInstance()->setCursorPosition(Point(width / 2.0f, height / 2.0f));
+	//InputSystem::getInstance()->setCursorPosition(Point(width / 2.0f, height / 2.0f));
 }
 
 void AppWindow::onKeyDown(int key)

@@ -43,6 +43,9 @@
     <Filter Include="GameEngine\InputSystem">
       <UniqueIdentifier>{376b09f1-e713-4eed-8d4f-7fff4fc2b2dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Texture">
+      <UniqueIdentifier>{1bad22b1-195d-433e-a411-c5ac92ef0e54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -83,6 +86,16 @@
     </ClCompile>
     <ClCompile Include="InputSystem.cpp">
       <Filter>GameEngine\InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_dx11.cpp" />
+    <ClCompile Include="imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
+    <ClCompile Include="stb-master\stb_vorbis.c" />
+    <ClCompile Include="Texture.cpp">
+      <Filter>GameEngine\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +150,37 @@
     <ClInclude Include="Point.h">
       <Filter>GameEngine\InputSystem</Filter>
     </ClInclude>
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_dx11.h" />
+    <ClInclude Include="imgui_impl_win32.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
+    <ClInclude Include="stb-master\stb_c_lexer.h" />
+    <ClInclude Include="stb-master\stb_connected_components.h" />
+    <ClInclude Include="stb-master\stb_divide.h" />
+    <ClInclude Include="stb-master\stb_ds.h" />
+    <ClInclude Include="stb-master\stb_dxt.h" />
+    <ClInclude Include="stb-master\stb_easy_font.h" />
+    <ClInclude Include="stb-master\stb_herringbone_wang_tile.h" />
+    <ClInclude Include="stb-master\stb_hexwave.h" />
+    <ClInclude Include="stb-master\stb_image.h" />
+    <ClInclude Include="stb-master\stb_image_resize2.h" />
+    <ClInclude Include="stb-master\stb_image_write.h" />
+    <ClInclude Include="stb-master\stb_include.h" />
+    <ClInclude Include="stb-master\stb_leakcheck.h" />
+    <ClInclude Include="stb-master\stb_perlin.h" />
+    <ClInclude Include="stb-master\stb_rect_pack.h" />
+    <ClInclude Include="stb-master\stb_sprintf.h" />
+    <ClInclude Include="stb-master\stb_textedit.h" />
+    <ClInclude Include="stb-master\stb_tilemap_editor.h" />
+    <ClInclude Include="stb-master\stb_truetype.h" />
+    <ClInclude Include="stb-master\stb_voxel_render.h" />
+    <ClInclude Include="Texture.h">
+      <Filter>GameEngine\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -145,5 +189,8 @@
     <FxCompile Include="PixelShader.hlsl">
       <Filter>App</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="imgui.ini" />
   </ItemGroup>
 </Project>
