@@ -199,31 +199,18 @@ void AppWindow::onUpdate()
 	//ImGui::ShowDemoWindow();
 	ImGui::Begin("Credits");
 
-	ImGui::Text("Scene Editor v0.1.2");
+	ImGui::Text("Scene Editor v1.0");
 
-	//ImGui::Separator();
+	ImGui::Separator();
 
-	//ImGui::Text("Developed by: Sydrenz Cao");
-	//ImGui::Text("Game Logic by: Sydrenz Cao");
-	//ImGui::Text("Art Direction by: Sydrenz Cao");
-	//ImGui::Text("Painstakingly Debugged by: Sydrenz 'Why isn't this working' Cao");
-	//ImGui::Text("Music Licensing Team: no one lmao");
-	//ImGui::Text("Memory Leaks Supervised by: Definitely not me");
-	//ImGui::Text("Emotional Support provided by: iced tea and the foam of my bed");
+	ImGui::Text("Developed by: Marco Laurel");
 
-	//ImGui::Separator();
+	ImGui::Separator();
 
-	//ImGui::Text("Special Thanks To:");
-	//ImGui::BulletText("Me, for being brave enough to open the project again");
-	//ImGui::BulletText("Future Me, who will look at this code with regret");
-	//ImGui::BulletText("Past Me, for writing zero comments");
-	//ImGui::BulletText("Stack Overflow, but I still did all the typing");
-	//ImGui::BulletText("My computer, which somehow did not crash");
+	ImGui::Text("Special Thanks To:");
+	ImGui::BulletText("Me, as always, hayyst");
 
-	//ImGui::Separator();
-
-	//if (ImGui::Button("Okay, bye")) {
-	//}
+	ImGui::Separator();
 
 	ImGui::End();
 
