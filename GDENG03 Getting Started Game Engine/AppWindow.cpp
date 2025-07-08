@@ -189,7 +189,7 @@ void AppWindow::onCreate()
 	/*------------------------------------------------*/
 
 	// Load the PNG here
-	//this->m_texture = new Texture("Icons/De_La_Salle_University_Seal.svg.png");
+	this->m_texture = new Texture("../Icons/De_La_Salle_University_Seal.png");
 
 }
 
@@ -201,7 +201,7 @@ void AppWindow::onUpdate()
 	ImGui::NewFrame();
 
 	//ImGui::ShowDemoWindow();
-	/*if (this->m_texture)
+	if (this->m_texture)
 	{
 		ImGui::Begin("My Image");
 		ImGui::Image(
@@ -209,7 +209,7 @@ void AppWindow::onUpdate()
 			ImVec2((float)this->m_texture->getWidth(), (float)this->m_texture->getHeight())
 		);
 		ImGui::End();
-	}*/
+	}
 	ImGui::Begin("Credits");
 
 	ImGui::Text("Scene Editor v1.0");
