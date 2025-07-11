@@ -63,6 +63,8 @@ private:
 	float rotationX = 0.0f;
 	float rotationY = 0.0f;
 
+	float m_color[4] = {0.8f, 0.2f, 0.2f, 1.0f};
+
 	Vector3D cubeScale = Vector3D(1.0f);
 
 	//Represents the sign of direction

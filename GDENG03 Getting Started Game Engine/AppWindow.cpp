@@ -3,10 +3,10 @@
 #include "Vector3D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
+
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
-
 
 struct vertex
 {
@@ -201,25 +201,28 @@ void AppWindow::onUpdate()
 	ImGui::NewFrame();
 
 	//ImGui::ShowDemoWindow();
-	if (this->m_texture)
-	{
-		ImGui::Begin("My Image");
-		ImGui::Image(
-			(void*)this->m_texture->getShaderResourceView(),
-			ImVec2((float)this->m_texture->getWidth(), (float)this->m_texture->getHeight())
-		);
-		ImGui::End();
-	}
-	ImGui::SetNextWindowSize(ImVec2(350, 250), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Credits");
 
 	// Only draw the content if the window is not collapsed
 	if (ImGui::IsWindowAppearing() || !ImGui::IsWindowCollapsed()) {
+		ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
+		if (this->m_texture)
+		{
+			ImGui::Begin("Credits");
+			ImGui::Image(
+				(void*)this->m_texture->getShaderResourceView(),
+				ImVec2((float)this->m_texture->getWidth(), (float)this->m_texture->getHeight())
+			);
+			ImGui::End();
+
+			ImGui::Text("About\n\n");
+			ImGui::Separator();
+		}
 		ImGui::Text("Scene Editor v1.0");
 
 		ImGui::Separator();
 
-		ImGui::Text("Developed by: Marco Laurel");
+		ImGui::Text("Developed by: Macario Alejandro Vicente Laurel");
 
 		ImGui::Separator();
 
@@ -231,6 +234,11 @@ void AppWindow::onUpdate()
 
 	ImGui::End();
 
+	ImGui::SetNextWindowPos(ImVec2(500.0f, 100.0f));
+	ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Color Picker");
+	ImGui::ColorPicker4("MyColor##4", this->m_color, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+	ImGui::End();
 	static bool show_demo_window = true;
 	//Window::onUpdate();
 	//change color here
@@ -407,6 +415,11 @@ void AppWindow::onMouseMove(const Point& mousePosition)
 	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width / 2.0f)) * this->m_delta_time;
 	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height / 2.0f)) * this->m_delta_time;
 
+	if (ImGui::GetIO().WantCaptureMouse)
+	{
+		return;
+	}
+
 	if (!this->invertedIsOn)
 	{
 		this->rotationX -= incrementerY;
@@ -424,6 +437,11 @@ void AppWindow::onMouseMove(const Point& mousePosition)
 
 void AppWindow::onKeyDown(int key)
 {
+	// Only process key presses if ImGui is not using the keyboard
+	if (ImGui::GetIO().WantCaptureKeyboard)
+	{
+		return;
+	}
 	switch (key) {
 	case 'W':
 		//this->rotationX += rotationSpeedMultiplier * this->m_delta_time;
