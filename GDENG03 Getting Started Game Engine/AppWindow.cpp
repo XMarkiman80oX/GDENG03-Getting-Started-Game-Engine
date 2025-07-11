@@ -210,20 +210,24 @@ void AppWindow::onUpdate()
 		);
 		ImGui::End();
 	}
+	ImGui::SetNextWindowSize(ImVec2(350, 250), ImGuiCond_FirstUseEver);
 	ImGui::Begin("Credits");
 
-	ImGui::Text("Scene Editor v1.0");
+	// Only draw the content if the window is not collapsed
+	if (ImGui::IsWindowAppearing() || !ImGui::IsWindowCollapsed()) {
+		ImGui::Text("Scene Editor v1.0");
 
-	ImGui::Separator();
+		ImGui::Separator();
 
-	ImGui::Text("Developed by: Marco Laurel");
+		ImGui::Text("Developed by: Marco Laurel");
 
-	ImGui::Separator();
+		ImGui::Separator();
 
-	ImGui::Text("Special Thanks To:");
-	ImGui::BulletText("Me, as always, hayyst");
+		ImGui::Text("Special Thanks To:");
+		ImGui::BulletText("Me, as always, hayyst");
 
-	ImGui::Separator();
+		ImGui::Separator();
+	}
 
 	ImGui::End();
 
