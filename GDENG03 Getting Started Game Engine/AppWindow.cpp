@@ -4,9 +4,9 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 
-#include "imgui.h"
-#include "imgui_impl_dx11.h"
-#include "imgui_impl_win32.h"
+#include "../IMGUI/imgui.h"
+#include "../IMGUI/imgui_impl_dx11.h"
+#include "../IMGUI/imgui_impl_win32.h"
 
 struct vertex
 {
@@ -200,45 +200,75 @@ void AppWindow::onUpdate()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	//ImGui::ShowDemoWindow();
-	ImGui::Begin("Credits");
+	// Declaration of boolean variables to control window visibility
+	static bool show_credits_window = false;
+	static bool show_color_picker_window = false;
 
-	// Only draw the content if the window is not collapsed
-	if (ImGui::IsWindowAppearing() || !ImGui::IsWindowCollapsed()) {
-		ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
-		if (this->m_texture)
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
 		{
-			ImGui::Begin("Credits");
-			ImGui::Image(
-				(void*)this->m_texture->getShaderResourceView(),
-				ImVec2((float)this->m_texture->getWidth(), (float)this->m_texture->getHeight())
-			);
-			ImGui::End();
-
-			ImGui::Text("About\n\n");
-			ImGui::Separator();
+			if (ImGui::MenuItem("Exit"))
+			{
+				// Handle exit logic
+				this->onDestroy();
+			}
+			ImGui::EndMenu();
 		}
-		ImGui::Text("Scene Editor v1.0");
-
-		ImGui::Separator();
-
-		ImGui::Text("Developed by: Macario Alejandro Vicente Laurel");
-
-		ImGui::Separator();
-
-		ImGui::Text("Special Thanks To:");
-		ImGui::BulletText("Me, as always, hayyst");
-
-		ImGui::Separator();
+		if (ImGui::BeginMenu("Windows"))
+		{
+			ImGui::MenuItem("Credits", NULL, &show_credits_window);
+			ImGui::MenuItem("Color Picker", NULL, &show_color_picker_window);
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
 	}
 
-	ImGui::End();
+	if (show_credits_window)
+	{
+		ImGui::Begin("Credits", &show_credits_window);
 
-	ImGui::SetNextWindowPos(ImVec2(500.0f, 100.0f));
-	ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
-	ImGui::Begin("Color Picker");
-	ImGui::ColorPicker4("MyColor##4", this->m_color, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
-	ImGui::End();
+		// Only draw the content if the window is not collapsed
+		if (ImGui::IsWindowAppearing() || !ImGui::IsWindowCollapsed()) {
+			ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
+			if (this->m_texture)
+			{
+				ImGui::Image(
+					(void*)this->m_texture->getShaderResourceView(),
+					ImVec2((float)this->m_texture->getWidth(), (float)this->m_texture->getHeight())
+				);
+
+				ImGui::Text("About\n\n");
+				ImGui::Separator();
+			}
+			ImGui::Text("Scene Editor v1.0");
+
+			ImGui::Separator();
+
+			ImGui::Text("Developed by: Macario Alejandro Vicente Laurel");
+
+			ImGui::Separator();
+
+			ImGui::Text("Special Thanks To:");
+			ImGui::BulletText("Me, as always, hayyst");
+
+			ImGui::Separator();
+		}
+
+		ImGui::End();
+	}
+
+
+	if (show_color_picker_window)
+	{
+		ImGui::Begin("Color Picker", &show_color_picker_window);
+		ImGui::SetNextWindowPos(ImVec2(500.0f, 100.0f));
+		ImGui::SetNextWindowSize(ImVec2(350, 550), ImGuiCond_FirstUseEver);
+		ImGui::ColorPicker4("MyColor##4", this->m_color, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview);
+		ImGui::End();
+	}
+
+
 	static bool show_demo_window = true;
 	//Window::onUpdate();
 	//change color here
