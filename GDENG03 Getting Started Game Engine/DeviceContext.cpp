@@ -5,6 +5,7 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "Texture.h"
 #include "RenderSystem.h"
 #include <exception>
 
@@ -91,6 +92,16 @@ void DeviceContext::setVertexShader(VertexShaderPtr vertex_shader)
 void DeviceContext::setPixelShader(PixelShaderPtr pixel_shader)
 {
 	m_device_context->PSSetShader(pixel_shader->m_pixel_shader, nullptr, 0);
+}
+
+void DeviceContext::setTexture(VertexShaderPtr vertex_shader, TexturePtr texture)
+{
+	this->m_device_context->VSSetShaderResources(0, 1, &texture->m_shader_resource_view);
+}
+
+void DeviceContext::setTexture(PixelShaderPtr pixel_shader, TexturePtr texture)
+{
+	this->m_device_context->PSSetShaderResources(0, 1, &texture->m_shader_resource_view);
 }
 
 //Setting constant buffer for the vertex shader

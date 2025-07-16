@@ -47,6 +47,8 @@ private:
 	PixelShaderPtr m_pixel_shader;
 	ConstantBufferPtr m_constant_buffer;
 	IndexBufferPtr m_index_buffer;
+
+	TexturePtr m_wood_tex;
 private:
 	float m_old_delta;
 	float m_new_delta;

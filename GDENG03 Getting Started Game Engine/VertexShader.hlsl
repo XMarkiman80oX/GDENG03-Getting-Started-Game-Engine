@@ -1,9 +1,8 @@
 struct VS_INPUT
 {
-    float4 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
+    float4 position : POSITION0; // the " : POSITION" semantic part of the hlsl language 
                                 // identifies that this attribute corresponds to "up vertex position"
-    float3 color : COLOR;
-    float3 color1 : COLOR1;
+    float2 texcoord : TEXTCOORD0;
 };
 struct VS_OUTPUT //The vertex shader will send the input data to the pixel shader after its execution
 {
@@ -12,8 +11,7 @@ struct VS_OUTPUT //The vertex shader will send the input data to the pixel shade
                                    // pipeline that the output of our vertex shader will contain
                                    // the final transformed vertex position in the screen space coordinates
                                    // used for rasterization
-    float3 color : COLOR;
-    float3 color1 : COLOR1;
+    float2 texcoord : TEXTCOORD0;
 };
 
 //This is the constant buffer that will be passed to this vertex shader
@@ -42,8 +40,7 @@ VS_OUTPUT main(VS_INPUT input)
     //SCREEN SPACE
     output.position = mul(output.position, m_proj);
     
-    output.color = input.color;
-    output.color1 = input.color1;
+    output.texcoord = input.texcoord;
     
     return output;
 }

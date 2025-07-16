@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 #include <Windows.h>
 #include "Vector3D.h"
+#include "Vector2D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 
@@ -8,8 +9,7 @@
 struct vertex
 {
 	Vector3D position;
-	Vector3D color;
-	Vector3D color1;
+	Vector2D texcoord; //Texture coordinates	
 };
 
 /*
@@ -42,7 +42,7 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->addListener(this);
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
-	TexturePtr m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\wood.jpg");
+	this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..//Assets//Textures//wood.jpg");
 	
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
@@ -52,29 +52,60 @@ void AppWindow::onCreate()
 
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
-	vertex vertexList[] = {
-		//X - Y - Z
+	Vector3D position_list[] = 
+	{
 		/***************FRONT FACE****************/
-		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-			/******************************************/
+		Vector3D(-0.5f, -0.5f, -0.5f), //POS1
+		Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
+		Vector3D(0.5f, 0.5f, -0.5f),    //POS3
+		Vector3D(0.5f, -0.5f, -0.5f),     //POS4
+		/******************************************/
 
-			/***************BACK FACE****************/
-			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-				/******************************************/
+		/***************BACK FACE****************/
+		Vector3D(0.5f, -0.5f, 0.5f), //POS1
+		Vector3D(0.5f, 0.5f, 0.5f),    //POS2
+		Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
+		Vector3D(-0.5f, -0.5f, 0.5f)     //POS4
+		/******************************************/
+	};
+	Vector2D texcoord_list[] =
+	{
+		Vector2D(0.0f), //POS1
+		Vector2D(0.0f, 1.0f),    //POS2
+		Vector2D(1.0f,0.0f),    //POS3
+		Vector2D(1.0f),     //POS4
+
+	};
+	vertex vertexList[] = {
+		{position_list[0], texcoord_list[1]}, 
+		{position_list[1], texcoord_list[0]}, 
+		{position_list[2], texcoord_list[2]}, 
+		{position_list[3], texcoord_list[3]}, 
+
+		{position_list[4], texcoord_list[1]},
+		{position_list[5], texcoord_list[0]},
+		{position_list[6], texcoord_list[2]},
+		{position_list[7], texcoord_list[3]},
+
+		{position_list[1], texcoord_list[1]},
+		{position_list[6], texcoord_list[0]},
+		{position_list[5], texcoord_list[2]},
+		{position_list[2], texcoord_list[3]},
+
+		{position_list[7], texcoord_list[1]},
+		{position_list[0], texcoord_list[0]},
+		{position_list[3], texcoord_list[2]},
+		{position_list[4], texcoord_list[3]},
+
+		{position_list[3], texcoord_list[1]},
+		{position_list[2], texcoord_list[0]},
+		{position_list[5], texcoord_list[2]},
+		{position_list[4], texcoord_list[3]},
+
+		{position_list[7], texcoord_list[1]},
+		{position_list[6], texcoord_list[0]},
+		{position_list[1], texcoord_list[2]},
+		{position_list[0], texcoord_list[3]},
 	};
 	UINT size_list = ARRAYSIZE(vertexList);
 	
@@ -87,17 +118,17 @@ void AppWindow::onCreate()
 		4,5,6,
 		6,7,4,
 		//TOP SIDE
-		1,6,5,
-		5,2,1,
+		8,9,10,
+		10,11,8,
 		//BOTTOM SIDE
-		7,0,3,
-		3,4,7,
+		12,13,14,
+		14,15,12,
 		//RIGHT SIDE
-		3,2,5,
-		5,4,3,
+		16,17,18,
+		18,19,16,
 		//LEFT SIDE
-		7,6,1,
-		1,0,7
+		20,21,22,
+		22,23,30
 	};
 	UINT size_index_list = ARRAYSIZE(index_list);
 	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list);
@@ -153,6 +184,8 @@ void AppWindow::onUpdate()
 
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
+
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
