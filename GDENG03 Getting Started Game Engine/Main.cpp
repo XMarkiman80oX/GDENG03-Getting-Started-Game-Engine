@@ -13,12 +13,16 @@ int main() {
 	} // Handle graphics engine creation failure
 	
 	{	// Initialize the application window and run the main loop
-		AppWindow app;
-		if (app.init()) {
+		try {
 
-			while (app.isRun()) {
-				app.broadcast();
-			}
+			AppWindow app;
+
+			while (app.isRun());
+		}
+		catch(...){
+			GraphicsEngine::release(); // Clean up graphics engine resources
+			InputSystem::release(); // Clean up input system resources
+			return -1;
 		}
 	}
 
