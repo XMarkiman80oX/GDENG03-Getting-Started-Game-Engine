@@ -6,6 +6,7 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "RenderSystem.h"
+#include <exception>
 
 DeviceContext::DeviceContext(ID3D11DeviceContext* device_context, RenderSystem* system) : m_render_system(system)
 	,m_device_context(device_context)
@@ -15,9 +16,9 @@ DeviceContext::DeviceContext(ID3D11DeviceContext* device_context, RenderSystem* 
 void DeviceContext::clearRenderTargetColor(SwapChain* swap_chain, float red, float green, float blue, float alpha)
 {
 	FLOAT clear_color[] = { red, green, blue, alpha };
-	m_device_context->ClearRenderTargetView(swap_chain->m_rtv, clear_color);
+	m_device_context->ClearRenderTargetView(swap_chain->m_render_target_view, clear_color);
 	//Will allow us to set which render target we want to draw on, in this case it's the back buffer. 
-	m_device_context->OMSetRenderTargets(1, &swap_chain->m_rtv, NULL);
+	m_device_context->OMSetRenderTargets(1, &swap_chain->m_render_target_view, NULL);
 }
 
 void DeviceContext::setVertexBuffer(VertexBuffer* vertex_buffer)
@@ -109,13 +110,8 @@ void DeviceContext::setIndexBuffer(IndexBuffer* index_buffer)
 	this->m_device_context->IASetIndexBuffer(index_buffer->m_buffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
-bool DeviceContext::release()
-{
-	this->m_device_context->Release();
-	delete this;
-	return true;
-}
 
 DeviceContext::~DeviceContext()
 {
+	this->m_device_context->Release();
 }

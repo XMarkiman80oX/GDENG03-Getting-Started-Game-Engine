@@ -43,10 +43,10 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
 	GraphicsEngine::get()->init();
-	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain();
 
 	RECT rc = this->getClientWindowRect();
-	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
+	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
+
 
 	this->worldCamera.setTranslation(Vector3D(0,0,-2));
 
@@ -76,10 +76,8 @@ void AppWindow::onCreate()
 				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
 				/******************************************/
 	};
-	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-	this->m_vertex_buffer = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(vertexList);
-
+	
 	/*----------------INDEX BUFFER PART----------------*/
 	unsigned int index_list[] = {
 		//FRONT SIDE
@@ -101,20 +99,21 @@ void AppWindow::onCreate()
 		7,6,1,
 		1,0,7
 	};
-	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer();
 	UINT size_index_list = ARRAYSIZE(index_list);
-	this->m_index_buffer->load(index_list, size_index_list);
+	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list);
+	
 	/*------------------------------------------------*/
 
+	/*----------------VERTEX SHADER PART----------------*/
+	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
-	/*----------------VERTEX SHADER PART----------------*/
 	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
 
 	this->m_vertex_shader = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 
-	this->m_vertex_buffer->load(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
-
+	this->m_vertex_buffer = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
+	
 	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 	/*------------------------------------------------*/
 
@@ -130,8 +129,7 @@ void AppWindow::onCreate()
 	constant cc;
 	cc.m_time = 0;
 
-	this->m_constant_buffer = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer();
-	this->m_constant_buffer->load(&cc, sizeof(constant));
+	this->m_constant_buffer = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(constant));
 	/*------------------------------------------------*/
 
 }
@@ -174,13 +172,6 @@ void AppWindow::onUpdate()
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
-	this->m_vertex_buffer->release();
-	this->m_index_buffer->release();
-	this->m_constant_buffer->release();
-	this->m_swap_chain->release();
-
-	this->m_vertex_shader->release();
-	this->m_pixel_shader->release();
 	GraphicsEngine::get()->getRenderSystem()->release();
 }
 

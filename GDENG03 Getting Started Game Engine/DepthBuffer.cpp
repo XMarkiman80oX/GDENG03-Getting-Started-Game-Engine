@@ -1,17 +1,8 @@
 #include "DepthBuffer.h"
 #include "RenderSystem.h"
+#include <exception>
 
-DepthBuffer::DepthBuffer(RenderSystem* system) : m_render_system(system)
-{
-    m_depth_stencil_buffer = nullptr;
-    m_depth_stencil_view = nullptr;
-}
-
-DepthBuffer::~DepthBuffer()
-{
-}
-
-bool DepthBuffer::init(UINT width, UINT height)
+DepthBuffer::DepthBuffer(RenderSystem* system, UINT width, UINT height) : m_render_system(system)
 {
     D3D11_TEXTURE2D_DESC depth_stencil_desc = {};
     depth_stencil_desc.Width = width;
@@ -26,25 +17,20 @@ bool DepthBuffer::init(UINT width, UINT height)
     depth_stencil_desc.CPUAccessFlags = 0;
     depth_stencil_desc.MiscFlags = 0;
 
-    HRESULT hr = this->m_render_system->getDevice()->CreateTexture2D(&depth_stencil_desc, nullptr, &m_depth_stencil_buffer);
-    if (FAILED(hr))
+    if (FAILED(this->m_render_system->getDevice()->CreateTexture2D(&depth_stencil_desc, nullptr, &m_depth_stencil_buffer)))
     {
-        return false;
+		throw std::exception("Failed to create depth stencil buffer.");
     }
 
-    hr = this->m_render_system->getDevice()->CreateDepthStencilView(m_depth_stencil_buffer, nullptr, &m_depth_stencil_view);
-    if (FAILED(hr))
+    if (FAILED(this->m_render_system->getDevice()->CreateDepthStencilView(m_depth_stencil_buffer, nullptr, &m_depth_stencil_view)))
     {
-        return false;
+        throw std::exception("Failed to create depth stencil view.");
     }
 
-    return true;
 }
 
-bool DepthBuffer::release()
+DepthBuffer::~DepthBuffer()
 {
     if (m_depth_stencil_view) m_depth_stencil_view->Release();
     if (m_depth_stencil_buffer) m_depth_stencil_buffer->Release();
-    delete this;
-    return true;
 }

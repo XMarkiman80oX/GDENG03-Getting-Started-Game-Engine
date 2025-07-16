@@ -1,15 +1,10 @@
 #include "ConstantBuffer.h"
 #include "DeviceContext.h"
 #include "RenderSystem.h"
+#include <exception>
 
-ConstantBuffer::ConstantBuffer(RenderSystem* system) : m_render_system(system)
+ConstantBuffer::ConstantBuffer(RenderSystem* system, void* buffer, UINT size_buffer) : m_render_system(system)
 {
-}
-
-bool ConstantBuffer::load(void* buffer, UINT size_buffer)
-{
-	if (this->m_buffer)this->m_buffer->Release();
-
 	D3D11_BUFFER_DESC buff_desc = {};
 	buff_desc.Usage = D3D11_USAGE_DEFAULT;
 	buff_desc.ByteWidth = size_buffer;
@@ -21,24 +16,17 @@ bool ConstantBuffer::load(void* buffer, UINT size_buffer)
 	init_data.pSysMem = buffer;
 
 	if (FAILED(this->m_render_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
-		return false;
-
-	return true;
+	{
+		throw::std::exception("Failed to create constant buffer.");
+	}
 }
-
 void ConstantBuffer::update(DeviceContext* context, void* buffer)
 {
 	//This will allow us "to upload the new data into our constant buffer in video memory".
 	context->m_device_context->UpdateSubresource(this->m_buffer, NULL, NULL, buffer, NULL, NULL);
 }
 
-bool ConstantBuffer::release()
-{
-	if (this->m_buffer) this->m_buffer->Release();
-	delete this;
-	return true;
-}
-
 ConstantBuffer::~ConstantBuffer()
 {
+	if (this->m_buffer) this->m_buffer->Release();
 }

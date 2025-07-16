@@ -9,8 +9,7 @@
 class ConstantBuffer
 {
 public:
-	ConstantBuffer(RenderSystem* system);
-	bool load(void* buffer, UINT size_buffer);
+	ConstantBuffer(RenderSystem* system, void* buffer, UINT size_buffer);
 	void update(DeviceContext* context, void* buffer); //so that we will be able to update our constant buffer
 													   //with new content at each render loop.
 	bool release();

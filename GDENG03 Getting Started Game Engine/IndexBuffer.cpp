@@ -1,15 +1,9 @@
 #include "IndexBuffer.h"
 #include "RenderSystem.h"
+#include <exception>
 
-IndexBuffer::IndexBuffer(RenderSystem* system) : m_render_system (system), m_buffer(0) {}
-IndexBuffer::~IndexBuffer(){}
-
-bool IndexBuffer::load(void* list_indices, UINT size_list)
+IndexBuffer::IndexBuffer(RenderSystem* system, void* list_indices, UINT size_list) : m_render_system (system), m_buffer(0) 
 {
-	//Since our load method can be used multiple times to load a different list of vertices,
-	//we release our resources so that we can create new ones for new lists of vertices.
-	if (this->m_buffer)this->m_buffer->Release();
-
 	/*
 	* This is a descriptor object where we set data relative to our buffer
 	*/
@@ -33,20 +27,18 @@ bool IndexBuffer::load(void* list_indices, UINT size_list)
 
 	//This is where the vertex buffer is created
 	if (FAILED(this->m_render_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &m_buffer)))
-		return false;
+		throw std::exception("Failed to create index buffer.");
 
-
-	return true;
 }
+
+IndexBuffer::~IndexBuffer() 
+{
+	this->m_buffer->Release();
+}
+
 
 UINT IndexBuffer::getSizeIndexList()
 {
 	return this->m_size_list;
 }
 
-bool IndexBuffer::release()
-{
-	this->m_buffer->Release();
-	delete this;
-	return true;
-}

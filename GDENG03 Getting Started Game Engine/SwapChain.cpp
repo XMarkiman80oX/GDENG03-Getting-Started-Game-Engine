@@ -1,11 +1,9 @@
 #include "SwapChain.h"
 #include "RenderSystem.h"
+#include <exception>
 
-SwapChain::SwapChain(RenderSystem* system) : m_render_system(system)
-{
-}
-
-bool SwapChain::init(HWND hwnd, UINT width, UINT height)
+//Initialize SwapChain for a window
+SwapChain::SwapChain(RenderSystem* system, HWND hwnd, UINT width, UINT height) : m_render_system(system)
 {
     ID3D11Device* device = this->m_render_system->m_d3d_device;
 
@@ -16,11 +14,11 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
     ZeroMemory(&desc, sizeof(desc)); /* -Allows us to fill all the memory occupied by our descriptor with zero
                                         -Basically, it's to be safe to avoid "dirty" initial values*/
 
-    desc.BufferCount = 1; /*In Windowed mode, the swap chain only needs one buffer 
+    desc.BufferCount = 1; /*In Windowed mode, the swap chain only needs one buffer
                             since there already is a front buffer (the desktop itself handled by
                             the desktop window manager of the Windows OS)*/
 
-    //Self Explanatory
+                            //Self Explanatory
     desc.BufferDesc.Width = width;
     desc.BufferDesc.Height = height;
 
@@ -29,22 +27,22 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
                                                             -DXGI_FORMAT_R8G8B8A8_UNORM means 8-bits
                                                             or one byte for each of the 4 color channels
                                                             of our pixels (R, G, B, A).*/
-    
+
     desc.BufferDesc.RefreshRate.Numerator = 60; //Refresh rate
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; /* Where we decide how to use the buffers of our Swap Chain (to be explained later)
                                                         */
     desc.OutputWindow = hwnd; //We're passing handler of our window
 
     //The number of multi-samples per pixel (to be talked about later)
-    desc.SampleDesc.Count = 1; 
-    desc.SampleDesc.Quality = 0; 
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
 
     desc.Windowed = TRUE; //Windowed mode or not
 
     HRESULT hr = this->m_render_system->m_dxgi_factory->CreateSwapChain(device, &desc, &m_swap_chain);
 
     if (FAILED(hr))
-        return false;
+		throw std::exception("Failed to create swap chain.");
 
     /*
     * We need the render type view of the swap chain (in DeviceContext::clearRenderTargetColor()), in this case we
@@ -60,18 +58,18 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
     * Check here if it fails
     */
     if (FAILED(hr))
-        return false;
+		throw std::exception("Failed to get back buffer from swap chain."); 
     /*
     * After checking we create the render target view here
     */
-    device->CreateRenderTargetView(buffer, NULL, &m_rtv);
+    device->CreateRenderTargetView(buffer, NULL, &m_render_target_view);
     buffer->Release();
 
     if (FAILED(hr))
-        return false;
+		throw std::exception("Failed to create render target view from back buffer.");
 
-    return true;
 }
+
 
 bool SwapChain::present(bool vsync)
 {
@@ -83,13 +81,8 @@ bool SwapChain::present(bool vsync)
     return true;
 }
 
-bool SwapChain::release()
-{
-    this->m_swap_chain->Release();
-    delete this;
-    return true;
-}
-
 SwapChain::~SwapChain()
 {
+    this->m_render_target_view->Release();
+    this->m_swap_chain->Release();
 }

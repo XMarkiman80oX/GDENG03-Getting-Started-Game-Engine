@@ -25,7 +25,6 @@ public:
 
 	void setIndexBuffer(IndexBuffer* index_buffer);
 
-	bool release();
 	~DeviceContext();
 
 private:

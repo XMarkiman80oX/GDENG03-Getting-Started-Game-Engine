@@ -6,15 +6,12 @@
 class DepthBuffer
 {
 public:
-    DepthBuffer(RenderSystem* system);
+    DepthBuffer(RenderSystem* system, UINT width, UINT height);
     ~DepthBuffer();
 
-    bool init(UINT width, UINT height);
-    bool release();
-
 private:
-    ID3D11Texture2D* m_depth_stencil_buffer;
-    ID3D11DepthStencilView* m_depth_stencil_view;
+    ID3D11Texture2D* m_depth_stencil_buffer = nullptr;
+    ID3D11DepthStencilView* m_depth_stencil_view = nullptr;
     RenderSystem* m_render_system = nullptr;
 
 private:

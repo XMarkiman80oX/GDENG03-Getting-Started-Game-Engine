@@ -5,19 +5,15 @@
 class SwapChain
 {
 public:
-	SwapChain(RenderSystem* system);
-	//Initialize SwapChain for a window
-	bool init(HWND hwnd, UINT width, UINT height);
-
-	bool present(bool vsync);
-
-	bool release();
+	SwapChain(RenderSystem* system, HWND hwnd, UINT width, UINT height);
 	~SwapChain();
+	bool present(bool vsync);
 
 private:
 	IDXGISwapChain* m_swap_chain;
-	ID3D11RenderTargetView* m_rtv;
+	ID3D11RenderTargetView* m_render_target_view;
 	RenderSystem* m_render_system = nullptr;
+
 private:
 	friend class DeviceContext;
 };

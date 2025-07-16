@@ -1,26 +1,14 @@
 #include "VertexShader.h"
 #include "RenderSystem.h"
+#include <exception>
 
-VertexShader::VertexShader(RenderSystem* system): m_render_system(system)
+VertexShader::VertexShader(RenderSystem* system, const void* shader_byte_code, size_t byte_code_size) : m_render_system(system)
 {
-}
-
-void VertexShader::release()
-{
-    this->m_vertex_shader->Release();
-    delete this;
+    if (!SUCCEEDED(this->m_render_system->m_d3d_device->CreateVertexShader(shader_byte_code, byte_code_size, nullptr, &this->m_vertex_shader)))
+        throw std::exception("Failed to create vertex shader");
 }
 
 VertexShader::~VertexShader()
 {
-}
-
-//The two parameters are not needed at the moment from tutorials 1-9
-bool VertexShader::init(const void *shader_byte_code, size_t byte_code_size)
-{
-    //Remember the last parameter is the attribute of this class, so CreateVertexShader outputs to this attribute to have a reference to the VertexShader
-    if(!SUCCEEDED(this->m_render_system->m_d3d_device->CreateVertexShader(shader_byte_code, byte_code_size, nullptr, &this->m_vertex_shader)))
-        return false;
-
-    return true;
+    this->m_vertex_shader->Release();
 }
