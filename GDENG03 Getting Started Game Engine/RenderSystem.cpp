@@ -57,7 +57,7 @@ bool RenderSystem::init()
 		return false;
 	}
 
-	this->m_imm_device_context = new DeviceContext(m_imm_context, this);
+	this->m_imm_device_context = std::make_shared<DeviceContext>(m_imm_context, this);
 
 	/*
 	*	If m_d3d_device supports IDXGIDevice, QueryInterface will
@@ -102,8 +102,6 @@ bool RenderSystem::release()
 	this->m_dxgi_adapter->Release();
 	this->m_dxgi_factory->Release();
 
-	delete this->m_imm_device_context;
-
 	this->m_d3d_device->Release();
 	return true;
 }
@@ -112,12 +110,12 @@ RenderSystem::~RenderSystem()
 {
 }
 
-SwapChain* RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
+SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
-	SwapChain* swap_chain = nullptr;
+	SwapChainPtr swap_chain = nullptr;
 
 	try {
-		swap_chain = new SwapChain(this, hwnd, width, height);
+		swap_chain = std::make_shared<SwapChain>(this, hwnd, width, height);
 	}
 	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch(...){
@@ -126,17 +124,17 @@ SwapChain* RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 	return swap_chain;
 }
 
-DeviceContext* RenderSystem::getImmediateDeviceContext()
+DeviceContextPtr RenderSystem::getImmediateDeviceContext()
 {
 	return this->m_imm_device_context;
 }
 
-VertexBuffer* RenderSystem::createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader)
+VertexBufferPtr RenderSystem::createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader)
 {
-	VertexBuffer* vertex_buffer = nullptr;
+	VertexBufferPtr vertex_buffer = nullptr;
 
 	try {
-		vertex_buffer = new VertexBuffer(this, list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader);
+		vertex_buffer = std::make_shared<VertexBuffer>(this, list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader);
 	}
 	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
@@ -145,12 +143,12 @@ VertexBuffer* RenderSystem::createVertexBuffer(void* list_vertices, UINT size_ve
 	return vertex_buffer;
 }
 
-ConstantBuffer* RenderSystem::createConstantBuffer(void* buffer, UINT size_buffer)
+ConstantBufferPtr RenderSystem::createConstantBuffer(void* buffer, UINT size_buffer)
 {
-	ConstantBuffer* constant_buffer = nullptr;
+	ConstantBufferPtr constant_buffer = nullptr;
 
 	try {
-		constant_buffer = new ConstantBuffer(this, buffer, size_buffer);
+		constant_buffer = std::make_shared<ConstantBuffer>(this, buffer, size_buffer);
 	}
 	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
@@ -159,12 +157,12 @@ ConstantBuffer* RenderSystem::createConstantBuffer(void* buffer, UINT size_buffe
 	return constant_buffer;
 }
 
-IndexBuffer* RenderSystem::createIndexBuffer(void* list_indices, UINT size_list)
+IndexBufferPtr RenderSystem::createIndexBuffer(void* list_indices, UINT size_list)
 {
-	IndexBuffer* index_buffer = nullptr;
+	IndexBufferPtr index_buffer = nullptr;
 
 	try {
-		index_buffer = new IndexBuffer(this, list_indices, size_list);
+		index_buffer = std::make_shared<IndexBuffer>(this, list_indices, size_list);
 	}
 	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
@@ -173,12 +171,12 @@ IndexBuffer* RenderSystem::createIndexBuffer(void* list_indices, UINT size_list)
 	return index_buffer;
 }
 
-VertexShader* RenderSystem::createVertexShader(const void* shader_byte_code, size_t byte_code_size)
+VertexShaderPtr RenderSystem::createVertexShader(const void* shader_byte_code, size_t byte_code_size)
 {
-	VertexShader* vertex_shader = nullptr;
+	VertexShaderPtr vertex_shader = nullptr;
 
 	try {
-		vertex_shader = new VertexShader(this, shader_byte_code, byte_code_size);
+		vertex_shader = std::make_shared<VertexShader>(this, shader_byte_code, byte_code_size);
 	}
 	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
@@ -187,12 +185,12 @@ VertexShader* RenderSystem::createVertexShader(const void* shader_byte_code, siz
 	return vertex_shader;
 }
 
-PixelShader* RenderSystem::createPixelShader(const void* shader_byte_code, size_t byte_code_size)
+PixelShaderPtr RenderSystem::createPixelShader(const void* shader_byte_code, size_t byte_code_size)
 {
-	PixelShader* pixel_shader = nullptr;
+	PixelShaderPtr pixel_shader = nullptr;
 
 	try {
-		pixel_shader = new PixelShader(this, shader_byte_code, byte_code_size);
+		pixel_shader = std::make_shared<PixelShader>(this, shader_byte_code, byte_code_size);
 	}
 	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {

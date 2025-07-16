@@ -20,7 +20,7 @@ ConstantBuffer::ConstantBuffer(RenderSystem* system, void* buffer, UINT size_buf
 		throw::std::exception("Failed to create constant buffer.");
 	}
 }
-void ConstantBuffer::update(DeviceContext* context, void* buffer)
+void ConstantBuffer::update(DeviceContextPtr context, void* buffer)
 {
 	//This will allow us "to upload the new data into our constant buffer in video memory".
 	context->m_device_context->UpdateSubresource(this->m_buffer, NULL, NULL, buffer, NULL, NULL);
