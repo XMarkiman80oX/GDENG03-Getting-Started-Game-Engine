@@ -43,7 +43,7 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
 	GraphicsEngine::get()->init();
-	this->m_swap_chain = GraphicsEngine::get()->createSwapChain();
+	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain();
 
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain->init(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
@@ -77,7 +77,7 @@ void AppWindow::onCreate()
 				/******************************************/
 	};
 	//Here we create the vertex buffer, then the established vertex list will be loaded here later on
-	this->m_vertex_buffer = GraphicsEngine::get()->createVertexBuffer();
+	this->m_vertex_buffer = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer();
 	UINT size_list = ARRAYSIZE(vertexList);
 
 	/*----------------INDEX BUFFER PART----------------*/
@@ -101,7 +101,7 @@ void AppWindow::onCreate()
 		7,6,1,
 		1,0,7
 	};
-	this->m_index_buffer = GraphicsEngine::get()->createIndexBuffer();
+	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer();
 	UINT size_index_list = ARRAYSIZE(index_list);
 	this->m_index_buffer->load(index_list, size_index_list);
 	/*------------------------------------------------*/
@@ -109,28 +109,28 @@ void AppWindow::onCreate()
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
 	/*----------------VERTEX SHADER PART----------------*/
-	GraphicsEngine::get()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
 
-	this->m_vertex_shader = GraphicsEngine::get()->createVertexShader(shader_byte_code, size_shader);
+	this->m_vertex_shader = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 
 	this->m_vertex_buffer->load(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
 
-	GraphicsEngine::get()->releaseCompiledShader();
+	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 	/*------------------------------------------------*/
 
 	/*----------------PIXEL SHADER PART----------------*/
-	GraphicsEngine::get()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
+	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
 
-	this->m_pixel_shader = GraphicsEngine::get()->createPixelShader(shader_byte_code, size_shader);
+	this->m_pixel_shader = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
 
-	GraphicsEngine::get()->releaseCompiledShader();
+	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 	/*------------------------------------------------*/
 
 	/*----------------CONSTANT BUFFER PART----------------*/
 	constant cc;
 	cc.m_time = 0;
 
-	this->m_constant_buffer = GraphicsEngine::get()->createConstantBuffer();
+	this->m_constant_buffer = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer();
 	this->m_constant_buffer->load(&cc, sizeof(constant));
 	/*------------------------------------------------*/
 
@@ -143,25 +143,25 @@ void AppWindow::onUpdate()
 	//Inputs get processed here
 	InputSystem::getInstance()->update();
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
 		0, 0.3f, 0.4f, 1);
 	RECT rc = this->getClientWindowRect();
-	GraphicsEngine::get()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
 	this->update();
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
-	GraphicsEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
-	GraphicsEngine::get()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
 
-	GraphicsEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
@@ -181,7 +181,7 @@ void AppWindow::onDestroy()
 
 	this->m_vertex_shader->release();
 	this->m_pixel_shader->release();
-	GraphicsEngine::get()->release();
+	GraphicsEngine::get()->getRenderSystem()->release();
 }
 
 void AppWindow::onFocus()
@@ -266,7 +266,7 @@ void AppWindow::update()
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 	
 	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width/(float)height, 0.1f, 100.0f);
-	this->m_constant_buffer->update(GraphicsEngine::get()->getImmediateDeviceContext(), &cc);
+	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
 }
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)

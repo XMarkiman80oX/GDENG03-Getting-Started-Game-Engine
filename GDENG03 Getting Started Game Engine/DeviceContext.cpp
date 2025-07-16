@@ -5,9 +5,10 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "RenderSystem.h"
 
-DeviceContext::DeviceContext(ID3D11DeviceContext* device_context)
-	: m_device_context(device_context)
+DeviceContext::DeviceContext(ID3D11DeviceContext* device_context, RenderSystem* system) : m_render_system(system)
+	,m_device_context(device_context)
 {
 }
 

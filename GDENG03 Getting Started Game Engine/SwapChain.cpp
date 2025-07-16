@@ -1,13 +1,13 @@
 #include "SwapChain.h"
-#include "GraphicsEngine.h"
+#include "RenderSystem.h"
 
-SwapChain::SwapChain()
+SwapChain::SwapChain(RenderSystem* system) : m_render_system(system)
 {
 }
 
 bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 {
-    ID3D11Device* device = GraphicsEngine::get()->m_d3d_device;
+    ID3D11Device* device = this->m_render_system->m_d3d_device;
 
     /*  DXGI_SWAP_CHAIN_DESC is "A C++ structure in which we have to insert some important values
     * like the handle and size of our window".
@@ -41,7 +41,7 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 
     desc.Windowed = TRUE; //Windowed mode or not
 
-    HRESULT hr = GraphicsEngine::get()->m_dxgi_factory->CreateSwapChain(device, &desc, &m_swap_chain);
+    HRESULT hr = this->m_render_system->m_dxgi_factory->CreateSwapChain(device, &desc, &m_swap_chain);
 
     if (FAILED(hr))
         return false;
