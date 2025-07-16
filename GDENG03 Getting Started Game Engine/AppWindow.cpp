@@ -42,6 +42,8 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->addListener(this);
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
+	TexturePtr m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\wood.jpg");
+	
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
