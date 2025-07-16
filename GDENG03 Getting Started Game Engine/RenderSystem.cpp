@@ -11,12 +11,7 @@
 #include <exception>
 
 RenderSystem::RenderSystem()
-{
-}
-
-bool RenderSystem::init()
-{
-	/* -"allows us to create the device from which we will get access to all the necessary
+{/* -"allows us to create the device from which we will get access to all the necessary
 	* resources necessary to draw on the screen"
 	* -"The driver is what allows directX to exectute the throw in functions"
 	* - We have to loop through some driver types until the creation of the device will be successful
@@ -54,7 +49,7 @@ bool RenderSystem::init()
 	}
 	if (FAILED(res))
 	{
-		return false;
+		throw std::exception("Failed to create render system");
 	}
 
 	this->m_imm_device_context = std::make_shared<DeviceContext>(m_imm_context, this);
@@ -86,15 +81,10 @@ bool RenderSystem::init()
 	creating swap chains, querying GPU information,
 	and handling display modes (windowed vs fullscreen)."
 	*/
-
-	return true;
 }
 
-bool RenderSystem::release()
+RenderSystem::~RenderSystem()
 {
-	if (m_vertex_shader)m_vertex_shader->Release();
-	if (m_pixel_shader)m_pixel_shader->Release();
-
 	if (m_vsblob)m_vsblob->Release();
 	if (m_psblob)m_psblob->Release();
 
@@ -103,11 +93,6 @@ bool RenderSystem::release()
 	this->m_dxgi_factory->Release();
 
 	this->m_d3d_device->Release();
-	return true;
-}
-
-RenderSystem::~RenderSystem()
-{
 }
 
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)

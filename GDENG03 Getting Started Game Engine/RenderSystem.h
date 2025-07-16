@@ -6,10 +6,6 @@ class RenderSystem
 {
 public:
 	RenderSystem();
-	//Initialize the GraphicsEngine and DirectX 11 Device
-	bool init();
-	//Release all the resources loaded
-	bool release();
 	~RenderSystem();
 public:
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
