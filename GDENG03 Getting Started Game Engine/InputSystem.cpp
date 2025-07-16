@@ -1,4 +1,7 @@
 #include "InputSystem.h"
+#include <Windows.h>
+
+InputSystem* InputSystem::m_input_system = nullptr;
 
 InputSystem::InputSystem()
 {
@@ -6,6 +9,7 @@ InputSystem::InputSystem()
 
 InputSystem::~InputSystem()
 {
+	InputSystem::m_input_system = nullptr;
 }
 
 void InputSystem::addListener(InputListener* listener)
@@ -41,7 +45,7 @@ void InputSystem::update()
 InputSystem* InputSystem::getInstance()
 {
 	static InputSystem system;
-	return &system;
+	return InputSystem::m_input_system;
 }
 
 void InputSystem::processKeyboardInput()
@@ -150,4 +154,20 @@ POINT InputSystem::getCurrentMousePosition()
 	::GetCursorPos(&currentMousePosition);
 
 	return currentMousePosition;
+}
+
+void InputSystem::create()
+{
+	if (InputSystem::m_input_system)
+		throw std::exception("GraphicsEngine has already been created. Don't call GraphicsEngine::create() anymore.");
+
+	InputSystem::m_input_system = new InputSystem();
+}
+
+void InputSystem::release()
+{
+	if (!InputSystem::m_input_system)
+		return;
+
+	delete InputSystem::m_input_system;
 }

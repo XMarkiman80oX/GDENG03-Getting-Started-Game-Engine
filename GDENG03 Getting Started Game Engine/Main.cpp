@@ -1,9 +1,11 @@
 #include "AppWindow.h"
+#include "InputSystem.h"
 
 int main() {
 
 	try {
 		GraphicsEngine::create();
+		InputSystem::create();
 	}
 	catch (...) 
 	{
@@ -21,5 +23,6 @@ int main() {
 	}
 
 	GraphicsEngine::release(); // Clean up graphics engine resources
+	InputSystem::release(); // Clean up input system resources
 	return 0;
 }

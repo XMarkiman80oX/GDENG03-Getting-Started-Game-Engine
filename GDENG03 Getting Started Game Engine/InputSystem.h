@@ -15,6 +15,7 @@ enum INPUT_STATE {
 class InputSystem
 {
 private:
+	static InputSystem* m_input_system;
 	std::map<InputListener*, InputListener*> setListeners;
 
 	//We know exactly when the key is down but not the precise moment in which it's released
@@ -30,17 +31,22 @@ private:
 public:
 	InputSystem();
 	~InputSystem();
+
 public:
 	void addListener(InputListener* listener);
 	void removeListener(InputListener* listener);
 
 	void setCursorPosition(const Point& pos);
 	void showCursor(bool show);
+
 public:
 	void update();
 
 public:
 	static InputSystem* getInstance();
+	static void create();
+	static void release();
+
 private:
 	void processKeyboardInput();
 	void processMouseInput();
