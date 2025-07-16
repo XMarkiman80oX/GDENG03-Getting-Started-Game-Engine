@@ -114,7 +114,16 @@ RenderSystem::~RenderSystem()
 
 SwapChain* RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
-	return new SwapChain(this, hwnd, width, height);
+	SwapChain* swap_chain = nullptr;
+
+	try {
+		swap_chain = new SwapChain(this, hwnd, width, height);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch(...){
+
+	}
+	return swap_chain;
 }
 
 DeviceContext* RenderSystem::getImmediateDeviceContext()
@@ -124,30 +133,72 @@ DeviceContext* RenderSystem::getImmediateDeviceContext()
 
 VertexBuffer* RenderSystem::createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader)
 {
-	return new VertexBuffer(this, list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader);
+	VertexBuffer* vertex_buffer = nullptr;
+
+	try {
+		vertex_buffer = new VertexBuffer(this, list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (...) {
+
+	}
+	return vertex_buffer;
 }
 
 ConstantBuffer* RenderSystem::createConstantBuffer(void* buffer, UINT size_buffer)
 {
-	return new ConstantBuffer(this, buffer, size_buffer);
+	ConstantBuffer* constant_buffer = nullptr;
+
+	try {
+		constant_buffer = new ConstantBuffer(this, buffer, size_buffer);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (...) {
+
+	}
+	return constant_buffer;
 }
 
 IndexBuffer* RenderSystem::createIndexBuffer(void* list_indices, UINT size_list)
 {
-	return new IndexBuffer(this, list_indices, size_list);
+	IndexBuffer* index_buffer = nullptr;
+
+	try {
+		index_buffer = new IndexBuffer(this, list_indices, size_list);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (...) {
+
+	}
+	return index_buffer;
 }
 
 VertexShader* RenderSystem::createVertexShader(const void* shader_byte_code, size_t byte_code_size)
 {
-	VertexShader* vs = new VertexShader(this, shader_byte_code, byte_code_size);
-	return vs;
+	VertexShader* vertex_shader = nullptr;
+
+	try {
+		vertex_shader = new VertexShader(this, shader_byte_code, byte_code_size);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (...) {
+
+	}
+	return vertex_shader;
 }
 
 PixelShader* RenderSystem::createPixelShader(const void* shader_byte_code, size_t byte_code_size)
 {
-	PixelShader* ps = new PixelShader(this, shader_byte_code, byte_code_size);
-	
-	return ps;
+	PixelShader* pixel_shader = nullptr;
+
+	try {
+		pixel_shader = new PixelShader(this, shader_byte_code, byte_code_size);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (...) {
+
+	}
+	return pixel_shader;
 }
 
 bool RenderSystem::compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
