@@ -50,5 +50,4 @@ private:
 	friend class VertexShader;
 	friend class PixelShader;
 	friend class Texture;
-	friend class DepthBuffer;
 };

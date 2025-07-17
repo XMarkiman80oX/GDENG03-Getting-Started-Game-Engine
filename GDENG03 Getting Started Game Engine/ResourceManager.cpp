@@ -24,13 +24,13 @@ ResourcePtr ResourceManager::createResourceFromFile(const wchar_t* file_path)
 
     if(raw_resource)
     {
-        std::cout << "BYE" << std::endl;
+        std::cout << "RESOURCE IS NOT NULL" << std::endl;
         ResourcePtr resource_ptr(raw_resource);
         this->m_map_resources[full_path] = resource_ptr;
         return resource_ptr;
 	}
     else {
-        std::cout << "HI" << std::endl;
+        std::cout << "RESOURCE IS NULL" << std::endl;
+        return nullptr;
     }
-    return nullptr;
 }

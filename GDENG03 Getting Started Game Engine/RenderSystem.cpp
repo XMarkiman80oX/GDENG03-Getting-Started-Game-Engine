@@ -46,6 +46,7 @@ RenderSystem::RenderSystem()
 		if (SUCCEEDED(res))
 		{
 			break;
+			++driver_type_index;
 		}
 	}
 	if (FAILED(res))
@@ -86,6 +87,8 @@ RenderSystem::RenderSystem()
 
 RenderSystem::~RenderSystem()
 {
+	if (this->m_vertex_shader)this->m_vertex_shader->Release();
+	if (this->m_pixel_shader)this->m_pixel_shader->Release();
 	if (m_vsblob)m_vsblob->Release();
 	if (m_psblob)m_psblob->Release();
 
@@ -130,6 +133,7 @@ VertexBufferPtr RenderSystem::createVertexBuffer(void* list_vertices, UINT size_
 		std::cerr << "An unknown error occurred while creating the vertex buffer." << std::endl;
 		throw; // Re-throw the exception
 	}
+
 	return vertex_buffer;
 }
 ConstantBufferPtr RenderSystem::createConstantBuffer(void* buffer, UINT size_buffer)
@@ -191,30 +195,15 @@ PixelShaderPtr RenderSystem::createPixelShader(const void* shader_byte_code, siz
 bool RenderSystem::compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
 	ID3DBlob* error_blob = nullptr;
-	// Use debug flags to get more detailed error information
-	UINT compile_flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
-
-	HRESULT hr = D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "vs_5_0", compile_flags, 0, &m_blob, &error_blob);
-
-	if (FAILED(hr))
-	{
-		// If compilation fails, check if there is a detailed error message from the compiler
-		if (error_blob)
-		{
-			// Print the compiler error to the debug output window
-			OutputDebugStringA((char*)error_blob->GetBufferPointer());
+	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "vs_5_0", 0, 0, &m_blob, &error_blob))) {
+		if (error_blob) {
 			error_blob->Release();
 		}
 		return false;
 	}
 
-	if (error_blob) {
-		// You can also output warnings here if you wish
-		error_blob->Release();
-	}
-
-	*shader_byte_code = this->m_blob->GetBufferPointer();
-	*byte_code_size = this->m_blob->GetBufferSize();
+	*shader_byte_code = m_blob->GetBufferPointer();
+	*byte_code_size = m_blob->GetBufferSize();
 
 	return true;
 }
@@ -222,20 +211,11 @@ bool RenderSystem::compileVertexShader(const wchar_t* file_name, const char* ent
 bool RenderSystem::compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
 	ID3DBlob* error_blob = nullptr;
-	UINT compile_flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
-
-	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "ps_5_0", compile_flags, 0, &this->m_blob, &error_blob)))
-	{
-		// If there was a compiler error, print it to the debug console
+	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "ps_5_0", 0, 0, &m_blob, &error_blob))) {
 		if (error_blob) {
-			std::cerr << "Pixel Shader Compilation Error: " << (const char*)error_blob->GetBufferPointer() << std::endl;
 			error_blob->Release();
 		}
 		return false;
-	}
-
-	if (error_blob) {
-		error_blob->Release();
 	}
 
 	*shader_byte_code = m_blob->GetBufferPointer();
