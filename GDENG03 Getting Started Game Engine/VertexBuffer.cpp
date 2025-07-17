@@ -7,7 +7,7 @@ VertexBuffer::VertexBuffer(RenderSystem* system, void* list_vertices, UINT size_
 	// can be validated against the array of attributes just created
 	//...To be discussed further later on
 	void* shader_byte_code, 
-	UINT size_byte_shader) : m_render_system(system)
+	size_t size_byte_shader) : m_render_system(system)
 	,m_buffer(0), m_layout(0)
 {
 	/*

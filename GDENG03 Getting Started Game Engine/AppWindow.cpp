@@ -191,7 +191,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
-	//GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
