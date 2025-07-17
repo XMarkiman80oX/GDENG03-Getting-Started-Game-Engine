@@ -9,6 +9,7 @@
 
 #include <d3dcompiler.h>
 #include <exception>
+#include <iostream>
 
 RenderSystem::RenderSystem()
 {/* -"allows us to create the device from which we will get access to all the necessary
@@ -114,20 +115,23 @@ DeviceContextPtr RenderSystem::getImmediateDeviceContext()
 	return this->m_imm_device_context;
 }
 
-VertexBufferPtr RenderSystem::createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader)
+VertexBufferPtr RenderSystem::createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, size_t size_byte_shader)
 {
 	VertexBufferPtr vertex_buffer = nullptr;
 
 	try {
 		vertex_buffer = std::make_shared<VertexBuffer>(this, list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (const std::runtime_error& e) {
+		std::cerr << "ERROR: " << e.what() << std::endl;
+		throw; // Re-throw the exception
+	}
 	catch (...) {
-
+		std::cerr << "An unknown error occurred while creating the vertex buffer." << std::endl;
+		throw; // Re-throw the exception
 	}
 	return vertex_buffer;
 }
-
 ConstantBufferPtr RenderSystem::createConstantBuffer(void* buffer, UINT size_buffer)
 {
 	ConstantBufferPtr constant_buffer = nullptr;
@@ -187,18 +191,26 @@ PixelShaderPtr RenderSystem::createPixelShader(const void* shader_byte_code, siz
 bool RenderSystem::compileVertexShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
 	ID3DBlob* error_blob = nullptr;
-	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr,
-		entry_point_name //the name of the function given by vertex shader hlsl
-		, "vs_5_0", //indicates the version of the set of shader features with which we want to 
-		//compile our shader code. "vs" for vertex shader.
-		0, 0, //useless as of the moment
-		&this->m_blob, //output param
-		//data structure in which we replaced the buffer with the compiled shader and its size in the memory
-		&error_blob))) //output param
-		//includes all the warning and error messages in case the compilation fails
+	// Use debug flags to get more detailed error information
+	UINT compile_flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
+
+	HRESULT hr = D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "vs_5_0", compile_flags, 0, &m_blob, &error_blob);
+
+	if (FAILED(hr))
 	{
-		if (error_blob)error_blob->Release();
+		// If compilation fails, check if there is a detailed error message from the compiler
+		if (error_blob)
+		{
+			// Print the compiler error to the debug output window
+			OutputDebugStringA((char*)error_blob->GetBufferPointer());
+			error_blob->Release();
+		}
 		return false;
+	}
+
+	if (error_blob) {
+		// You can also output warnings here if you wish
+		error_blob->Release();
 	}
 
 	*shader_byte_code = this->m_blob->GetBufferPointer();
@@ -209,13 +221,21 @@ bool RenderSystem::compileVertexShader(const wchar_t* file_name, const char* ent
 
 bool RenderSystem::compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size)
 {
-	//Notes are similar in compileVertexShader function
 	ID3DBlob* error_blob = nullptr;
-	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name
-		, "ps_5_0", 0, 0, &this->m_blob, &error_blob)))
+	UINT compile_flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
+
+	if (!SUCCEEDED(D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "ps_5_0", compile_flags, 0, &this->m_blob, &error_blob)))
 	{
-		if (error_blob)error_blob->Release();
+		// If there was a compiler error, print it to the debug console
+		if (error_blob) {
+			std::cerr << "Pixel Shader Compilation Error: " << (const char*)error_blob->GetBufferPointer() << std::endl;
+			error_blob->Release();
+		}
 		return false;
+	}
+
+	if (error_blob) {
+		error_blob->Release();
 	}
 
 	*shader_byte_code = m_blob->GetBufferPointer();
@@ -228,9 +248,4 @@ void RenderSystem::releaseCompiledShader()
 {
 	if (this->m_blob)
 		m_blob->Release();
-}
-
-ID3D11Device* RenderSystem::getDevice()
-{
-	return this->m_d3d_device;
 }
