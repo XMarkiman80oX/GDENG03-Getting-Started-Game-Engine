@@ -44,8 +44,7 @@ void InputSystem::update()
 
 InputSystem* InputSystem::getInstance()
 {
-	static InputSystem system;
-	return InputSystem::m_input_system;
+	return m_input_system;
 }
 
 void InputSystem::processKeyboardInput()

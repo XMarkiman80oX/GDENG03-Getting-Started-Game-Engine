@@ -15,7 +15,7 @@ IndexBuffer::IndexBuffer(RenderSystem* system, void* list_indices, UINT size_lis
 	buff_desc.Usage = D3D11_USAGE_DEFAULT; // D3D11_USAGE_DEFAULT means it can be read and written in both cpu and gpu
 
 	buff_desc.ByteWidth = 4 * size_list; //Indicates the size in bytes of our buffer
-	buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER; //We tell directx how to bind our buffer to the graphics pipleine
+	buff_desc.BindFlags = D3D11_BIND_INDEX_BUFFER; //We tell directx how to bind our buffer to the graphics pipleine
 	//Here, we're saying it's a vertex buffer
 	buff_desc.CPUAccessFlags = 0; //Not important rn
 	buff_desc.MiscFlags = 0;//Not important rn
