@@ -10,7 +10,7 @@ public:
 public:
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
 	DeviceContextPtr getImmediateDeviceContext();
-	VertexBufferPtr createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, UINT size_byte_shader);
+	VertexBufferPtr createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, size_t size_byte_shader);
 	ConstantBufferPtr createConstantBuffer(void* buffer, UINT size_buffer);
 	IndexBufferPtr createIndexBuffer(void* list_indices, UINT size_list);
 	VertexShaderPtr createVertexShader(const void* shader_byte_code, size_t byte_code_size);
@@ -21,9 +21,6 @@ public:
 	bool compilePixelShader(const wchar_t* file_name, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
 
 	void releaseCompiledShader();
-
-public:
-	ID3D11Device* getDevice();
 
 private:
 	DeviceContextPtr m_imm_device_context;
@@ -53,4 +50,5 @@ private:
 	friend class VertexShader;
 	friend class PixelShader;
 	friend class Texture;
+	friend class DepthBuffer;
 };
