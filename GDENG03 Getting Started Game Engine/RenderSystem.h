@@ -7,11 +7,13 @@ class RenderSystem
 public:
 	RenderSystem();
 	~RenderSystem();
+
 public:
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
 	DeviceContextPtr getImmediateDeviceContext();
 	VertexBufferPtr createVertexBuffer(void* list_vertices, UINT size_vertex, UINT size_list, void* shader_byte_code, size_t size_byte_shader);
 	ConstantBufferPtr createConstantBuffer(void* buffer, UINT size_buffer);
+	DepthBufferPtr createDepthBuffer(UINT width, UINT height);
 	IndexBufferPtr createIndexBuffer(void* list_indices, UINT size_list);
 	VertexShaderPtr createVertexShader(const void* shader_byte_code, size_t byte_code_size);
 	PixelShaderPtr createPixelShader(const void* shader_byte_code, size_t byte_code_size);
@@ -50,4 +52,5 @@ private:
 	friend class VertexShader;
 	friend class PixelShader;
 	friend class Texture;
+	friend class DepthBuffer;
 };

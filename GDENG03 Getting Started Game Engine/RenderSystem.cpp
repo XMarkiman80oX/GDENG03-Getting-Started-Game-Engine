@@ -150,6 +150,20 @@ ConstantBufferPtr RenderSystem::createConstantBuffer(void* buffer, UINT size_buf
 	return constant_buffer;
 }
 
+DepthBufferPtr RenderSystem::createDepthBuffer(UINT width, UINT height)
+{
+	DepthBufferPtr depth_buffer = nullptr;
+
+	try {
+		depth_buffer = std::make_shared<DepthBuffer>(this, width, height);
+	}
+	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
+	catch (...) {
+
+	}
+	return depth_buffer;
+}
+
 IndexBufferPtr RenderSystem::createIndexBuffer(void* list_indices, UINT size_list)
 {
 	IndexBufferPtr index_buffer = nullptr;

@@ -36,7 +36,6 @@ AppWindow::~AppWindow()
 
 void AppWindow::onCreate()
 {
-	//Window::onCreate();
 	//We need to add AppWindow as a listener to the Input System
 	InputSystem::getInstance()->addListener(this);
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
@@ -60,6 +59,7 @@ void AppWindow::onCreate()
 	
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
+	this->m_depth_buffer = GraphicsEngine::get()->getRenderSystem()->createDepthBuffer(rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
 
 	this->worldCamera.setTranslation(Vector3D(0,0,-2));
@@ -182,13 +182,16 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
-	//Window::onUpdate();
 	//change color here
 	//Inputs get processed here
 	InputSystem::getInstance()->update();
 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain,
-		0, 0.3f, 0.4f, 1);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor
+	(
+		this->m_swap_chain, 
+		this->m_depth_buffer, 
+		0, 0.3f, 0.4f, 1
+	);
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 

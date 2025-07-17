@@ -4,6 +4,7 @@
 #include "SwapChain.h"
 #include "DeviceContext.h"
 #include "VertexBuffer.h"
+#include "DepthBuffer.h"
 #include "ConstantBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexShader.h"
@@ -47,6 +48,7 @@ private:
 	PixelShaderPtr m_pixel_shader;
 	ConstantBufferPtr m_constant_buffer;
 	IndexBufferPtr m_index_buffer;
+	DepthBufferPtr m_depth_buffer;
 
 	TexturePtr m_wood_tex;
 	MeshPtr m_mesh;
