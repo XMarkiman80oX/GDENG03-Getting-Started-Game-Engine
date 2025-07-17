@@ -41,7 +41,7 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
 	try {
-		this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\..\\Assets\\Textures\\wood.jpg");
+		this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\wood.jpg");
 	}
 	catch (const std::exception& e) {
 		// Handle the exception, e.g., show an error message

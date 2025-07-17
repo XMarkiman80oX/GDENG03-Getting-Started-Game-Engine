@@ -1,8 +1,8 @@
 struct VS_INPUT
 {
-    float4 position : POSITION0; // the " : POSITION" semantic part of the hlsl language 
+    float3 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
                                 // identifies that this attribute corresponds to "up vertex position"
-    float2 texcoord : TEXTCOORD0;
+    float2 texcoord : TEXCOORD0;
 };
 struct VS_OUTPUT //The vertex shader will send the input data to the pixel shader after its execution
 {
@@ -11,7 +11,7 @@ struct VS_OUTPUT //The vertex shader will send the input data to the pixel shade
                                    // pipeline that the output of our vertex shader will contain
                                    // the final transformed vertex position in the screen space coordinates
                                    // used for rasterization
-    float2 texcoord : TEXTCOORD0;
+    float2 texcoord : TEXCOORD0;
 };
 
 //This is the constant buffer that will be passed to this vertex shader
@@ -20,13 +20,12 @@ cbuffer constant : register(b0)
     row_major float4x4 m_world;
     row_major float4x4 m_view;
     row_major float4x4 m_proj;
-    
     unsigned int m_time;
 };
 
 VS_OUTPUT main(VS_INPUT input)
 {
-    VS_OUTPUT output = (VS_OUTPUT) 0; //This creates a VS_OUTPUT object
+    VS_OUTPUT output = (VS_OUTPUT)0; //This creates a VS_OUTPUT object
     //output.position = lerp(input.position /*initial position*/, input.position1/*new position*/, 
     //                        sin(m_time / 1000.0f) + 1.0f / 2.0f /*- delta time
     //                                                              - + 1/2 because delta only accepts [0,1],
@@ -35,13 +34,16 @@ VS_OUTPUT main(VS_INPUT input)
     //                        );
     //WORLD SPACE
     
-    output.position = mul(input.position, m_world);
-    //VIEW SPACE
-    output.position = mul(output.position, m_view);
-    //SCREEN SPACE
-    output.position = mul(output.position, m_proj);
-    
+    // Convert the input float3 position to a float4 for matrix math
+    float4 pos = float4(input.position, 1.0f);
+
+    // Transform the vertex position
+    pos = mul(pos, m_world);
+    pos = mul(pos, m_view);
+    output.position = mul(pos, m_proj);
+
+    // Pass the texture coordinate to the pixel shader
     output.texcoord = input.texcoord;
-    
+
     return output;
 }
