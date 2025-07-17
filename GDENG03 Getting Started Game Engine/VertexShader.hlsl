@@ -1,6 +1,6 @@
 struct VS_INPUT
 {
-    float3 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
+    float4 position : POSITION; // the " : POSITION" semantic part of the hlsl language 
                                 // identifies that this attribute corresponds to "up vertex position"
     float2 texcoord : TEXCOORD0;
 };
@@ -35,12 +35,12 @@ VS_OUTPUT main(VS_INPUT input)
     //WORLD SPACE
     
     // Convert the input float3 position to a float4 for matrix math
-    float4 pos = float4(input.position, 1.0f);
-
-    // Transform the vertex position
-    pos = mul(pos, m_world);
-    pos = mul(pos, m_view);
-    output.position = mul(pos, m_proj);
+    output.position = mul(input.position, m_world);
+    //VIEW SPACE
+    output.position = mul(output.position, m_view);
+    //SCREEN SPACE
+    output.position = mul(output.position, m_proj);
+    
 
     // Pass the texture coordinate to the pixel shader
     output.texcoord = input.texcoord;
