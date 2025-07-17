@@ -34,6 +34,7 @@ VS_OUTPUT main(VS_INPUT input)
     //                                                              [0,2])*/
     //                        );
     //WORLD SPACE
+    
     output.position = mul(input.position, m_world);
     //VIEW SPACE
     output.position = mul(output.position, m_view);

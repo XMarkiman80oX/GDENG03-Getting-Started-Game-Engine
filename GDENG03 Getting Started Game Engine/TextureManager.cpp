@@ -16,11 +16,12 @@ TexturePtr TextureManager::createTextureFromFile(const wchar_t* file_path)
 
 Resource* TextureManager::createResourceFromFileConcrete(const wchar_t* file_path)
 {
-	Texture* m_texture = nullptr;
+	Texture* tex = nullptr;
 	try {
-		m_texture = new Texture(file_path);
+		tex = new Texture(file_path);
 		
 	}
-	catch(...){}
-	return nullptr;
+	catch(...){
+	}
+	return tex;
 }

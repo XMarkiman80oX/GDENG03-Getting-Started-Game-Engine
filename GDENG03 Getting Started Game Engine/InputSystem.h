@@ -28,7 +28,7 @@ private:
 	//"We have to check the current mouse position with a valid old mouse position"
 	bool isFirstTime = true;
 
-public:
+private:
 	InputSystem();
 	~InputSystem();
 

@@ -9,7 +9,7 @@ Texture::Texture(const wchar_t* full_path) : Resource(full_path)
 
 	if (SUCCEEDED(res)) {
 		res = DirectX::CreateTexture(GraphicsEngine::get()->getRenderSystem()->m_d3d_device, image_data.GetImages(),
-			image_data.GetImageCount(), image_data.GetMetadata(), &this->m_texture);
+			image_data.GetImageCount(), image_data.GetMetadata(), &m_texture);
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
 		srv_desc.Format = image_data.GetMetadata().format;
@@ -27,5 +27,6 @@ Texture::Texture(const wchar_t* full_path) : Resource(full_path)
 
 Texture::~Texture()
 {
-	this->m_texture->Release();
+	m_shader_resource_view->Release();
+	m_texture->Release();
 }

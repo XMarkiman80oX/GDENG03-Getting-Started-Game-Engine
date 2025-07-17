@@ -6,15 +6,15 @@
 
 class GraphicsEngine
 {
-public:
+private:
 	//Initialize the GraphicsEngine and DirectX 11 Device
 	GraphicsEngine();
 	//Release all the resources loaded
 	~GraphicsEngine();
 
 public:	
-	RenderSystem* getRenderSystem();
-	TextureManager* getTextureManager();
+	RenderSystem * getRenderSystem();
+	TextureManager * getTextureManager();
 
 //Initialize the GraphicsEngine and DirectX 11 Device
 public:

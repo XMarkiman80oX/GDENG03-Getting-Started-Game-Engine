@@ -10,6 +10,6 @@ public:
 
 protected:
 	// Inherited via ResourceManager
-	virtual Resource* createResourceFromFileConcrete(const wchar_t* file_path) override;
+	virtual Resource* createResourceFromFileConcrete(const wchar_t* file_path);
 };
 

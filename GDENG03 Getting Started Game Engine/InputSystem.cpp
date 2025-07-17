@@ -44,8 +44,7 @@ void InputSystem::update()
 
 InputSystem* InputSystem::getInstance()
 {
-	static InputSystem system;
-	return InputSystem::m_input_system;
+	return m_input_system;
 }
 
 void InputSystem::processKeyboardInput()
@@ -159,7 +158,7 @@ POINT InputSystem::getCurrentMousePosition()
 void InputSystem::create()
 {
 	if (InputSystem::m_input_system)
-		throw std::exception("GraphicsEngine has already been created. Don't call GraphicsEngine::create() anymore.");
+		throw std::exception("InputSystem has already been created. Don't call InputSystem::create() anymore.");
 
 	InputSystem::m_input_system = new InputSystem();
 }

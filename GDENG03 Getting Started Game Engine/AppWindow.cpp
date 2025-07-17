@@ -5,13 +5,11 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 
-
 struct vertex
 {
 	Vector3D position;
 	Vector2D texcoord; //Texture coordinates	
 };
-
 /*
 	"DirectX handles the constant in video memory in checks of 16 bytes, so if our structure has
 	a size of 24 bytes, this size must be modified to be a multiple of 16, so we will have to enlarge it
@@ -42,7 +40,14 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->addListener(this);
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
-	this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..//Assets//Textures//wood.jpg");
+	try {
+		this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\wood.jpg");
+	}
+	catch (const std::exception& e) {
+		// Handle the exception, e.g., show an error message
+		MessageBox(nullptr, L"Failed to load texture.", L"Error", MB_OK);
+		// You might want to close the application here or use a default texture
+	}
 	
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
@@ -55,25 +60,25 @@ void AppWindow::onCreate()
 	Vector3D position_list[] = 
 	{
 		/***************FRONT FACE****************/
-		Vector3D(-0.5f, -0.5f, -0.5f), //POS1
-		Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-		Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-		Vector3D(0.5f, -0.5f, -0.5f),     //POS4
+		{Vector3D(-0.5f, -0.5f, -0.5f) }, //POS1
+		{Vector3D(-0.5f, 0.5f, -0.5f) },    //POS2
+		{Vector3D(0.5f, 0.5f, -0.5f) },    //POS3
+		{Vector3D(0.5f, -0.5f, -0.5f) },     //POS4
 		/******************************************/
 
 		/***************BACK FACE****************/
-		Vector3D(0.5f, -0.5f, 0.5f), //POS1
-		Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-		Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-		Vector3D(-0.5f, -0.5f, 0.5f)     //POS4
+		{Vector3D(0.5f, -0.5f, 0.5f)}, //POS1
+		{Vector3D(0.5f, 0.5f, 0.5f) },    //POS2
+		{Vector3D(-0.5f, 0.5f, 0.5f) },    //POS3
+		{Vector3D(-0.5f, -0.5f, 0.5f) }    //POS4
 		/******************************************/
 	};
 	Vector2D texcoord_list[] =
 	{
-		Vector2D(0.0f), //POS1
-		Vector2D(0.0f, 1.0f),    //POS2
-		Vector2D(1.0f,0.0f),    //POS3
-		Vector2D(1.0f),     //POS4
+		{Vector2D(0.0f)},
+		{Vector2D(0.0f, 1.0f) },
+		{Vector2D(1.0f,0.0f)},
+		{Vector2D(1.0f)}
 
 	};
 	vertex vertexList[] = {
@@ -105,7 +110,7 @@ void AppWindow::onCreate()
 		{position_list[7], texcoord_list[1]},
 		{position_list[6], texcoord_list[0]},
 		{position_list[1], texcoord_list[2]},
-		{position_list[0], texcoord_list[3]},
+		{position_list[0], texcoord_list[3]}
 	};
 	UINT size_list = ARRAYSIZE(vertexList);
 	
@@ -128,7 +133,7 @@ void AppWindow::onCreate()
 		18,19,16,
 		//LEFT SIDE
 		20,21,22,
-		22,23,30
+		22,23,20
 	};
 	UINT size_index_list = ARRAYSIZE(index_list);
 	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list);
@@ -140,6 +145,7 @@ void AppWindow::onCreate()
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
 	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
+	
 
 	this->m_vertex_shader = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 
@@ -185,7 +191,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
+	//GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);

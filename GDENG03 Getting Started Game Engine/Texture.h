@@ -1,6 +1,5 @@
 #pragma once
 #include "Resource.h"
-#include "Prerequisites.h"
 #include <d3d11.h>
 class Texture : public Resource
 {
