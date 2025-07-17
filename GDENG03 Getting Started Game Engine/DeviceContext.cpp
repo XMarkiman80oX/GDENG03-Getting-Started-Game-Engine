@@ -11,7 +11,7 @@
 #include <exception>
 
 DeviceContext::DeviceContext(ID3D11DeviceContext* device_context, RenderSystem* system) : m_render_system(system)
-	,m_device_context(device_context)
+, m_device_context(device_context)
 {
 }
 
@@ -21,7 +21,7 @@ void DeviceContext::clearRenderTargetColor(const SwapChainPtr& swap_chain, const
 	m_device_context->ClearRenderTargetView(swap_chain->m_render_target_view, clear_color);
 	m_device_context->ClearDepthStencilView(depth_buffer->getDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	//Will allow us to set which render target we want to draw on, in this case it's the back buffer. 
-	m_device_context->OMSetRenderTargets(1, &swap_chain->m_render_target_view, NULL);
+	m_device_context->OMSetRenderTargets(1, &swap_chain->m_render_target_view, depth_buffer->getDepthStencilView());
 }
 
 void DeviceContext::setVertexBuffer(const VertexBufferPtr& vertex_buffer)

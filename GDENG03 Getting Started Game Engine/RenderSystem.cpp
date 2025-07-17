@@ -6,6 +6,7 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "DepthBuffer.h"
 
 #include <d3dcompiler.h>
 #include <exception>
