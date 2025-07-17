@@ -4,6 +4,7 @@
 #include "Vector2D.h"
 #include "Matrix4x4.h"
 #include "InputSystem.h"
+#include "Mesh.h"
 
 struct vertex
 {
@@ -41,11 +42,19 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
 	try {
-		this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\wood.jpg");
+		this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
 	}
 	catch (const std::exception& e) {
 		// Handle the exception, e.g., show an error message
 		MessageBox(nullptr, L"Failed to load texture.", L"Error", MB_OK);
+		// You might want to close the application here or use a default texture
+	}
+	try {
+		this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\teapot.obj");
+	}
+	catch (const std::exception& e) {
+		// Handle the exception, e.g., show an error message
+		MessageBox(nullptr, L"Failed to load mesh.", L"Error", MB_OK);
 		// You might want to close the application here or use a default texture
 	}
 	
@@ -194,11 +203,11 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vertex_buffer);
+    GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_index_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh->getIndexBuffer());
 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_index_buffer->getSizeIndexList(), 0, 0);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;

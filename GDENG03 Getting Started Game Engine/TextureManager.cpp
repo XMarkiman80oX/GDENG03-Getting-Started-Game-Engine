@@ -1,5 +1,6 @@
 #include "TextureManager.h"
 #include "Texture.h"
+#include "MeshManager.h"
 
 TextureManager::TextureManager() : ResourceManager()
 {
