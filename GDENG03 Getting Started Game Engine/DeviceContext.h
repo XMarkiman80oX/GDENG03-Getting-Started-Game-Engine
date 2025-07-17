@@ -26,7 +26,7 @@ public:
 	void setConstantBuffer(const VertexShaderPtr& vertex_shader, const ConstantBufferPtr& buffer);
 	void setConstantBuffer(const PixelShaderPtr& pixel_shader, const ConstantBufferPtr& buffer);
 
-	void setIndexBuffer(const IndexBufferPtr index_buffer);
+	void setIndexBuffer(const IndexBufferPtr& index_buffer);
 
 	~DeviceContext();
 
