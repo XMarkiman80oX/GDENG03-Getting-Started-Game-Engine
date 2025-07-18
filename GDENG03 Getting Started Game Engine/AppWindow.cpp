@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "Cube.h"
 #include "Sphere.h"
+#include "Plane.h"
 #include "ConstantBufferData.h"
 
 AppWindow::AppWindow()
@@ -50,11 +51,12 @@ void AppWindow::onCreate()
 	WorldCamera::getInstance()->setTranslation(Vector3D(0, 0, -2));
 
 	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
-	Sphere* marcosSphere = new Sphere("Marco's Sphere", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());	
+	Plane* marcosPlane = new Plane("Marco's Plane", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
 
-	marcosSphere->setPosition(Vector3D(0, 0, 2));
+	marcosPlane->setPosition(Vector3D(0, 0, 2));
+	marcosPlane->setScale(100);
 	this->objectsInWorld.push_back(marcosCube);
-	this->objectsInWorld.push_back(marcosSphere);
+	this->objectsInWorld.push_back(marcosPlane);
 }
 
 void AppWindow::onUpdate()

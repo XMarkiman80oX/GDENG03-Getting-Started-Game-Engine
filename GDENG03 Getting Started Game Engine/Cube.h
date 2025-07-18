@@ -13,8 +13,6 @@
 class Cube : public BaseGameObject, public InputListener
 {
 private:
-	bool hasTexture = true;
-
 	float ticks = 0.0f;
 	float deltaPos = 0.0f;
 	float deltaTime = 0.0f;
@@ -51,7 +49,4 @@ private:
 	void onRightMouseDown(const Point& mousePosition) override;
 	void onRightMouseUp(const Point& mousePosition) override;
 
-//HELPER FUNCTIONS
-private:
-	void createTexture(const wchar_t* texturePath);
 };

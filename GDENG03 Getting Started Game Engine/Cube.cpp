@@ -1,8 +1,8 @@
 #include "Cube.h"
-#include "GraphicsEngine.h"
 #include "SwapChain.h"
 #include "WorldCamera.h"
 #include "InputSystem.h"
+#include "GraphicsEngine.h"
 
 Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem) : BaseGameObject(name, renderSystem)
 {
@@ -99,7 +99,7 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 {
 	InputSystem::getInstance()->addListener(this);
 
-	this->createTexture(L"..\\Assets\\Textures\\brick.png");
+	this->setTexture(L"..\\Assets\\Textures\\brick.png");
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
 	Vector3D position_list[] =
@@ -243,15 +243,3 @@ void Cube::onRightMouseUp(const Point& mousePosition)
 	this->cubeScale = Vector3D(1.0f);
 }
 
-void Cube::createTexture(const wchar_t* texturePath)
-{
-	if (this->hasTexture) 
-	{
-		try {
-			this->texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
-		}
-		catch (const std::exception& e) {
-			MessageBox(nullptr, L"Failed to load texture.", L"Error", MB_OK);
-		}
-	}
-}

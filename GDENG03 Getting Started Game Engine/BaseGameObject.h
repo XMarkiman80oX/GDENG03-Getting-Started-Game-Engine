@@ -15,11 +15,14 @@ class BaseGameObject
 protected: //Inherited to other primitives
 	RenderSystem* renderSystem; //Pointer to the render system, so we can access the device and context
 
+	bool hasTexture = true;
 	std::string name;
 	Vector3D localPosition;
 	Vector3D localScale;
 	Vector3D localRotation;
-	Vector3D localMatrix;
+	Vector3D localMatrix; 
+
+	const wchar_t* texturePath;
 
 	TexturePtr texture;
 
@@ -48,6 +51,7 @@ public: //Setters
 	void setRotation(Vector3D rot);
 
 	void setSelected(bool isSelected);
+	void setTexture(const wchar_t* texturePath);
 
 public: //Getters
 	Vector3D getLocalRotation();

@@ -1,10 +1,24 @@
 #include "BaseGameObject.h"
+#include "GraphicsEngine.h"
 
 BaseGameObject::BaseGameObject(std::string name, RenderSystem* renderSystem) : name(name), renderSystem(renderSystem){
 }
 BaseGameObject::~BaseGameObject() {
 }
 
+void BaseGameObject::setTexture(const wchar_t* texturePath)
+{
+	if (this->hasTexture)
+	{
+		try {
+			this->texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromFile(texturePath);
+			this->texturePath = texturePath;
+		}
+		catch (const std::exception& e) {
+			MessageBox(nullptr, L"Failed to load texture.", L"Error", MB_OK);
+		}
+	}
+}
 void BaseGameObject::setPosition(float x, float y, float z)
 {
 	this->localPosition = Vector3D(x, y, z);
