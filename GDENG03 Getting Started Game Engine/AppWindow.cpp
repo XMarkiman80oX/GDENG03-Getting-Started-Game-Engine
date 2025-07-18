@@ -5,6 +5,8 @@
 #include "Matrix4x4.h"
 #include "InputSystem.h"
 #include "Mesh.h"
+#include "Cube.h"
+#include "Sphere.h"
 
 struct vertex
 {
@@ -22,12 +24,19 @@ struct constant
 	unsigned int m_time;
 };
 
+
 AppWindow::AppWindow()
 {
 }
 
 AppWindow::~AppWindow()
 {
+}
+
+AppWindow* AppWindow::getInstance()
+{
+	static AppWindow appWindow;
+	return &appWindow;
 }
 
 void AppWindow::onCreate()
@@ -176,9 +185,10 @@ void AppWindow::onCreate()
 
 void AppWindow::onUpdate()
 {
-	//change color here
 	//Inputs get processed here
 	InputSystem::getInstance()->update();
+
+	this->deltaTime = static_cast<float>(EngineTime::getDeltaTime());
 
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor
 	(
@@ -187,17 +197,14 @@ void AppWindow::onUpdate()
 		0, 0.3f, 0.4f, 1
 	);
 	RECT rc = this->getClientWindowRect();
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
+	GraphicsEngine::getInstance()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	update();
+
+	WorldCamera::getInstance()->updateCamera();
+
+	this->updateGameObjects(rc);
 
 	m_swap_chain->present(true);
-
-	this->m_old_delta = this->m_new_delta;
-	this->m_new_delta = ::GetTickCount();
-
-	//if the old delta has no value, set it to 0 so we dont have a new delta that equals to the new delta one
-	this->m_delta_time = (this->m_old_delta) ? ((this->m_new_delta - this->m_old_delta) / 1000.0f) : 0;
 }
 
 void AppWindow::onDestroy()
@@ -208,87 +215,13 @@ void AppWindow::onDestroy()
 void AppWindow::onFocus()
 {
 	InputSystem::getInstance()->addListener(this);
+	InputSystem::getInstance()->addListener(WorldCamera::getInstance());
 }
 
 void AppWindow::onKillFocus()
 {
 	InputSystem::getInstance()->removeListener(this);
-}
-
-void AppWindow::update()
-{
-	constant cc;
-	Matrix4x4 temp;
-
-	// CAMERA AND PROJECTION MATRIX UPDATE
-	Matrix4x4 worldCam;
-	worldCam.setIdentity();
-
-	temp.setIdentity();
-	temp.setRotationX(rotationX);
-	worldCam *= temp;
-
-	temp.setIdentity();
-	temp.setRotationY(rotationY);
-	worldCam *= temp;
-
-	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward * 0.3f);
-	newPos = newPos + worldCam.getXDirection() * (this->rightward * 0.3f);
-
-	worldCam.setTranslation(newPos);
-	this->worldCamera = worldCam;
-	worldCam.setInverse();
-
-	cc.m_view = worldCam;
-
-	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
-	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-
-	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
-
-	// RENDER MODEL 1
-	cc.m_world.setIdentity();
-	if (m_selected_model == 0)
-	{
-		cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
-	}
-	cc.m_world.setTranslation(Vector3D(-2, 0, 0));
-	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh->getIndexBuffer());
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
-
-	// RENDER MODEL 2
-	cc.m_world.setIdentity();
-	if (m_selected_model == 1)
-	{
-		cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
-	}
-	cc.m_world.setTranslation(Vector3D(0, 0, 0));
-	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh2->getVertexBuffer());
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh2->getIndexBuffer());
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh2->getIndexBuffer()->getSizeIndexList(), 0, 0);
-
-	// RENDER MODEL 3
-	cc.m_world.setIdentity();
-	if (m_selected_model == 2)
-	{
-		cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
-	}
-	cc.m_world.setTranslation(Vector3D(2, 0, 0));
-	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh3->getVertexBuffer());
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh3->getIndexBuffer());
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh3->getIndexBuffer()->getSizeIndexList(), 0, 0);
+	InputSystem::getInstance()->removeListener(WorldCamera::getInstance());
 }
 
 
@@ -308,65 +241,49 @@ void AppWindow::onRightMouseUp(const Point& mousePosition)
 {
 }
 
+void AppWindow::updateGameObjects(RECT clientWindowRect)
+{
+	for(BaseGameObject* object : this->objectsInWorld)
+	{
+		object->update(clientWindowRect);
+		object->draw(clientWindowRect.right - clientWindowRect.left, clientWindowRect.bottom - clientWindowRect.top);
+	}
+}
+
+void AppWindow::destroyGameObjects()
+{
+	this->objectsInWorld.clear();
+}
+
+void AppWindow::selectNextObject()
+{
+	this->objectSelectedIndex++;
+
+	//Make sure it doesn't go over the amount of objects in this->objectsInWorld
+	if (this->objectSelectedIndex > this->objectsInWorld.size() - 1)
+		this->objectSelectedIndex = 0;
+
+	//Set All Selected Objects to false first before toggling it on
+	for (BaseGameObject* object : this->objectsInWorld) {
+		this->objectsInWorld[this->objectSelectedIndex]->setSelected(false);
+	}
+
+	this->objectsInWorld[this->objectSelectedIndex]->setSelected(true);
+}
+
 void AppWindow::onMouseMove(const Point& mousePosition)
 {
-	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
-	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-
-	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width / 2.0f)) * this->m_delta_time;
-	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height / 2.0f)) * this->m_delta_time;
-
-	if (!this->invertedIsOn)
-	{
-		this->rotationX -= incrementerY;
-		this->rotationY -= incrementerX;
-	}
-	else
-	{
-		this->rotationX += incrementerY;
-		this->rotationY += incrementerX;
-	}
-
-	//So it clamps to the mouse's initial position in the window
-	InputSystem::getInstance()->setCursorPosition(Point(width / 2.0f, height / 2.0f));
 }
 
 void AppWindow::onKeyDown(int key)
 {
-	switch (key) {
-	case 'W':
-		this->forward = 1.0f;
-		break;
-	case 'S':
-		this->forward = -1.0f;
-		break;
-	case 'A':
-		this->rightward = -1.0f;
-		break;
-	case 'D':
-		this->rightward = 1.0f;
-		break;
-	case 'Q':
-		this->m_scale -= this->m_scaleSpeed;
-		break;
-	case 'E':
-		this->m_scale += this->m_scaleSpeed;
-		break;
-	case '1':
-		m_selected_model = 0;
-		break;
-	case '2':
-		m_selected_model = 1;
-		break;
-	case '3':
-		m_selected_model = 2;
-		break;
-	}
 }
 
 void AppWindow::onKeyUp(int key)
 {
-	//0.0f since we want to stop our camera
-	this->forward = 0.0f;
-	this->rightward = 0.0f;
+	switch (key) {
+	case VK_SPACE:
+		this->selectNextObject();
+		break;
+	}
 }

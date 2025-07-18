@@ -88,6 +88,7 @@ bool Window::broadcast()
         this->m_is_init = true;
     }
 
+    EngineTime::LogFrameStart();
     this->onUpdate();
 
     while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0) {
@@ -96,6 +97,8 @@ bool Window::broadcast()
     }
 
     Sleep(1);
+
+    EngineTime::LogFrameEnd();
 
     return true;
 }
@@ -116,6 +119,11 @@ RECT Window::getClientWindowRect()
     ::GetClientRect(this->m_hwnd, &rc);
     return rc;
 
+}
+
+void Window::setHWND(HWND hwnd)
+{
+    this->m_hwnd = hwnd;
 }
 
 void Window::onFocus()

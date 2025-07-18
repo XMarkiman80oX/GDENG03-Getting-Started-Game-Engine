@@ -53,7 +53,7 @@ GraphicsEngine::~GraphicsEngine()
 }
 
 
-GraphicsEngine* GraphicsEngine::get()
+GraphicsEngine* GraphicsEngine::getInstance()
 {
 	return m_engine;
 }

@@ -12,9 +12,32 @@
 #include "InputListener.h"
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
+#include "DepthBuffer.h"	
+#include "WorldCamera.h"	
+#include "Cube.h"
+#include "Sphere.h"
+#include <vector>
 
 class AppWindow : public Window, public InputListener
 {
+private:
+	//float oldDelta;
+	float newDelta;
+	float deltaTime;
+
+	float deltaPosition;
+	float deltaScale;
+
+	bool invertedIsOn = false;
+	bool cursorIsVisible = false;
+
+	std::vector<BaseGameObject*> objectsInWorld = {};
+
+	int objectSelectedIndex = 0;
+
+public:
+	static AppWindow* getInstance();
+
 public:
 	AppWindow();
 	~AppWindow();
@@ -25,6 +48,7 @@ public:
 	virtual void onDestroy() override;
 	virtual void onFocus() override;
 	virtual void onKillFocus() override;
+
 	// Inherited via InputListener
 	void onKeyDown(int key) override;
 	void onKeyUp(int key) override;
@@ -37,9 +61,6 @@ public:
 	void onLeftMouseUp(const Point& mousePosition) override;
 	void onRightMouseDown(const Point& mousePosition) override;
 	void onRightMouseUp(const Point& mousePosition) override;
-
-private:
-	void update();
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -79,4 +100,9 @@ private:
 	bool cursorIsVisible = false;
 
 	int m_selected_model = 0;
+//HELPER FUNCTIONS
+private:
+	void updateGameObjects(RECT clientWindowRect);
+	void destroyGameObjects();
+	void selectNextObject();
 };

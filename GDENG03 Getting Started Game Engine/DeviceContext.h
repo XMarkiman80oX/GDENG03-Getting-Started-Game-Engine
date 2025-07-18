@@ -3,7 +3,6 @@
 
 #include "Prerequisites.h"
 
-//Immediate Context (not yet deferred)
 class DeviceContext
 {
 public:
