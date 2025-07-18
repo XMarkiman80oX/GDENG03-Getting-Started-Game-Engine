@@ -52,6 +52,8 @@ private:
 
 	TexturePtr m_wood_tex;
 	MeshPtr m_mesh;
+	MeshPtr m_mesh2;
+	MeshPtr m_mesh3;
 private:
 	float m_old_delta;
 	float m_new_delta;
@@ -62,7 +64,7 @@ private:
 
 	float rotationX = 0.0f;
 	float rotationY = 0.0f;
-
+	 
 	float m_scale = 1.0f;
 	const float m_scaleSpeed = 0.1f;
 
@@ -76,4 +78,5 @@ private:
 	bool invertedIsOn = false;
 	bool cursorIsVisible = false;
 
+	int m_selected_model = 0;
 };

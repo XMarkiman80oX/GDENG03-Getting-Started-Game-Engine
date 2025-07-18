@@ -9,13 +9,9 @@
 struct vertex
 {
 	Vector3D position;
-	Vector2D texcoord; //Texture coordinates	
+	Vector2D texcoord; //Texture coordinates
 };
-/*
-	"DirectX handles the constant in video memory in checks of 16 bytes, so if our structure has
-	a size of 24 bytes, this size must be modified to be a multiple of 16, so we will have to enlarge it
-	of further 8 bytes. That's what "__declspec(align(16))" does.
-*/
+
 __declspec(align(16))
 struct constant
 {
@@ -44,17 +40,15 @@ void AppWindow::onCreate()
 		this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
 	}
 	catch (const std::exception& e) {
-		// Handle the exception, e.g., show an error message
 		MessageBox(nullptr, L"Failed to load texture.", L"Error", MB_OK);
-		// You might want to close the application here or use a default texture
 	}
 	try {
 		this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\teapot.obj");
+		this->m_mesh2 = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\bunny.obj");
+		this->m_mesh3 = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\armadillo.obj");
 	}
 	catch (const std::exception& e) {
-		// Handle the exception, e.g., show an error message
 		MessageBox(nullptr, L"Failed to load mesh.", L"Error", MB_OK);
-		// You might want to close the application here or use a default texture
 	}
 
 	RECT rc = this->getClientWindowRect();
@@ -195,22 +189,8 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
-	this->update();
+	update();
 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
-
-	//Here we will pass the vertex buffer from which to get the vertices to render
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh->getIndexBuffer());
-
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
 	m_swap_chain->present(true);
 
 	this->m_old_delta = this->m_new_delta;
@@ -238,24 +218,9 @@ void AppWindow::onKillFocus()
 void AppWindow::update()
 {
 	constant cc;
-	cc.m_time = ::GetTickCount();/*This is a windows function that allows us to get the time elapsed since the
-								system started in milliseconds*/
-
-	float movementRate = 1.0f / 0.55f;
-	//This means we reach one unit per 1/movementRate seconds (reciprocal)
-	this->m_delta_pos += m_delta_time * movementRate;
-
-	if (this->m_delta_pos > 1.0f)
-		m_delta_pos = 0;
-
 	Matrix4x4 temp;
-	this->m_delta_scale += this->m_delta_time * movementRate;
 
-	cc.m_world.setIdentity();
-	cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
-
-	float cubeSizeMultiplier = 1 / 300.0f;
-
+	// CAMERA AND PROJECTION MATRIX UPDATE
 	Matrix4x4 worldCam;
 	worldCam.setIdentity();
 
@@ -267,30 +232,65 @@ void AppWindow::update()
 	temp.setRotationY(rotationY);
 	worldCam *= temp;
 
-	//moving through the z axis
-	//float value entails how much units is moved
 	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward * 0.3f);
-
 	newPos = newPos + worldCam.getXDirection() * (this->rightward * 0.3f);
 
-	//setting our camera backwards two points along the x axis
 	worldCam.setTranslation(newPos);
 	this->worldCamera = worldCam;
 	worldCam.setInverse();
 
 	cc.m_view = worldCam;
-	cc.m_proj.setOrthogonalProjectionMatrix(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left) * cubeSizeMultiplier,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) * cubeSizeMultiplier,
-		-4.0f,
-		4.0f
-	);
+
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
 	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
+
+	// RENDER MODEL 1
+	cc.m_world.setIdentity();
+	if (m_selected_model == 0)
+	{
+		cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
+	}
+	cc.m_world.setTranslation(Vector3D(-2, 0, 0));
 	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
+
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_vertex_shader, this->m_constant_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_pixel_shader, this->m_constant_buffer);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vertex_shader);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_pixel_shader);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh->getIndexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
+
+	// RENDER MODEL 2
+	cc.m_world.setIdentity();
+	if (m_selected_model == 1)
+	{
+		cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
+	}
+	cc.m_world.setTranslation(Vector3D(0, 0, 0));
+	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
+
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh2->getVertexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh2->getIndexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh2->getIndexBuffer()->getSizeIndexList(), 0, 0);
+
+	// RENDER MODEL 3
+	cc.m_world.setIdentity();
+	if (m_selected_model == 2)
+	{
+		cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
+	}
+	cc.m_world.setTranslation(Vector3D(2, 0, 0));
+	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
+
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh3->getVertexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh3->getIndexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh3->getIndexBuffer()->getSizeIndexList(), 0, 0);
 }
+
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)
 {
@@ -351,6 +351,15 @@ void AppWindow::onKeyDown(int key)
 		break;
 	case 'E':
 		this->m_scale += this->m_scaleSpeed;
+		break;
+	case '1':
+		m_selected_model = 0;
+		break;
+	case '2':
+		m_selected_model = 1;
+		break;
+	case '3':
+		m_selected_model = 2;
 		break;
 	}
 }
