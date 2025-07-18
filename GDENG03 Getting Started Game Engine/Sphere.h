@@ -9,7 +9,7 @@
 class Sphere : public BaseGameObject
 {
 public:
-    Sphere(std::string name, void* shaderByteCode, size_t sizeShader);
+    Sphere(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem);
     ~Sphere();
 
     void update(RECT windowRect) override;
@@ -17,11 +17,11 @@ public:
     void initializeObject(void* shaderByteCode, size_t sizeShader) override;
 
 private:
-    VertexBuffer* m_vb;
-    IndexBuffer* m_ib;
-    ConstantBuffer* m_cb;
-    VertexShader* m_vs;
-    PixelShader* m_ps;
+    VertexBufferPtr m_vb;
+    IndexBufferPtr m_ib;
+    ConstantBufferPtr m_cb;
+    VertexShaderPtr m_vs;
+    PixelShaderPtr m_ps;
 
     int m_num_vertices;
     int m_num_indices;

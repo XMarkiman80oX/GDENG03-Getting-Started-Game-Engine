@@ -49,10 +49,12 @@ void AppWindow::onCreate()
 	WorldCamera::getInstance()->initialize(rc);
 	WorldCamera::getInstance()->setTranslation(Vector3D(0, 0, -2));
 
-
 	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
+	Sphere* marcosSphere = new Sphere("Marco's Sphere", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());	
 
+	marcosSphere->setPosition(Vector3D(0, 0, 2));
 	this->objectsInWorld.push_back(marcosCube);
+	this->objectsInWorld.push_back(marcosSphere);
 }
 
 void AppWindow::onUpdate()

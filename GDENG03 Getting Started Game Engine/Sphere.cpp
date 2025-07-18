@@ -6,18 +6,13 @@
 
 #define M_PI 3.14159265358979323846
 
-Sphere::Sphere(std::string name, void* shaderByteCode, size_t sizeShader) : BaseGameObject(name)
+Sphere::Sphere(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem) : BaseGameObject(name, renderSystem)
 {
-    initializeObject(shaderByteCode, sizeShader);
+    this->initializeObject(shaderByteCode, sizeShader);
 }
 
 Sphere::~Sphere()
 {
-    m_vb->release();
-    m_ib->release();
-    m_cb->release();
-    m_vs->release();
-    m_ps->release();
 }
 
 void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
@@ -45,16 +40,7 @@ void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
             float y = radius * cos(phi);
             float z = radius * sin(theta) * sin(phi);
 
-            // Determine color based on the x-coordinate
-            Vector3D color;
-            if (x < 0) {
-                color = Vector3D(1.0f, 0.0f, 0.0f); // Red
-            }
-            else {
-                color = Vector3D(0.0f, 0.0f, 1.0f); // Blue
-            }
-            // The second color is for interpolation purposes
-            vertices.push_back({ Vector3D(x, y, z), color, color });
+            vertices.push_back({ Vector3D(x, y, z), Vector2D(U, V) });
         }
     }
 
@@ -75,18 +61,14 @@ void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
 
 
     // Create Buffers
-    m_vb = GraphicsEngine::getInstance()->getRenderSystem()->createVertexBuffer();
-    m_vb->load(vertices.data(), sizeof(vertex), m_num_vertices, shaderByteCode, sizeShader);
-
-    m_ib = GraphicsEngine::getInstance()->getRenderSystem()->createIndexBuffer();
-    m_ib->load(indices.data(), m_num_indices);
-
-    // Shaders
     GraphicsEngine::getInstance()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shaderByteCode, &sizeShader);
     m_vs = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shaderByteCode, sizeShader);
-    m_vb->load(vertices.data(), sizeof(vertex), m_num_vertices, shaderByteCode, sizeShader);
+    m_vb = GraphicsEngine::getInstance()->getRenderSystem()->createVertexBuffer(vertices.data(), sizeof(vertex), m_num_vertices, shaderByteCode, sizeShader);
     GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
 
+    m_ib = GraphicsEngine::getInstance()->getRenderSystem()->createIndexBuffer(indices.data(), m_num_indices);
+
+    // Shaders
     GraphicsEngine::getInstance()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shaderByteCode, &sizeShader);
     m_ps = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shaderByteCode, sizeShader);
     GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
@@ -94,8 +76,7 @@ void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
     // Constant Buffer
     constantBufferData cbd = {};
     cbd.m_time = 0;
-    m_cb = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer();
-    m_cb->load(&cbd, sizeof(constantBufferData));
+    m_cb = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer(&cbd, sizeof(constantBufferData));
 }
 
 
@@ -106,13 +87,13 @@ void Sphere::update(RECT windowRect)
 
 void Sphere::draw(int width, int height)
 {
-    DeviceContext* deviceContext = GraphicsEngine::getInstance()->getRenderSystem()->getImmediateDeviceContext();
+    DeviceContextPtr deviceContext = GraphicsEngine::getInstance()->getRenderSystem()->getImmediateDeviceContext();
 
     deviceContext->setVertexShader(m_vs);
     deviceContext->setPixelShader(m_ps);
 
     constantBufferData cbd = {};
-    cbd.m_time = ::GetTickCount();
+    cbd.m_time = EngineTime::EngineTime::getTotalElapsedTime() * 1000.0;
 
     Matrix4x4 world;
     world.setIdentity();
