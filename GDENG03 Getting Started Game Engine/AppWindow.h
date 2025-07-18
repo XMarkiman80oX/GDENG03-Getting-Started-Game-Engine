@@ -12,7 +12,7 @@
 #include "InputListener.h"
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
-#include "DepthBuffer.h"	
+#include "Prerequisites.h"	
 #include "WorldCamera.h"	
 #include "Cube.h"
 #include "Sphere.h"
@@ -71,35 +71,10 @@ private:
 	IndexBufferPtr m_index_buffer;
 	DepthBufferPtr m_depth_buffer;
 
-	TexturePtr m_wood_tex;
 	MeshPtr m_mesh;
 	MeshPtr m_mesh2;
 	MeshPtr m_mesh3;
-private:
-	float m_old_delta;
-	float m_new_delta;
-	float m_delta_time;
 
-	float m_delta_pos;
-	float m_delta_scale;
-
-	float rotationX = 0.0f;
-	float rotationY = 0.0f;
-	 
-	float m_scale = 1.0f;
-	const float m_scaleSpeed = 0.1f;
-
-	//Represents the sign of direction
-	float forward = 0.0f;
-	float rightward = 0.0f;
-	Matrix4x4 worldCamera;
-
-	const float rotationSpeedMultiplier = 0.14f;
-
-	bool invertedIsOn = false;
-	bool cursorIsVisible = false;
-
-	int m_selected_model = 0;
 //HELPER FUNCTIONS
 private:
 	void updateGameObjects(RECT clientWindowRect);

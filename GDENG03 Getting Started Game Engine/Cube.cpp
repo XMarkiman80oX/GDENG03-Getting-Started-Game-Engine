@@ -4,17 +4,13 @@
 #include "WorldCamera.h"
 #include "InputSystem.h"
 
-Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader) : BaseGameObject(name)
+Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem) : BaseGameObject(name, renderSystem)
 {
 	this->initializeObject(shaderByteCode, sizeShader);
 }
 
 Cube::~Cube()
 {
-	this->vertexBuffer->release();
-	this->indexBuffer->release();
-	this->constantBuffer->release();
-	BaseGameObject::~BaseGameObject();
 }
 
 void Cube::update(RECT windowRect)
@@ -29,21 +25,22 @@ void Cube::update(RECT windowRect)
 }
 void Cube::draw(int width, int height)
 {
-	DeviceContext* deviceContextInst = GraphicsEngine::getInstance()->getImmediateDeviceContext();
+	DeviceContextPtr deviceContextInst = GraphicsEngine::getInstance()->getRenderSystem()->getImmediateDeviceContext();
 
 	deviceContextInst->setVertexShader(this->vertexShader);
 	deviceContextInst->setPixelShader(this->pixelShader);
+	deviceContextInst->setTexture(this->pixelShader, this->texture);
 	constantBufferData cbData = {};
 
 	// Set the time for animations
-	cbData.m_time = ::GetTickCount();
+	cbData.m_time = static_cast<unsigned int>(EngineTime::getTotalElapsedTime() * 1000.0);
 
-	if (this->deltaPos > 1.0f) {
+	if (this->deltaPos > 1.0f) 
 		this->deltaPos = 0.0f;
-	}
-	else {
+
+	else 
 		this->deltaPos += this->deltaTime * 0.1f;
-	}
+	
 
 	Matrix4x4 allMatrix;
 	allMatrix.setIdentity(); // Initialize the matrix
@@ -101,34 +98,67 @@ void Cube::setRotationSpeed(Vector3D speed)
 void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 {
 	InputSystem::getInstance()->addListener(this);
-	vertex vertexList[] = {
-		//X - Y - Z
-		/***************FRONT FACE****************/
-		{Vector3D(-0.5f, -0.5f, -0.5f), //POS1
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-		{Vector3D(-0.5f, 0.5f, -0.5f),    //POS2
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, 0.5f, -0.5f),    //POS3
-			Vector3D(1,1,0), Vector3D(0.2f,0.2f,0)},
-		{Vector3D(0.5f, -0.5f, -0.5f),     //POS4
-			Vector3D(1,0,0), Vector3D(0.2f,0,0)},
-			/******************************************/
 
-			/***************BACK FACE****************/
-			{Vector3D(0.5f, -0.5f, 0.5f), //POS1
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-			{Vector3D(0.5f, 0.5f, 0.5f),    //POS2
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, 0.5f, 0.5f),    //POS3
-				Vector3D(0,1,1), Vector3D(0,0.2f,0.2f)},
-			{Vector3D(-0.5f, -0.5f, 0.5f),     //POS4
-				Vector3D(0,1,0), Vector3D(0,0.2f,0)},
-				/******************************************/
+	this->createTexture(L"..\\Assets\\Textures\\brick.png");
+	//Set the vertices of the object here
+	//This is using the triangle strip approach
+	Vector3D position_list[] =
+	{
+		/***************FRONT FACE****************/
+		{Vector3D(-0.5f, -0.5f, -0.5f) }, //POS1
+		{Vector3D(-0.5f, 0.5f, -0.5f) },    //POS2
+		{Vector3D(0.5f, 0.5f, -0.5f) },    //POS3
+		{Vector3D(0.5f, -0.5f, -0.5f) },     //POS4
+		/******************************************/
+
+		/***************BACK FACE****************/
+		{Vector3D(0.5f, -0.5f, 0.5f)}, //POS1
+		{Vector3D(0.5f, 0.5f, 0.5f) },    //POS2
+		{Vector3D(-0.5f, 0.5f, 0.5f) },    //POS3
+		{Vector3D(-0.5f, -0.5f, 0.5f) }    //POS4
+		/******************************************/
+	};
+	Vector2D texcoord_list[] =
+	{
+		{Vector2D(0.0f)},
+		{Vector2D(0.0f, 1.0f) },
+		{Vector2D(1.0f,0.0f)},
+		{Vector2D(1.0f)}
+
+	};
+	vertex vertexList[] = {
+		{position_list[0], texcoord_list[1]},
+		{position_list[1], texcoord_list[0]},
+		{position_list[2], texcoord_list[2]},
+		{position_list[3], texcoord_list[3]},
+
+		{position_list[4], texcoord_list[1]},
+		{position_list[5], texcoord_list[0]},
+		{position_list[6], texcoord_list[2]},
+		{position_list[7], texcoord_list[3]},
+
+		{position_list[1], texcoord_list[1]},
+		{position_list[6], texcoord_list[0]},
+		{position_list[5], texcoord_list[2]},
+		{position_list[2], texcoord_list[3]},
+
+		{position_list[7], texcoord_list[1]},
+		{position_list[0], texcoord_list[0]},
+		{position_list[3], texcoord_list[2]},
+		{position_list[4], texcoord_list[3]},
+
+		{position_list[3], texcoord_list[1]},
+		{position_list[2], texcoord_list[0]},
+		{position_list[5], texcoord_list[2]},
+		{position_list[4], texcoord_list[3]},
+
+		{position_list[7], texcoord_list[1]},
+		{position_list[6], texcoord_list[0]},
+		{position_list[1], texcoord_list[2]},
+		{position_list[0], texcoord_list[3]}
 	};
 
-	this->vertexBuffer = GraphicsEngine::getInstance()->createVertexBuffer();
-	this->vertexBuffer->load(vertexList, sizeof(vertex), ARRAYSIZE(vertexList), shaderByteCode, sizeShader);
-
+	/*----------------INDEX BUFFER PART----------------*/
 	unsigned int index_list[] = {
 		//FRONT SIDE
 		0,1,2, // 1st Triangle
@@ -137,42 +167,48 @@ void Cube::initializeObject(void* shaderByteCode, size_t sizeShader)
 		4,5,6,
 		6,7,4,
 		//TOP SIDE
-		1,6,5,
-		5,2,1,
+		8,9,10,
+		10,11,8,
 		//BOTTOM SIDE
-		7,0,3,
-		3,4,7,
+		12,13,14,
+		14,15,12,
 		//RIGHT SIDE
-		3,2,5,
-		5,4,3,
+		16,17,18,
+		18,19,16,
 		//LEFT SIDE
-		7,6,1,
-		1,0,7
+		20,21,22,
+		22,23,20
 	};
-	this->indexBuffer = GraphicsEngine::getInstance()->createIndexBuffer();
+	
+	UINT size_index_list = ARRAYSIZE(index_list); 
+	this->indexBuffer = GraphicsEngine::getInstance()->getRenderSystem()->createIndexBuffer(index_list, size_index_list);
 
-	UINT size_index_list = ARRAYSIZE(index_list);
-	this->indexBuffer->load(index_list, size_index_list);
+	/*----------------VERTEX SHADER PART----------------*/
+	GraphicsEngine::getInstance()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shaderByteCode, &sizeShader);
 
-	GraphicsEngine::getInstance()->compileVertexShader(L"VertexShader.hlsl", "main", &shaderByteCode, &sizeShader);
+	this->vertexShader = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shaderByteCode, sizeShader);
+	this->vertexBuffer = GraphicsEngine::getInstance()->getRenderSystem()->createVertexBuffer(vertexList, sizeof(vertex), ARRAYSIZE(vertexList), shaderByteCode, sizeShader);
 
-	this->vertexShader = GraphicsEngine::getInstance()->createVertexShader(shaderByteCode, sizeShader);
+	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
+	/*------------------------------------------------*/
 
-	this->vertexBuffer->load(vertexList, sizeof(vertex), ARRAYSIZE(vertexList), shaderByteCode, sizeShader);
 
-	GraphicsEngine::getInstance()->releaseCompiledShader();
+	/*----------------PIXEL SHADER PART----------------*/
+	GraphicsEngine::getInstance()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shaderByteCode, &sizeShader);
 
-	GraphicsEngine::getInstance()->compilePixelShader(L"PixelShader.hlsl", "main", &shaderByteCode, &sizeShader);
+	this->pixelShader = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shaderByteCode, sizeShader);
 
-	this->pixelShader = GraphicsEngine::getInstance()->createPixelShader(shaderByteCode, sizeShader);
+	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
+	/*------------------------------------------------*/
 
-	GraphicsEngine::getInstance()->releaseCompiledShader();
 
+	/*----------------CONSTANT BUFFER PART----------------*/
 	constantBufferData cc;
 	cc.m_time = 0;
 
-	this->constantBuffer = GraphicsEngine::getInstance()->createConstantBuffer();
-	this->constantBuffer->load(&cc, sizeof(constantBufferData));
+	this->constantBuffer = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer(&cc, sizeof(constantBufferData));
+
+	/*------------------------------------------------*/
 }
 
 void Cube::onKeyDown(int key)
@@ -205,4 +241,17 @@ void Cube::onRightMouseDown(const Point& mousePosition)
 void Cube::onRightMouseUp(const Point& mousePosition)
 {
 	this->cubeScale = Vector3D(1.0f);
+}
+
+void Cube::createTexture(const wchar_t* texturePath)
+{
+	if (this->hasTexture) 
+	{
+		try {
+			this->texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
+		}
+		catch (const std::exception& e) {
+			MessageBox(nullptr, L"Failed to load texture.", L"Error", MB_OK);
+		}
+	}
 }

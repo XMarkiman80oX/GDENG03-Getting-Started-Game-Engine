@@ -8,10 +8,13 @@
 #include "string"
 #include "Vector3D.h"
 #include "InputListener.h"
+#include "Prerequisites.h"
 
 class Cube : public BaseGameObject, public InputListener
 {
 private:
+	bool hasTexture = true;
+
 	float ticks = 0.0f;
 	float deltaPos = 0.0f;
 	float deltaTime = 0.0f;
@@ -21,7 +24,7 @@ private:
 	Vector3D m_rotation_speed;
 
 public:
-	Cube(std::string name, void* shaderByteCode, size_t sizeShader);
+	Cube(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem);
 	~Cube();
 
 public:
@@ -33,11 +36,11 @@ public:
 	void initializeObject(void* shaderByteCode, size_t sizeShader) override;
 
 private:
-	VertexBuffer* vertexBuffer;
-	VertexShader* vertexShader;
-	PixelShader* pixelShader;
-	IndexBuffer* indexBuffer;
-	ConstantBuffer* constantBuffer;
+	VertexBufferPtr vertexBuffer;
+	VertexShaderPtr vertexShader;
+	PixelShaderPtr pixelShader;
+	IndexBufferPtr indexBuffer;
+	ConstantBufferPtr constantBuffer;
 
 	// Inherited via InputListener
 	void onKeyDown(int key) override;
@@ -47,4 +50,8 @@ private:
 	void onLeftMouseUp(const Point& mousePosition) override;
 	void onRightMouseDown(const Point& mousePosition) override;
 	void onRightMouseUp(const Point& mousePosition) override;
+
+//HELPER FUNCTIONS
+private:
+	void createTexture(const wchar_t* texturePath);
 };

@@ -97,6 +97,11 @@ void WorldCamera::setInverse()
     this->worldCamera.setInverse();
 }
 
+void WorldCamera::setTranslation(const Vector3D& translation)
+{
+    this->worldCamera.setTranslation(translation);
+}
+
 void WorldCamera::onKeyDown(int key)
 {
     switch (key) {

@@ -89,16 +89,16 @@ Mesh::Mesh(const wchar_t* full_path) : Resource(full_path)
 	}
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
-	GraphicsEngine::get()->getVertexMeshLayoutShaderByteCodeAndSize(&shader_byte_code, &size_shader);
+	GraphicsEngine::getInstance()->getVertexMeshLayoutShaderByteCodeAndSize(&shader_byte_code, &size_shader);
 
-	m_vertex_buffer = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer(
+	m_vertex_buffer = GraphicsEngine::getInstance()->getRenderSystem()->createVertexBuffer(
 		&list_vertices[0],
 		sizeof(VertexMesh),
 		(UINT)list_vertices.size(),
 		shader_byte_code,
 		size_shader
 	);
-	m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(
+	m_index_buffer = GraphicsEngine::getInstance()->getRenderSystem()->createIndexBuffer(
 		&list_indices[0],
 		(UINT)list_indices.size()
 	);

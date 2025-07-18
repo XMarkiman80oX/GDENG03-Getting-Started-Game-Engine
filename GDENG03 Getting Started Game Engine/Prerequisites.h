@@ -1,5 +1,7 @@
 #pragma once
 #include <memory>
+#include "Vector2D.h"
+#include "Vector3D.h"
 
 class SwapChain;
 class DeviceContext;
@@ -17,6 +19,13 @@ class Texture;
 class TextureManager;
 class Mesh;
 class MeshManager;
+class BaseGameObject;
+
+struct vertex
+{
+	Vector3D position;
+	Vector2D texcoord;
+};
 
 typedef std::shared_ptr<SwapChain> SwapChainPtr;
 typedef std::shared_ptr<DeviceContext> DeviceContextPtr;

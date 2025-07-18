@@ -54,23 +54,27 @@
     </Filter>
     <Filter Include="GameEngine\GraphicsEngine\ResourceManager\MeshManager">
       <UniqueIdentifier>{8528865c-0d72-4aa4-90df-b9bade977b09}</UniqueIdentifier>
+    </Filter>
     <Filter Include="GameEngine\GraphicsEngine\GameObjects">
-      <UniqueIdentifier>{28b3f2d4-bbbc-4b9a-b2db-cb3b684f630f}</UniqueIdentifier>
+      <UniqueIdentifier>{60959ef8-6bfd-4806-ab6d-a4c857c86bf1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Cube">
-      <UniqueIdentifier>{f8920fb2-2259-47c3-af4d-3518cccb763d}</UniqueIdentifier>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Primitives">
+      <UniqueIdentifier>{19ab043c-98bc-42ef-ac0c-5bdebfabbd2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Plane">
-      <UniqueIdentifier>{c9e2a740-90f2-4e86-acb3-6f209729c66e}</UniqueIdentifier>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Primitives\Cube">
+      <UniqueIdentifier>{a449693e-efa5-4d49-8861-0b6db09a96ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Primitives\Sphere">
+      <UniqueIdentifier>{497c777e-af15-4932-93d4-6d66f09b1dab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Primitives\Plane">
+      <UniqueIdentifier>{1724ea3e-5a5b-42cb-a4ad-fa1a78148418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameEngine\GraphicsEngine\EngineTime">
+      <UniqueIdentifier>{4d91589d-d7f1-4c6a-ae32-d5b85bc23637}</UniqueIdentifier>
     </Filter>
     <Filter Include="GameEngine\GraphicsEngine\GameObjects\WorldCamera">
-      <UniqueIdentifier>{e8981e25-eac8-4d9b-9a07-688a04ffd0c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameEngine\EngineTime">
-      <UniqueIdentifier>{2fa58720-fab7-4af1-b586-5c29978aced7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameEngine\GraphicsEngine\GameObjects\Sphere">
-      <UniqueIdentifier>{70f8df30-2742-4181-b705-6a90c3d2a2c5}</UniqueIdentifier>
+      <UniqueIdentifier>{36bb1e07-553a-46bf-a1f4-a82f7421fadd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -130,23 +134,27 @@
     </ClCompile>
     <ClCompile Include="MeshManager.cpp">
       <Filter>GameEngine\GraphicsEngine\ResourceManager\MeshManager</Filter>
+    </ClCompile>
     <ClCompile Include="BaseGameObject.cpp">
       <Filter>GameEngine\GraphicsEngine\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="Cube.cpp">
-      <Filter>GameEngine\GraphicsEngine\GameObjects\Cube</Filter>
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Primitives\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Primitives\Sphere</Filter>
     </ClCompile>
     <ClCompile Include="Plane.cpp">
-      <Filter>GameEngine\GraphicsEngine\GameObjects\Plane</Filter>
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Primitives\Plane</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineTime.cpp">
+      <Filter>GameEngine\GraphicsEngine\EngineTime</Filter>
     </ClCompile>
     <ClCompile Include="WorldCamera.cpp">
       <Filter>GameEngine\GraphicsEngine\GameObjects\WorldCamera</Filter>
     </ClCompile>
-    <ClCompile Include="EngineTime.cpp">
-      <Filter>GameEngine\EngineTime</Filter>
-    </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>GameEngine\GraphicsEngine\GameObjects\Sphere</Filter>
+    <ClCompile Include="DepthBuffer.cpp">
+      <Filter>GameEngine\GraphicsEngine\RenderSystem\DepthBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,26 +235,30 @@
     </ClInclude>
     <ClInclude Include="VertexMesh.h">
       <Filter>GameEngine\Math</Filter>
+    </ClInclude>
     <ClInclude Include="BaseGameObject.h">
       <Filter>GameEngine\GraphicsEngine\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Cube.h">
-      <Filter>GameEngine\GraphicsEngine\GameObjects\Cube</Filter>
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Primitives\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Primitives\Sphere</Filter>
     </ClInclude>
     <ClInclude Include="Plane.h">
-      <Filter>GameEngine\GraphicsEngine\GameObjects\Plane</Filter>
+      <Filter>GameEngine\GraphicsEngine\GameObjects\Primitives\Plane</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineTime.h">
+      <Filter>GameEngine\GraphicsEngine\EngineTime</Filter>
     </ClInclude>
     <ClInclude Include="WorldCamera.h">
       <Filter>GameEngine\GraphicsEngine\GameObjects\WorldCamera</Filter>
     </ClInclude>
-    <ClInclude Include="EngineTime.h">
-      <Filter>GameEngine\EngineTime</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>GameEngine\GraphicsEngine\GameObjects\Sphere</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBufferData.h">
-      <Filter>GameEngine</Filter>
+      <Filter>GameEngine\GraphicsEngine\RenderSystem\ConstantBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthBuffer.h">
+      <Filter>GameEngine\GraphicsEngine\RenderSystem\DepthBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -257,7 +269,7 @@
       <Filter>App</Filter>
     </FxCompile>
     <FxCompile Include="VertexMeshLayoutShader.hlsl">
-      <Filter>GameEngine\GraphicsEngine</Filter>
+      <Filter>App</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -1,33 +1,33 @@
 #pragma once
 #include "Matrix4x4.h"
+#include "Vector3D.h"
 #include "string"
 #include <Windows.h>
 #include "ConstantBufferData.h"
+#include "Prerequisites.h"
+#include "RenderSystem.h"
+#include <vector>
+#include <exception>
+#include "EngineTime.h"
 
-class VertexShader;
-class PixelShader;
 class BaseGameObject
 {
-protected:
-	struct vertex
-	{
-		Vector3D position;
-		Vector3D color;
-		Vector3D color1;
-	};
-
 protected: //Inherited to other primitives
+	RenderSystem* renderSystem; //Pointer to the render system, so we can access the device and context
+
 	std::string name;
 	Vector3D localPosition;
 	Vector3D localScale;
 	Vector3D localRotation;
 	Vector3D localMatrix;
 
+	TexturePtr texture;
+
 	//If this object is selected, then keybinds will only work on this object
 	bool isSelected = false;
 
 public: //Constructors
-	BaseGameObject(std::string name);
+	BaseGameObject(std::string name, RenderSystem* renderSystem);
 	~BaseGameObject();
 
 public: //ABSTRACT CLASSES

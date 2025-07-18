@@ -1,7 +1,6 @@
 #include "BaseGameObject.h"
 
-BaseGameObject::BaseGameObject(std::string name) {
-	this->name = name;
+BaseGameObject::BaseGameObject(std::string name, RenderSystem* renderSystem) : name(name), renderSystem(renderSystem){
 }
 BaseGameObject::~BaseGameObject() {
 }

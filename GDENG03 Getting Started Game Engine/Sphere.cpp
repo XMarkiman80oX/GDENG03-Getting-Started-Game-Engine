@@ -75,26 +75,26 @@ void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
 
 
     // Create Buffers
-    m_vb = GraphicsEngine::getInstance()->createVertexBuffer();
+    m_vb = GraphicsEngine::getInstance()->getRenderSystem()->createVertexBuffer();
     m_vb->load(vertices.data(), sizeof(vertex), m_num_vertices, shaderByteCode, sizeShader);
 
-    m_ib = GraphicsEngine::getInstance()->createIndexBuffer();
+    m_ib = GraphicsEngine::getInstance()->getRenderSystem()->createIndexBuffer();
     m_ib->load(indices.data(), m_num_indices);
 
     // Shaders
-    GraphicsEngine::getInstance()->compileVertexShader(L"VertexShader.hlsl", "main", &shaderByteCode, &sizeShader);
-    m_vs = GraphicsEngine::getInstance()->createVertexShader(shaderByteCode, sizeShader);
+    GraphicsEngine::getInstance()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shaderByteCode, &sizeShader);
+    m_vs = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shaderByteCode, sizeShader);
     m_vb->load(vertices.data(), sizeof(vertex), m_num_vertices, shaderByteCode, sizeShader);
-    GraphicsEngine::getInstance()->releaseCompiledShader();
+    GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
 
-    GraphicsEngine::getInstance()->compilePixelShader(L"PixelShader.hlsl", "main", &shaderByteCode, &sizeShader);
-    m_ps = GraphicsEngine::getInstance()->createPixelShader(shaderByteCode, sizeShader);
-    GraphicsEngine::getInstance()->releaseCompiledShader();
+    GraphicsEngine::getInstance()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shaderByteCode, &sizeShader);
+    m_ps = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shaderByteCode, sizeShader);
+    GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
 
     // Constant Buffer
     constantBufferData cbd = {};
     cbd.m_time = 0;
-    m_cb = GraphicsEngine::getInstance()->createConstantBuffer();
+    m_cb = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer();
     m_cb->load(&cbd, sizeof(constantBufferData));
 }
 
@@ -106,7 +106,7 @@ void Sphere::update(RECT windowRect)
 
 void Sphere::draw(int width, int height)
 {
-    DeviceContext* deviceContext = GraphicsEngine::getInstance()->getImmediateDeviceContext();
+    DeviceContext* deviceContext = GraphicsEngine::getInstance()->getRenderSystem()->getImmediateDeviceContext();
 
     deviceContext->setVertexShader(m_vs);
     deviceContext->setPixelShader(m_ps);

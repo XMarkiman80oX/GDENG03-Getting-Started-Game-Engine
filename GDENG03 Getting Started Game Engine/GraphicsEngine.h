@@ -21,7 +21,7 @@ public:
 
 //Initialize the GraphicsEngine and DirectX 11 Device
 public:
-	static GraphicsEngine* get();
+	static GraphicsEngine* getInstance();
 	static void create();
 	static void release();
 

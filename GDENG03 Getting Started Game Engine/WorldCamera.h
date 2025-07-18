@@ -37,6 +37,9 @@ public:
 	Matrix4x4 getProjectionMatrix(); // Added getter for the projection matrix
 
 public:
+	void setTranslation(const Vector3D& translation);
+
+public:
 	void initialize(RECT windowRect);
 	void updateCamera();
 
