@@ -9,6 +9,7 @@
 #include <vector>
 #include <exception>
 #include "EngineTime.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 class BaseGameObject
 {
@@ -28,6 +29,13 @@ protected: //Inherited to other primitives
 
 	//If this object is selected, then keybinds will only work on this object
 	bool isSelected = false;
+
+public:
+	reactphysics3d::RigidBody* getRigidBody();
+	void setRigidBody(reactphysics3d::RigidBody* body);
+
+protected:
+	reactphysics3d::RigidBody* m_rigidBody = nullptr;
 
 public: //Constructors
 	BaseGameObject(std::string name, RenderSystem* renderSystem);

@@ -17,6 +17,7 @@
 #include "Cube.h"
 #include "Sphere.h"
 #include <vector>
+#include <reactphysics3d/reactphysics3d.h>
 
 class AppWindow : public Window, public InputListener
 {
@@ -80,4 +81,17 @@ private:
 	void updateGameObjects(RECT clientWindowRect);
 	void destroyGameObjects();
 	void selectNextObject();
+
+private:
+	// ReactPhysics3D
+	reactphysics3d::PhysicsCommon m_physicsCommon;
+	reactphysics3d::PhysicsWorld* m_physicsWorld;
+
+	// Pre-compiled shaders for cubes
+	void* m_cube_vs_byte_code = nullptr;
+	size_t m_cube_vs_size = 0;
+	void* m_cube_ps_byte_code = nullptr;
+	size_t m_cube_ps_size = 0;
+
+	void spawnCubes();
 };

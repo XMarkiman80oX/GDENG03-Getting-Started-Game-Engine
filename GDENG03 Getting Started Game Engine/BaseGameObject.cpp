@@ -78,3 +78,13 @@ std::string BaseGameObject::getName()
 {
 	return this->name;
 }
+
+reactphysics3d::RigidBody* BaseGameObject::getRigidBody()
+{
+	return m_rigidBody;
+}
+
+void BaseGameObject::setRigidBody(reactphysics3d::RigidBody* body)
+{
+	m_rigidBody = body;
+}
