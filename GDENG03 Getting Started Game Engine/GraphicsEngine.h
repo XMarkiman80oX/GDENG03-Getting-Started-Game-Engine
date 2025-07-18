@@ -1,7 +1,6 @@
 #pragma once
 #include <d3d11.h>
 #include "Prerequisites.h"
-#include "GameObjectManager.h"
 #include "RenderSystem.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
@@ -25,37 +24,25 @@ public:
 	void destroyEntity(EntityId entity);
 
 	template<typename T>
-	void registerComponent() { componentManager->registerComponent<T>(); }
+	void registerComponent();
 
 	template<typename T>
-	void addComponent(EntityId entity, T component) {
-		componentManager->addComponent<T>(entity, component);
-		auto signature = gameObjectManager->getSignature(entity); // No more undefined type error
-		signature.set(componentManager->getComponentType<T>(), true);
-		gameObjectManager->setSignature(entity, signature);
-		systemManager->entitySignatureChanged(entity, signature);
-	}
+	void addComponent(EntityId entity, T component);
 
 	template<typename T>
-	void removeComponent(EntityId entity) {
-		componentManager->removeComponent<T>(entity);
-		auto signature = gameObjectManager->getSignature(entity);
-		signature.set(componentManager->getComponentType<T>(), false);
-		gameObjectManager->setSignature(entity, signature);
-		systemManager->entitySignatureChanged(entity, signature);
-	}
+	void removeComponent(EntityId entity);
 
 	template<typename T>
-	T& getComponent(EntityId entity) { return componentManager->getComponent<T>(entity); }
+	T& getComponent(EntityId entity);
 
 	template<typename T>
-	ComponentId getComponentType() { return componentManager->getComponentType<T>(); }
+	ComponentId getComponentType();
 
 	template<typename T>
-	std::shared_ptr<T> registerSystem() { return systemManager->registerSystem<T>(); }
+	std::shared_ptr<T> registerSystem();
 
 	template<typename T>
-	void setSystemSignature(std::bitset<MAX_COMPONENTS> signature) { systemManager->setSignature<T>(signature); }
+	void setSystemSignature(std::bitset<MAX_COMPONENTS> signature);
 
 public:
 	static GraphicsEngine* getInstance();

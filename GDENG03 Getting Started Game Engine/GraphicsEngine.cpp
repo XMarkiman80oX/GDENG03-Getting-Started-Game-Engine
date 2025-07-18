@@ -1,7 +1,7 @@
 #include "GraphicsEngine.h"
+#include "GameObjectManager.h"
 #include <exception>
 
-#include "GameObjectManager.h"
 #include "ComponentManager.h"
 #include "SystemManager.h"
 
@@ -111,4 +111,51 @@ void GraphicsEngine::destroyEntity(EntityId entity)
 	gameObjectManager->destroyEntity(entity);
 	componentManager->entityDestroyed(entity);
 	systemManager->entityDestroyed(entity);
+}
+template<typename T>
+void GraphicsEngine::registerComponent() 
+{ 
+	componentManager->registerComponent<T>(); 
+}
+
+template<typename T>
+void GraphicsEngine::addComponent(EntityId entity, T component) {
+	componentManager->addComponent<T>(entity, component);
+	auto signature = gameObjectManager->getSignature(entity); // No more undefined type error
+	signature.set(componentManager->getComponentType<T>(), true);
+	gameObjectManager->setSignature(entity, signature);
+	systemManager->entitySignatureChanged(entity, signature);
+}
+
+template<typename T>
+void GraphicsEngine::removeComponent(EntityId entity) {
+	componentManager->removeComponent<T>(entity);
+	auto signature = gameObjectManager->getSignature(entity);
+	signature.set(componentManager->getComponentType<T>(), false);
+	gameObjectManager->setSignature(entity, signature);
+	systemManager->entitySignatureChanged(entity, signature);
+}
+
+template<typename T>
+T& GraphicsEngine::getComponent(EntityId entity)
+{ 
+	return componentManager->getComponent<T>(entity); 
+}
+
+template<typename T>
+ComponentId GraphicsEngine::getComponentType()
+{
+	return componentManager->getComponentType<T>(); 
+}
+
+template<typename T>
+std::shared_ptr<T> GraphicsEngine::registerSystem()
+{
+	return systemManager->registerSystem<T>(); 
+}
+
+template<typename T>
+void GraphicsEngine::setSystemSignature(std::bitset<MAX_COMPONENTS> signature)
+{
+	systemManager->setSignature<T>(signature); 
 }

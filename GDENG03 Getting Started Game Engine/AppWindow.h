@@ -13,6 +13,7 @@
 #include "Vector3D.h"	
 #include "Matrix4x4.h"	
 #include "Prerequisites.h"	
+#include "GameObjectManager.h"	
 #include "WorldCamera.h"	
 #include <vector>
 #include <memory>
