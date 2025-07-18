@@ -9,8 +9,6 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "ConstantBufferData.h"
-#include "TransformComponent.h"
-#include "RenderComponent.h"
 
 AppWindow::AppWindow()
 {
@@ -35,46 +33,6 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->addListener(this);
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
-	GraphicsEngine::getInstance()->initECS();
-	GraphicsEngine::getInstance()->registerComponent<TransformComponent>();
-	GraphicsEngine::getInstance()->registerComponent<RenderComponent>();
-
-	auto renderSystemECS = GraphicsEngine::getInstance()->registerSystem<System>(); // Register a generic system for rendering
-
-	std::bitset<MAX_COMPONENTS> renderSignature;
-	renderSignature.set(GraphicsEngine::getInstance()->getComponentType<TransformComponent>());
-	renderSignature.set(GraphicsEngine::getInstance()->getComponentType<RenderComponent>());
-	GraphicsEngine::getInstance()->setSystemSignature<System>(renderSignature); // Set signature for the generic system
-
-	// Create a cube entity
-	EntityId cube = GraphicsEngine::getInstance()->createEntity();
-
-	TransformComponent transform;
-	transform.position = Vector3D(0, 0, 0);
-	transform.rotation = Vector3D(0, 0, 0);
-	transform.scale = Vector3D(1, 1, 1);
-	GraphicsEngine::getInstance()->addComponent(cube, transform);;
-
-	RenderComponent render;
-	render.mesh = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\cube.obj");
-	render.texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
-	
-	// Create a basic material
-	GraphicsEngine::getInstance()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	VertexShaderPtr vs = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
-	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
-
-	GraphicsEngine::getInstance()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-	PixelShaderPtr ps = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
-	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
-
-	constantBufferData cbd = {};
-	cbd.m_time = 0;
-	ConstantBufferPtr cb = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer(&cbd, sizeof(constantBufferData));
-
-
-	GraphicsEngine::getInstance()->addComponent(cube, render);
-
 	/*try {
 		this->m_mesh = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\teapot.obj");
 		this->m_mesh2 = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\bunny.obj");
@@ -92,17 +50,18 @@ void AppWindow::onCreate()
 	WorldCamera::getInstance()->initialize(rc);
 	WorldCamera::getInstance()->setTranslation(Vector3D(0, 0, -2));
 
-	/*Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
+	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
 	Plane* marcosPlane = new Plane("Marco's Plane", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
 
 	marcosPlane->setPosition(Vector3D(0, 0, 2));
 	marcosPlane->setScale(100);
 	this->objectsInWorld.push_back(marcosCube);
-	this->objectsInWorld.push_back(marcosPlane);*/
+	this->objectsInWorld.push_back(marcosPlane);
 }
 
 void AppWindow::onUpdate()
 {
+	//Inputs get processed here
 	InputSystem::getInstance()->update();
 
 	this->deltaTime = static_cast<float>(EngineTime::getDeltaTime());
@@ -116,11 +75,10 @@ void AppWindow::onUpdate()
 	RECT rc = this->getClientWindowRect();
 	GraphicsEngine::getInstance()->getRenderSystem()->getImmediateDeviceContext()->setViewportSize(rc.right - rc.left, rc.bottom - rc.top);
 
+
 	WorldCamera::getInstance()->updateCamera();
 
-	auto renderSystemECS = GraphicsEngine::getInstance()->registerSystem<System>();
-
-	GraphicsEngine::getInstance()->getRenderSystem()->draw(rc.right - rc.left, rc.bottom - rc.top, *renderSystemECS);
+	this->updateGameObjects(rc);
 
 	m_swap_chain->present(true);
 }

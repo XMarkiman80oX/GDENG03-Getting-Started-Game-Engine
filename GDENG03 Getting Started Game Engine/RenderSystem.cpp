@@ -1,5 +1,3 @@
-#include "TransformComponent.h"
-#include "RenderComponent.h"
 #include "RenderSystem.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"
@@ -9,15 +7,10 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "DepthBuffer.h"
-#include "ConstantBufferData.h"
-#include "EngineTime.h"
-#include "GraphicsEngine.h"
-#include "WorldCamera.h"
 
 #include <d3dcompiler.h>
 #include <exception>
 #include <iostream>
-
 
 RenderSystem::RenderSystem()
 {/* -"allows us to create the device from which we will get access to all the necessary
@@ -107,65 +100,6 @@ RenderSystem::~RenderSystem()
 	this->m_d3d_device->Release();
 }
 
-void RenderSystem::draw(int width, int height, System& system)
-{
-	DeviceContextPtr deviceContext = this->getImmediateDeviceContext();
-
-	for (auto const& entity : system.entities)
-	{
-		auto& transform = GraphicsEngine::getInstance()->getComponent<TransformComponent>(entity);
-		auto& render = GraphicsEngine::getInstance()->getComponent<RenderComponent>(entity);
-
-		// Assuming RenderComponent has a MaterialPtr which holds shaders and constant buffers
-		// This part might need adjustment based on your final Material class structure.
-		// For now, I'll assume direct access to shaders and textures.
-
-		/*deviceContext->setVertexShader(render.material->getVertexShader());
-		deviceContext->setPixelShader(render.material->getPixelShader());
-		deviceContext->setTexture(render.material->getPixelShader(), render.texture);*/
-
-		constantBufferData cbd = {};
-		cbd.m_time = static_cast<unsigned int>(EngineTime::getTotalElapsedTime() * 1000.0);
-
-		Matrix4x4 allMatrix;
-		allMatrix.setIdentity();
-
-		Matrix4x4 translationMatrix;
-		translationMatrix.setTranslation(transform.position);
-
-		Matrix4x4 scaleMatrix;
-		scaleMatrix.setScale(transform.scale);
-
-		Matrix4x4 zMatrix, yMatrix, xMatrix;
-		zMatrix.setIdentity();
-		yMatrix.setIdentity();
-		xMatrix.setIdentity();
-
-		zMatrix.setRotationZ(transform.rotation.z);
-		xMatrix.setRotationX(transform.rotation.x);
-		yMatrix.setRotationY(transform.rotation.y);
-
-		Matrix4x4 rotationMatrix;
-		rotationMatrix = xMatrix * yMatrix * zMatrix;
-
-		allMatrix *= scaleMatrix;
-		allMatrix *= rotationMatrix;
-		allMatrix *= translationMatrix;
-
-		cbd.m_world = allMatrix;
-		cbd.m_view = WorldCamera::getInstance()->getViewMatrix();
-		cbd.m_proj = WorldCamera::getInstance()->getProjectionMatrix();
-
-		/*render.material->getConstantBuffer()->update(deviceContext, &cbd);
-		deviceContext->setConstantBuffer(render.material->getVertexShader(), render.material->getConstantBuffer());
-		deviceContext->setConstantBuffer(render.material->getPixelShader(), render.material->getConstantBuffer());*/
-
-		/*deviceContext->setVertexBuffer(render.mesh->getVertexBuffer());
-		deviceContext->setIndexBuffer(render.mesh->getIndexBuffer());
-
-		deviceContext->drawIndexedTriangleList(render.mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);*/
-	}
-}
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
 	SwapChainPtr swap_chain = nullptr;

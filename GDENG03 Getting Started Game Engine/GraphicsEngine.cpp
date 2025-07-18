@@ -1,9 +1,6 @@
 #include "GraphicsEngine.h"
+#include "RenderSystem.h"
 #include <exception>
-
-#include "EntityManager.h"
-#include "ComponentManager.h"
-#include "SystemManager.h"
 
 GraphicsEngine* GraphicsEngine::m_engine = nullptr;
 
@@ -44,9 +41,6 @@ GraphicsEngine::GraphicsEngine()
 
 	this->m_render_system->releaseCompiledShader();
 	/*--------------------------------------------------------------*/
-
-	// Initialize ECS Managers
-	this->initECS();
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -66,9 +60,9 @@ GraphicsEngine* GraphicsEngine::getInstance()
 
 void GraphicsEngine::create()
 {
-	if (GraphicsEngine::m_engine)
+	if(GraphicsEngine::m_engine)
 		throw std::exception("GraphicsEngine has already been created. Don't call GraphicsEngine::create() anymore.");
-
+	
 	GraphicsEngine::m_engine = new GraphicsEngine();
 }
 
@@ -99,25 +93,4 @@ void GraphicsEngine::getVertexMeshLayoutShaderByteCodeAndSize(void** byte_code, 
 {
 	*byte_code = this->m_mesh_layout_byte_code;
 	*size = this->m_mesh_layout_size;
-}
-
-// --- ECS Method Implementations ---
-
-void GraphicsEngine::initECS()
-{
-	componentManager = std::make_unique<ComponentManager>();
-	entityManager = std::make_unique<EntityManager>();
-	systemManager = std::make_unique<SystemManager>();
-}
-
-EntityId GraphicsEngine::createEntity()
-{
-	return entityManager->createEntity();
-}
-
-void GraphicsEngine::destroyEntity(EntityId entity)
-{
-	entityManager->destroyEntity(entity);
-	componentManager->entityDestroyed(entity);
-	systemManager->entityDestroyed(entity);
 }
