@@ -2,6 +2,11 @@
 #include "GraphicsEngine.h"
 
 BaseGameObject::BaseGameObject(std::string name, RenderSystem* renderSystem) : name(name), renderSystem(renderSystem){
+	this->name = name;
+	this->localPosition = Vector3D(0, 0, 0);
+	this->localRotation = Vector3D(0, 0, 0);
+	this->localScale = Vector3D(1, 1, 1);
+	this->m_rigidBody = nullptr;
 }
 BaseGameObject::~BaseGameObject() {
 }
