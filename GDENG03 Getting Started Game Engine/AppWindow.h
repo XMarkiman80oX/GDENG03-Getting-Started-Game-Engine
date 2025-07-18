@@ -63,7 +63,8 @@ private:
 	float rotationX = 0.0f;
 	float rotationY = 0.0f;
 
-	Vector3D cubeScale = Vector3D(1.0f);
+	float m_scale = 1.0f;
+	const float m_scaleSpeed = 0.1f;
 
 	//Represents the sign of direction
 	float forward = 0.0f;

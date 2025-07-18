@@ -56,17 +56,17 @@ void AppWindow::onCreate()
 		MessageBox(nullptr, L"Failed to load mesh.", L"Error", MB_OK);
 		// You might want to close the application here or use a default texture
 	}
-	
+
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 	this->m_depth_buffer = GraphicsEngine::get()->getRenderSystem()->createDepthBuffer(rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
 
 
-	this->worldCamera.setTranslation(Vector3D(0,0,-2));
+	this->worldCamera.setTranslation(Vector3D(0, 0, -2));
 
 	//Set the vertices of the object here
 	//This is using the triangle strip approach
-	Vector3D position_list[] = 
+	Vector3D position_list[] =
 	{
 		/***************FRONT FACE****************/
 		{Vector3D(-0.5f, -0.5f, -0.5f) }, //POS1
@@ -91,10 +91,10 @@ void AppWindow::onCreate()
 
 	};
 	vertex vertexList[] = {
-		{position_list[0], texcoord_list[1]}, 
-		{position_list[1], texcoord_list[0]}, 
-		{position_list[2], texcoord_list[2]}, 
-		{position_list[3], texcoord_list[3]}, 
+		{position_list[0], texcoord_list[1]},
+		{position_list[1], texcoord_list[0]},
+		{position_list[2], texcoord_list[2]},
+		{position_list[3], texcoord_list[3]},
 
 		{position_list[4], texcoord_list[1]},
 		{position_list[5], texcoord_list[0]},
@@ -122,7 +122,7 @@ void AppWindow::onCreate()
 		{position_list[0], texcoord_list[3]}
 	};
 	UINT size_list = ARRAYSIZE(vertexList);
-	
+
 	/*----------------INDEX BUFFER PART----------------*/
 	unsigned int index_list[] = {
 		//FRONT SIDE
@@ -146,7 +146,7 @@ void AppWindow::onCreate()
 	};
 	UINT size_index_list = ARRAYSIZE(index_list);
 	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list);
-	
+
 	/*------------------------------------------------*/
 
 	/*----------------VERTEX SHADER PART----------------*/
@@ -154,12 +154,12 @@ void AppWindow::onCreate()
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
 	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	
+
 
 	this->m_vertex_shader = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 
 	this->m_vertex_buffer = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer(vertexList, sizeof(vertex), size_list, shader_byte_code, size_shader);
-	
+
 	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 	/*------------------------------------------------*/
 
@@ -188,8 +188,8 @@ void AppWindow::onUpdate()
 
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor
 	(
-		this->m_swap_chain, 
-		this->m_depth_buffer, 
+		this->m_swap_chain,
+		this->m_depth_buffer,
 		0, 0.3f, 0.4f, 1
 	);
 	RECT rc = this->getClientWindowRect();
@@ -206,7 +206,7 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_pixel_shader, this->m_wood_tex);
 
 	//Here we will pass the vertex buffer from which to get the vertices to render
-    GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
 
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh->getIndexBuffer());
 
@@ -250,28 +250,10 @@ void AppWindow::update()
 
 	Matrix4x4 temp;
 	this->m_delta_scale += this->m_delta_time * movementRate;
-	//cc.m_world.setTranslation(Vector3D::lerp(Vector3D(-2.0f, -2.0f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), this->m_delta_pos));
-	/*cc.m_world.setScale(Vector3D::lerp(Vector3D(0.5f, 0.5f, 0.0f), Vector3D(2.0f, 2.0f, 0.0f), (sin(this->m_delta_scale)+1.0f)/2.0f));
-
-	temp.setTranslation(Vector3D::lerp(Vector3D(-1.5f, -1.5f, 0.0f), Vector3D(1.5f, 1.5f, 0.0f), this->m_delta_pos));
-
-	cc.m_world *= temp;*/
-
-	//cc.m_world.setScale(this->cubeScale);
-
-	//temp.setIdentity();
-	//temp.setRotationZ(0.0f);
-	//cc.m_world *= temp;
-
-	//temp.setIdentity();
-	//temp.setRotationY(this->rotationY);
-	//cc.m_world *= temp;
-
-	//temp.setIdentity();
-	//temp.setRotationX(this->rotationX);
-	//cc.m_world *= temp;
 
 	cc.m_world.setIdentity();
+	cc.m_world.setScale(Vector3D(m_scale, m_scale, m_scale));
+
 	float cubeSizeMultiplier = 1 / 300.0f;
 
 	Matrix4x4 worldCam;
@@ -287,9 +269,9 @@ void AppWindow::update()
 
 	//moving through the z axis
 	//float value entails how much units is moved
-	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward*0.3f);
-	
-	newPos = newPos + worldCam.getXDirection() * (this->rightward*0.3f);
+	Vector3D newPos = this->worldCamera.getTranslation() + worldCam.getZDirection() * (this->forward * 0.3f);
+
+	newPos = newPos + worldCam.getXDirection() * (this->rightward * 0.3f);
 
 	//setting our camera backwards two points along the x axis
 	worldCam.setTranslation(newPos);
@@ -305,73 +287,70 @@ void AppWindow::update()
 	);
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-	
-	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width/(float)height, 0.1f, 100.0f);
+
+	cc.m_proj.setPerspectiveFOVLH(1.57f, (float)width / (float)height, 0.1f, 100.0f);
 	this->m_constant_buffer->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
 }
 
 void AppWindow::onLeftMouseDown(const Point& mousePosition)
 {
-	//means xyz are all uniform
-	this->cubeScale = Vector3D(0.5f);
 }
 
 void AppWindow::onLeftMouseUp(const Point& mousePosition)
 {
-	this->cubeScale = Vector3D(1.0f);
 }
 
 void AppWindow::onRightMouseDown(const Point& mousePosition)
 {
-	this->cubeScale = Vector3D(2.0f);
 }
 
 void AppWindow::onRightMouseUp(const Point& mousePosition)
 {
-	this->cubeScale = Vector3D(1.0f);
 }
 
 void AppWindow::onMouseMove(const Point& mousePosition)
 {
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
-	
-	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width/2.0f)) * this->m_delta_time;
-	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height/2.0f)) * this->m_delta_time;
-	
+
+	float incrementerX = this->rotationSpeedMultiplier * (mousePosition.x - (width / 2.0f)) * this->m_delta_time;
+	float incrementerY = this->rotationSpeedMultiplier * (mousePosition.y - (height / 2.0f)) * this->m_delta_time;
+
 	if (!this->invertedIsOn)
 	{
 		this->rotationX -= incrementerY;
 		this->rotationY -= incrementerX;
 	}
-	else 
+	else
 	{
 		this->rotationX += incrementerY;
 		this->rotationY += incrementerX;
 	}
-	
+
 	//So it clamps to the mouse's initial position in the window
-	InputSystem::getInstance()->setCursorPosition(Point(width/2.0f, height/2.0f));
+	InputSystem::getInstance()->setCursorPosition(Point(width / 2.0f, height / 2.0f));
 }
 
 void AppWindow::onKeyDown(int key)
 {
 	switch (key) {
 	case 'W':
-		//this->rotationX += rotationSpeedMultiplier * this->m_delta_time;
 		this->forward = 1.0f;
 		break;
 	case 'S':
-		//this->rotationX -= rotationSpeedMultiplier * this->m_delta_time;
 		this->forward = -1.0f;
 		break;
 	case 'A':
-		//this->rotationY += rotationSpeedMultiplier * this->m_delta_time;
 		this->rightward = -1.0f;
 		break;
 	case 'D':
-		//this->rotationY -= rotationSpeedMultiplier * this->m_delta_time;
 		this->rightward = 1.0f;
+		break;
+	case 'Q':
+		this->m_scale -= this->m_scaleSpeed;
+		break;
+	case 'E':
+		this->m_scale += this->m_scaleSpeed;
 		break;
 	}
 }
