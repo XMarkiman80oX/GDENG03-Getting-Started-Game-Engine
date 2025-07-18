@@ -45,11 +45,9 @@ void AppWindow::onCreate()
 	m_physicsWorld->setGravity(reactphysics3d::Vector3(0.0, -9.81, 0.0));
 
 	// Create Game Objects
-	Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
 	Plane* marcosPlane = new Plane("Marco's Plane", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
 	marcosPlane->setPosition(Vector3D(0, 0, 0));
 	marcosPlane->setScale(100);
-	this->objectsInWorld.push_back(marcosCube);
 	this->objectsInWorld.push_back(marcosPlane);
 
 
@@ -82,7 +80,8 @@ void AppWindow::onUpdate()
 	WorldCamera::getInstance()->updateCamera();
 
 	// Update physics world BEFORE updating game objects
-	//m_physicsWorld->update(this->deltaTime);
+	 if (this->deltaTime > 0.0f)
+		m_physicsWorld->update(this->deltaTime);
 
 	// Update game object transforms from physics simulation
 	for (auto& object : objectsInWorld)
