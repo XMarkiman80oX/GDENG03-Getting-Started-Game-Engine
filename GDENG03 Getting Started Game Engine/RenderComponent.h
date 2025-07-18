@@ -10,4 +10,6 @@ public:
     VertexShaderPtr vertexShader;
     PixelShaderPtr pixelShader;
     ConstantBufferPtr constantBuffer;
+    VertexBufferPtr vertexBuffer;
+    IndexBufferPtr indexBuffer;
 };

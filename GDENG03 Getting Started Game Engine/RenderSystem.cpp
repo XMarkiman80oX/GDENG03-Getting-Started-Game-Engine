@@ -122,10 +122,10 @@ void RenderSystem::draw(int width, int height, System& system)
 		deviceContext->setConstantBuffer(render.vertexShader, render.constantBuffer);
 		deviceContext->setConstantBuffer(render.pixelShader, render.constantBuffer);
 
-		/*deviceContext->setVertexBuffer(render.mesh->getVertexBuffer());
-		deviceContext->setIndexBuffer(render.mesh->getIndexBuffer());
+		deviceContext->setVertexBuffer(render.vertexBuffer);
+		deviceContext->setIndexBuffer(render.indexBuffer);
 
-		deviceContext->drawIndexedTriangleList(render.mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);*/
+		deviceContext->drawIndexedTriangleList(render.indexBuffer->getSizeIndexList(), 0, 0);
 	}
 }
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)

@@ -1,16 +1,29 @@
 #pragma once
 #include "SystemAttributes.h"
+#include "GraphicsEngine.h"
+#include "TransformComponent.h"
+#include "RenderComponent.h"
+#include "ConstantBufferData.h"
+#include "BaseGameObject.h"
+#include "Vector3D.h"
 #include <queue>
 #include <array>
 #include <bitset>
 
-class EntityManager
+class GameObjectManager
 {
 public:
-    EntityManager();
-    ~EntityManager();
+    GameObjectManager();
+    ~GameObjectManager();
 
-    EntityId createEntity();
+    void createGameObject(BaseGameObject* spawningObject);
+
+    EntityId generateEntityID();
+
+public:
+    static GameObjectManager* getInstance();
+    static void create();
+    static void release();
 
 public:
     void setSignature(EntityId entity, std::bitset<MAX_COMPONENTS> signature); 
@@ -20,6 +33,9 @@ public:
 
 public:
     void destroyEntity(EntityId entity);
+
+private:
+    static GameObjectManager* gameObjectManager;
 
 private:
     std::queue<EntityId> availableEntities{};

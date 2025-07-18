@@ -22,7 +22,24 @@ private:
 	Vector3D m_rotation_speed;
 
 public:
-	Cube(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem);
+	Cube(
+		std::string name, 
+		void* shaderByteCode, 
+		size_t sizeShader,
+		RenderSystem* renderSystem,
+		const Vector3D& position = Vector3D(),
+		const Vector3D& rotation = Vector3D(),
+		const Vector3D& scale = Vector3D(1.0f),
+		const wchar_t* texturePath = nullptr,
+		const wchar_t* meshPath = nullptr
+	);
+	Cube(
+		std::string name, 
+		void* shaderByteCode, 
+		size_t sizeShader, 
+		const wchar_t* texturePath, 
+		RenderSystem* renderSystem
+	);
 	~Cube();
 
 public:

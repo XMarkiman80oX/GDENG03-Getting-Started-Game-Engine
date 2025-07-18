@@ -4,7 +4,7 @@
 #include "RenderSystem.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
-#include "EntityManager.h"
+#include "GameObjectManager.h"
 #include "ComponentManager.h"
 #include "SystemManager.h"
 #include <bitset>
@@ -22,8 +22,6 @@ public:
 	void getVertexMeshLayoutShaderByteCodeAndSize(void** byte_code, size_t* size);
 
 	// --- ECS Methods ---
-	void initECS();
-	EntityId createEntity();
 	void destroyEntity(EntityId entity);
 
 	template<typename T>
@@ -32,18 +30,18 @@ public:
 	template<typename T>
 	void addComponent(EntityId entity, T component) {
 		componentManager->addComponent<T>(entity, component);
-		auto signature = entityManager->getSignature(entity);
+		auto signature = gameObjectManager->getSignature(entity);
 		signature.set(componentManager->getComponentType<T>(), true);
-		entityManager->setSignature(entity, signature);
+		gameObjectManager->setSignature(entity, signature);
 		systemManager->entitySignatureChanged(entity, signature);
 	}
 
 	template<typename T>
 	void removeComponent(EntityId entity) {
 		componentManager->removeComponent<T>(entity);
-		auto signature = entityManager->getSignature(entity);
+		auto signature = gameObjectManager->getSignature(entity);
 		signature.set(componentManager->getComponentType<T>(), false);
-		entityManager->setSignature(entity, signature);
+		gameObjectManager->setSignature(entity, signature);
 		systemManager->entitySignatureChanged(entity, signature);
 	}
 
@@ -73,7 +71,7 @@ private:
 	size_t m_mesh_layout_size = 0;
 
 	// --- ECS Members ---
-	std::unique_ptr<ComponentManager> componentManager;
-	std::unique_ptr<EntityManager> entityManager;
-	std::unique_ptr<SystemManager> systemManager;
+	ComponentManagerPtr componentManager;
+	GameObjectManagerPtr gameObjectManager;
+	SystemManagerPtr systemManager;
 };

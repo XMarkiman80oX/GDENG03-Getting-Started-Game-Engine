@@ -6,6 +6,7 @@ int main() {
 	try {
 		GraphicsEngine::create();
 		InputSystem::create();
+		GameObjectManager::create();
 	}
 	catch (...) 
 	{
@@ -28,5 +29,6 @@ int main() {
 
 	GraphicsEngine::release(); // Clean up graphics engine resources
 	InputSystem::release(); // Clean up input system resources
+	GameObjectManager::release(); 
 	return 0;
 }

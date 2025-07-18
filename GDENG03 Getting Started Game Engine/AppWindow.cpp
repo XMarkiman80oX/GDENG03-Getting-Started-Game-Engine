@@ -36,7 +36,6 @@ void AppWindow::onCreate()
 	InputSystem::getInstance()->addListener(this);
 	InputSystem::getInstance()->showCursor(this->cursorIsVisible);
 
-	GraphicsEngine::getInstance()->initECS();
 	GraphicsEngine::getInstance()->registerComponent<TransformComponent>();
 	GraphicsEngine::getInstance()->registerComponent<RenderComponent>();
 
@@ -48,33 +47,7 @@ void AppWindow::onCreate()
 	GraphicsEngine::getInstance()->setSystemSignature<System>(renderSignature); // Set signature for the generic system
 
 	// Create a cube entity
-	EntityId cube = GraphicsEngine::getInstance()->createEntity();
-
-	TransformComponent transform;
-	transform.position = Vector3D(0, 0, 0);
-	transform.rotation = Vector3D(0, 0, 0);
-	transform.scale = Vector3D(1, 1, 1);
-	GraphicsEngine::getInstance()->addComponent(cube, transform);;
-
-	RenderComponent render;
-	render.mesh = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\cube.obj");
-	render.texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
-
-	// Create a basic material
-	GraphicsEngine::getInstance()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	render.vertexShader = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
-	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
-
-	GraphicsEngine::getInstance()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-	render.pixelShader = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
-	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
-
-	constantBufferData cbd = {};
-	cbd.m_time = 0;
-	render.constantBuffer = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer(&cbd, sizeof(constantBufferData));
-
-
-	GraphicsEngine::getInstance()->addComponent(cube, render);
+	GameObjectManager::getInstance()->createGameObject(new Cube("Marco's Cube", shader_byte_code, size_shader, L"..\\Assets\\Textures\\brick.png", GraphicsEngine::getInstance()->getRenderSystem()));
 
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::getInstance()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);

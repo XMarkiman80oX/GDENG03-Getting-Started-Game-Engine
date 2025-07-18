@@ -1,7 +1,23 @@
 #include "BaseGameObject.h"
 #include "GraphicsEngine.h"
 
-BaseGameObject::BaseGameObject(std::string name, RenderSystem* renderSystem) : name(name), renderSystem(renderSystem){
+BaseGameObject::BaseGameObject(
+	std::string name,
+	RenderSystem* renderSystem,
+	const Vector3D& position, 
+	const Vector3D& rotation, 
+	const Vector3D& scale, 
+	const wchar_t* texturePath = nullptr,
+	const wchar_t* meshPath = nullptr)
+	: 
+	name(name), 
+	renderSystem(renderSystem),
+	localPosition(position),
+	localScale(rotation),
+	localRotation(scale),
+	texturePath(texturePath),
+	meshPath(meshPath)
+{
 }
 BaseGameObject::~BaseGameObject() {
 }
@@ -77,4 +93,14 @@ Vector3D BaseGameObject::getLocalRotation()
 std::string BaseGameObject::getName()
 {
 	return this->name;
+}
+
+const wchar_t* BaseGameObject::getMeshPath()
+{
+	return this->meshPath;
+}
+
+const wchar_t* BaseGameObject::getTexturePath()
+{
+	return this->texturePath;
 }

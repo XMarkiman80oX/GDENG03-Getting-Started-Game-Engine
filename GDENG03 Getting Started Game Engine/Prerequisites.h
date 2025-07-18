@@ -21,6 +21,9 @@ class Mesh;
 class MeshManager;
 class BaseGameObject;
 class System;
+class ComponentManager;
+class GameObjectManager;
+class SystemManager;
 
 struct vertex
 {
@@ -40,3 +43,6 @@ typedef std::shared_ptr<Texture> TexturePtr;
 typedef std::shared_ptr<Mesh> MeshPtr;
 typedef std::shared_ptr<DepthBuffer> DepthBufferPtr;
 typedef std::shared_ptr<System> SystemPtr;
+typedef std::unique_ptr<ComponentManager> ComponentManagerPtr;
+typedef std::unique_ptr<GameObjectManager> GameObjectManagerPtr;
+typedef std::unique_ptr<SystemManager> SystemManagerPtr;

@@ -2,9 +2,9 @@
 #include "SwapChain.h"
 #include "WorldCamera.h"
 #include "InputSystem.h"
-#include "GraphicsEngine.h"
 
-Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader, RenderSystem* renderSystem) : BaseGameObject(name, renderSystem)
+Cube::Cube(std::string name, void* shaderByteCode, size_t sizeShader, const wchar_t* texturePath, RenderSystem* renderSystem)
+	: BaseGameObject(name, renderSystem, Vector3D(),Vector3D(), Vector3D(), texturePath)
 {
 	this->initializeObject(shaderByteCode, sizeShader);
 }

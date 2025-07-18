@@ -1,7 +1,7 @@
 #include "GraphicsEngine.h"
 #include <exception>
 
-#include "EntityManager.h"
+#include "GameObjectManager.h"
 #include "ComponentManager.h"
 #include "SystemManager.h"
 
@@ -33,6 +33,7 @@ GraphicsEngine::GraphicsEngine()
 		throw std::exception("Mesh Manager not created successfully");
 	}
 
+
 	/*----------------VERTEX MESH LAYOUT SHADER PART----------------*/
 	void* shader_byte_code = nullptr;
 	size_t size_shader = 0;
@@ -46,7 +47,9 @@ GraphicsEngine::GraphicsEngine()
 	/*--------------------------------------------------------------*/
 
 	// Initialize ECS Managers
-	this->initECS();
+	componentManager = std::make_unique<ComponentManager>();
+	gameObjectManager = std::make_unique<GameObjectManager>();
+	systemManager = std::make_unique<SystemManager>();
 }
 
 GraphicsEngine::~GraphicsEngine()
@@ -103,21 +106,9 @@ void GraphicsEngine::getVertexMeshLayoutShaderByteCodeAndSize(void** byte_code, 
 
 // --- ECS Method Implementations ---
 
-void GraphicsEngine::initECS()
-{
-	componentManager = std::make_unique<ComponentManager>();
-	entityManager = std::make_unique<EntityManager>();
-	systemManager = std::make_unique<SystemManager>();
-}
-
-EntityId GraphicsEngine::createEntity()
-{
-	return entityManager->createEntity();
-}
-
 void GraphicsEngine::destroyEntity(EntityId entity)
 {
-	entityManager->destroyEntity(entity);
+	gameObjectManager->destroyEntity(entity);
 	componentManager->entityDestroyed(entity);
 	systemManager->entityDestroyed(entity);
 }

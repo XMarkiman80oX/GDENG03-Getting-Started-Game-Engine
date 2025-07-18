@@ -9,8 +9,10 @@
 #include <vector>
 #include <exception>
 #include "EngineTime.h"
+#include "GraphicsEngine.h"
+#include "IEntity.h"
 
-class BaseGameObject
+class BaseGameObject : public IEntity
 {
 protected: //Inherited to other primitives
 	RenderSystem* renderSystem; //Pointer to the render system, so we can access the device and context
@@ -23,6 +25,7 @@ protected: //Inherited to other primitives
 	Vector3D localMatrix; 
 
 	const wchar_t* texturePath;
+	const wchar_t* meshPath;
 
 	TexturePtr texture;
 
@@ -30,7 +33,15 @@ protected: //Inherited to other primitives
 	bool isSelected = false;
 
 public: //Constructors
-	BaseGameObject(std::string name, RenderSystem* renderSystem);
+	BaseGameObject(
+		std::string name,
+		RenderSystem* renderSystem,
+		const Vector3D& position = Vector3D(),
+		const Vector3D& rotation = Vector3D(),
+		const Vector3D& scale = Vector3D(1.0f),
+		const wchar_t* texturePath = nullptr,
+		const wchar_t* meshPath = nullptr
+	);
 	~BaseGameObject();
 
 public: //ABSTRACT CLASSES
@@ -56,6 +67,7 @@ public: //Setters
 public: //Getters
 	Vector3D getLocalRotation();
 	std::string getName();
-
+	const wchar_t* getMeshPath();
+	const wchar_t* getTexturePath();
 };
 
