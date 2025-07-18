@@ -1,10 +1,10 @@
 #pragma once
 #include <d3d11.h>
 #include "Prerequisites.h"
+#include "GameObjectManager.h"
 #include "RenderSystem.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
-#include "GameObjectManager.h"
 #include "ComponentManager.h"
 #include "SystemManager.h"
 #include <bitset>
@@ -30,7 +30,7 @@ public:
 	template<typename T>
 	void addComponent(EntityId entity, T component) {
 		componentManager->addComponent<T>(entity, component);
-		auto signature = gameObjectManager->getSignature(entity);
+		auto signature = gameObjectManager->getSignature(entity); // No more undefined type error
 		signature.set(componentManager->getComponentType<T>(), true);
 		gameObjectManager->setSignature(entity, signature);
 		systemManager->entitySignatureChanged(entity, signature);
@@ -72,6 +72,6 @@ private:
 
 	// --- ECS Members ---
 	ComponentManagerPtr componentManager;
-	GameObjectManagerPtr gameObjectManager;
+	GameObjectManagerPtr gameObjectManager; // Fully defined type is now available
 	SystemManagerPtr systemManager;
 };

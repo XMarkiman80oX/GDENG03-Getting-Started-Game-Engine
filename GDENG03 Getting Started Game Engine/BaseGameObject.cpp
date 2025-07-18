@@ -4,13 +4,13 @@
 BaseGameObject::BaseGameObject(
 	std::string name,
 	RenderSystem* renderSystem,
-	const Vector3D& position, 
-	const Vector3D& rotation, 
-	const Vector3D& scale, 
-	const wchar_t* texturePath = nullptr,
-	const wchar_t* meshPath = nullptr)
-	: 
-	name(name), 
+	const Vector3D& position,
+	const Vector3D& rotation,
+	const Vector3D& scale,
+	const wchar_t* texturePath,
+	const wchar_t* meshPath)
+	:
+	name(name),
 	renderSystem(renderSystem),
 	localPosition(position),
 	localScale(rotation),
