@@ -11,6 +11,7 @@
 #include "ConstantBufferData.h"
 #include "TransformComponent.h"
 #include "RenderComponent.h"
+#include "System.h"
 
 AppWindow::AppWindow()
 {
@@ -39,7 +40,7 @@ void AppWindow::onCreate()
 	GraphicsEngine::getInstance()->registerComponent<TransformComponent>();
 	GraphicsEngine::getInstance()->registerComponent<RenderComponent>();
 
-	auto renderSystemECS = GraphicsEngine::getInstance()->registerSystem<System>(); // Register a generic system for rendering
+	this->renderSystemECS = GraphicsEngine::getInstance()->registerSystem<System>(); // Register a generic system for rendering
 
 	std::bitset<MAX_COMPONENTS> renderSignature;
 	renderSignature.set(GraphicsEngine::getInstance()->getComponentType<TransformComponent>());
@@ -58,31 +59,22 @@ void AppWindow::onCreate()
 	RenderComponent render;
 	render.mesh = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\cube.obj");
 	render.texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\brick.png");
-	
+
 	// Create a basic material
 	GraphicsEngine::getInstance()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "main", &shader_byte_code, &size_shader);
-	VertexShaderPtr vs = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
+	render.vertexShader = GraphicsEngine::getInstance()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
 
 	GraphicsEngine::getInstance()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "main", &shader_byte_code, &size_shader);
-	PixelShaderPtr ps = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
+	render.pixelShader = GraphicsEngine::getInstance()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
 	GraphicsEngine::getInstance()->getRenderSystem()->releaseCompiledShader();
 
 	constantBufferData cbd = {};
 	cbd.m_time = 0;
-	ConstantBufferPtr cb = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer(&cbd, sizeof(constantBufferData));
+	render.constantBuffer = GraphicsEngine::getInstance()->getRenderSystem()->createConstantBuffer(&cbd, sizeof(constantBufferData));
 
 
 	GraphicsEngine::getInstance()->addComponent(cube, render);
-
-	/*try {
-		this->m_mesh = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\teapot.obj");
-		this->m_mesh2 = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\bunny.obj");
-		this->m_mesh3 = GraphicsEngine::getInstance()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\armadillo.obj");
-	}
-	catch (const std::exception& e) {
-		MessageBox(nullptr, L"Failed to load mesh.", L"Error", MB_OK);
-	}*/
 
 	RECT rc = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::getInstance()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left /* Width */, rc.bottom - rc.top /* Height */);
@@ -91,14 +83,6 @@ void AppWindow::onCreate()
 
 	WorldCamera::getInstance()->initialize(rc);
 	WorldCamera::getInstance()->setTranslation(Vector3D(0, 0, -2));
-
-	/*Cube* marcosCube = new Cube("Marco's Cube", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
-	Plane* marcosPlane = new Plane("Marco's Plane", shader_byte_code, size_shader, GraphicsEngine::getInstance()->getRenderSystem());
-
-	marcosPlane->setPosition(Vector3D(0, 0, 2));
-	marcosPlane->setScale(100);
-	this->objectsInWorld.push_back(marcosCube);
-	this->objectsInWorld.push_back(marcosPlane);*/
 }
 
 void AppWindow::onUpdate()
@@ -118,9 +102,7 @@ void AppWindow::onUpdate()
 
 	WorldCamera::getInstance()->updateCamera();
 
-	auto renderSystemECS = GraphicsEngine::getInstance()->registerSystem<System>();
-
-	GraphicsEngine::getInstance()->getRenderSystem()->draw(rc.right - rc.left, rc.bottom - rc.top, *renderSystemECS);
+	GraphicsEngine::getInstance()->getRenderSystem()->draw(rc.right - rc.left, rc.bottom - rc.top, *this->renderSystemECS);
 
 	m_swap_chain->present(true);
 }
@@ -161,16 +143,10 @@ void AppWindow::onRightMouseUp(const Point& mousePosition)
 
 void AppWindow::updateGameObjects(RECT clientWindowRect)
 {
-	for(BaseGameObject* object : this->objectsInWorld)
-	{
-		object->update(clientWindowRect);
-		object->draw(clientWindowRect.right - clientWindowRect.left, clientWindowRect.bottom - clientWindowRect.top);
-	}
 }
 
 void AppWindow::destroyGameObjects()
 {
-	this->objectsInWorld.clear();
 }
 
 void AppWindow::selectNextObject()
@@ -178,15 +154,9 @@ void AppWindow::selectNextObject()
 	this->objectSelectedIndex++;
 
 	//Make sure it doesn't go over the amount of objects in this->objectsInWorld
-	if (this->objectSelectedIndex > this->objectsInWorld.size() - 1)
+	if (this->objectSelectedIndex > 0)
 		this->objectSelectedIndex = 0;
 
-	//Set All Selected Objects to false first before toggling it on
-	for (BaseGameObject* object : this->objectsInWorld) {
-		this->objectsInWorld[this->objectSelectedIndex]->setSelected(false);
-	}
-
-	this->objectsInWorld[this->objectSelectedIndex]->setSelected(true);
 }
 
 void AppWindow::onMouseMove(const Point& mousePosition)

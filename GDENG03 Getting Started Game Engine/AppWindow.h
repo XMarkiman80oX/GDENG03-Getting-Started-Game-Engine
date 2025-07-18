@@ -14,9 +14,10 @@
 #include "Matrix4x4.h"	
 #include "Prerequisites.h"	
 #include "WorldCamera.h"	
-#include "Cube.h"
-#include "Sphere.h"
 #include <vector>
+#include <memory>
+#include "System.h"
+
 
 class AppWindow : public Window, public InputListener
 {
@@ -31,9 +32,9 @@ private:
 	bool invertedIsOn = false;
 	bool cursorIsVisible = false;
 
-	std::vector<BaseGameObject*> objectsInWorld = {};
-
 	int objectSelectedIndex = 0;
+	std::shared_ptr<System> renderSystemECS;
+
 
 public:
 	static AppWindow* getInstance();
@@ -75,7 +76,7 @@ private:
 	MeshPtr m_mesh2;
 	MeshPtr m_mesh3;
 
-//HELPER FUNCTIONS
+	//HELPER FUNCTIONS
 private:
 	void updateGameObjects(RECT clientWindowRect);
 	void destroyGameObjects();

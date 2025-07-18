@@ -1,7 +1,5 @@
 #include "EntityManager.h"
 
-#include <array>
-
 EntityManager::EntityManager()
 {
     for (EntityId entity = 0; entity < MAX_ENTITIES; ++entity)

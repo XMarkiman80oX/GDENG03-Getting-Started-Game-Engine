@@ -1,5 +1,3 @@
-#include "TransformComponent.h"
-#include "RenderComponent.h"
 #include "RenderSystem.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"
@@ -9,6 +7,8 @@
 #include "VertexShader.h"
 #include "PixelShader.h"
 #include "DepthBuffer.h"
+#include "TransformComponent.h"
+#include "RenderComponent.h"
 #include "ConstantBufferData.h"
 #include "EngineTime.h"
 #include "GraphicsEngine.h"
@@ -20,21 +20,12 @@
 
 
 RenderSystem::RenderSystem()
-{/* -"allows us to create the device from which we will get access to all the necessary
-	* resources necessary to draw on the screen"
-	* -"The driver is what allows directX to exectute the throw in functions"
-	* - We have to loop through some driver types until the creation of the device will be successful
-	* hence why the vector
-	*/
+{
 	D3D_DRIVER_TYPE driver_types[] =
 	{
-		//Arranged best to worst
-		D3D_DRIVER_TYPE_HARDWARE, /*Where the drawing calls are executed mainly on the gpu
-										to guarantee the best performance
-									*/
-		D3D_DRIVER_TYPE_WARP, /* Where the draw and calls are all executed on the CPU
-								*/
-		D3D_DRIVER_TYPE_REFERENCE /* Really slow performance */
+		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_WARP,
+		D3D_DRIVER_TYPE_REFERENCE
 	};
 	UINT num_driver_types = ARRAYSIZE(driver_types);
 
@@ -46,7 +37,6 @@ RenderSystem::RenderSystem()
 
 	HRESULT res = 0;
 
-	//This loop is for scanning our vector of driver types
 	for (UINT driver_type_index = 0; driver_type_index < num_driver_types; ++driver_type_index)
 	{
 		res = D3D11CreateDevice(NULL, driver_types[driver_type_index], NULL, NULL, feature_levels,
@@ -64,33 +54,9 @@ RenderSystem::RenderSystem()
 
 	this->m_imm_device_context = std::make_shared<DeviceContext>(m_imm_context, this);
 
-	/*
-	*	If m_d3d_device supports IDXGIDevice, QueryInterface will
-	* return a pointer to it and that pointer will be stored in m_dxgi_device
-	*/
 	m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&m_dxgi_device);
-	/*
-	*	-IDXGIAdapter is basically the GPU or the hardware
-	*	-This queries info about the hardware and its capabilities
-	*	-The result of this call will give you a pointer to IDXGIAdapter, stored in m_dxgi_adapter.
-	*/
 	m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void**)&m_dxgi_adapter);
-	/*
-	*	-The IDXGIFactory interface allows you to create and manage resources related to DirectX,
-	such as swap chains (which manage buffers for rendering and presenting frames on the screen).
-		-The result of this call will give you a pointer to IDXGIFactory, stored in m_dxgi_factory.
-	*/
 	m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void**)&m_dxgi_factory);
-	/*
-	* DXGI (DirectX Graphics Infrastructure) provides low-level access to display devices,
-	such as video cards and monitors, and is responsible for tasks like
-	presenting rendered frames to the screen, managing full-screen transitions, and creating swap chains.
-
-	* -"By accessing the IDXGIDevice, IDXGIAdapter, and IDXGIFactory,
-	you can manage these resources and handle things like
-	creating swap chains, querying GPU information,
-	and handling display modes (windowed vs fullscreen)."
-	*/
 }
 
 RenderSystem::~RenderSystem()
@@ -116,13 +82,9 @@ void RenderSystem::draw(int width, int height, System& system)
 		auto& transform = GraphicsEngine::getInstance()->getComponent<TransformComponent>(entity);
 		auto& render = GraphicsEngine::getInstance()->getComponent<RenderComponent>(entity);
 
-		// Assuming RenderComponent has a MaterialPtr which holds shaders and constant buffers
-		// This part might need adjustment based on your final Material class structure.
-		// For now, I'll assume direct access to shaders and textures.
-
-		/*deviceContext->setVertexShader(render.material->getVertexShader());
-		deviceContext->setPixelShader(render.material->getPixelShader());
-		deviceContext->setTexture(render.material->getPixelShader(), render.texture);*/
+		deviceContext->setVertexShader(render.vertexShader);
+		deviceContext->setPixelShader(render.pixelShader);
+		deviceContext->setTexture(render.pixelShader, render.texture);
 
 		constantBufferData cbd = {};
 		cbd.m_time = static_cast<unsigned int>(EngineTime::getTotalElapsedTime() * 1000.0);
@@ -156,9 +118,9 @@ void RenderSystem::draw(int width, int height, System& system)
 		cbd.m_view = WorldCamera::getInstance()->getViewMatrix();
 		cbd.m_proj = WorldCamera::getInstance()->getProjectionMatrix();
 
-		/*render.material->getConstantBuffer()->update(deviceContext, &cbd);
-		deviceContext->setConstantBuffer(render.material->getVertexShader(), render.material->getConstantBuffer());
-		deviceContext->setConstantBuffer(render.material->getPixelShader(), render.material->getConstantBuffer());*/
+		render.constantBuffer->update(deviceContext, &cbd);
+		deviceContext->setConstantBuffer(render.vertexShader, render.constantBuffer);
+		deviceContext->setConstantBuffer(render.pixelShader, render.constantBuffer);
 
 		/*deviceContext->setVertexBuffer(render.mesh->getVertexBuffer());
 		deviceContext->setIndexBuffer(render.mesh->getIndexBuffer());
@@ -173,8 +135,7 @@ SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 	try {
 		swap_chain = std::make_shared<SwapChain>(this, hwnd, width, height);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
-	catch(...){
+	catch (...) {
 
 	}
 	return swap_chain;
@@ -194,11 +155,11 @@ VertexBufferPtr RenderSystem::createVertexBuffer(void* list_vertices, UINT size_
 	}
 	catch (const std::runtime_error& e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
-		throw; // Re-throw the exception
+		throw;
 	}
 	catch (...) {
 		std::cerr << "An unknown error occurred while creating the vertex buffer." << std::endl;
-		throw; // Re-throw the exception
+		throw;
 	}
 
 	return vertex_buffer;
@@ -210,7 +171,6 @@ ConstantBufferPtr RenderSystem::createConstantBuffer(void* buffer, UINT size_buf
 	try {
 		constant_buffer = std::make_shared<ConstantBuffer>(this, buffer, size_buffer);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
 
 	}
@@ -224,7 +184,6 @@ DepthBufferPtr RenderSystem::createDepthBuffer(UINT width, UINT height)
 	try {
 		depth_buffer = std::make_shared<DepthBuffer>(this, width, height);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
 
 	}
@@ -238,7 +197,6 @@ IndexBufferPtr RenderSystem::createIndexBuffer(void* list_indices, UINT size_lis
 	try {
 		index_buffer = std::make_shared<IndexBuffer>(this, list_indices, size_list);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
 
 	}
@@ -252,7 +210,6 @@ VertexShaderPtr RenderSystem::createVertexShader(const void* shader_byte_code, s
 	try {
 		vertex_shader = std::make_shared<VertexShader>(this, shader_byte_code, byte_code_size);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
 
 	}
@@ -266,7 +223,6 @@ PixelShaderPtr RenderSystem::createPixelShader(const void* shader_byte_code, siz
 	try {
 		pixel_shader = std::make_shared<PixelShader>(this, shader_byte_code, byte_code_size);
 	}
-	//if an exception is thrown and caught, the destructor is called automatically and the pointer is not touched
 	catch (...) {
 
 	}

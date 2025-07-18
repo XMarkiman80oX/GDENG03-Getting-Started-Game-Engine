@@ -6,6 +6,8 @@ class RenderComponent : public BaseComponent
 {
 public:
     MeshPtr mesh;
-    //MaterialPtr material;
     TexturePtr texture;
+    VertexShaderPtr vertexShader;
+    PixelShaderPtr pixelShader;
+    ConstantBufferPtr constantBuffer;
 };
