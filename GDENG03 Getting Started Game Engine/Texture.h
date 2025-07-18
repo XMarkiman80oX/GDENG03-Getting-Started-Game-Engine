@@ -5,9 +5,6 @@ class Texture : public Resource
 {
 public:
 	Texture(const wchar_t* full_path);
-
-	//allows for basic fill colors, not just images
-	Texture(const void* pixel_data, UINT width, UINT height);
 	~Texture();
 
 private:
