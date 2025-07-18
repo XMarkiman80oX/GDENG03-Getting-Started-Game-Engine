@@ -20,10 +20,12 @@ void Plane::update(RECT windowRect)
 
 void Plane::draw(int width, int height)
 {
+
     DeviceContextPtr deviceContext = GraphicsEngine::getInstance()->getRenderSystem()->getImmediateDeviceContext();
 
     deviceContext->setVertexShader(this->m_vertex_shader);
     deviceContext->setPixelShader(this->m_pixel_shader);
+    deviceContext->setTexture(this->m_pixel_shader, this->texture);
 
     constantBufferData cbd = {};
     cbd.m_time = 0;
@@ -56,6 +58,10 @@ void Plane::draw(int width, int height)
 
 void Plane::initializeObject(void* shaderByteCode, size_t sizeShader)
 {
+    //white plane
+    unsigned char white_pixel[] = { 255, 255, 255, 255 };
+    this->texture = GraphicsEngine::getInstance()->getTextureManager()->createTextureFromPixelData(white_pixel, 1, 1);
+
     //Set the vertices of the plane here
     vertex planeVertexList[] = {
         //X - Y - Z

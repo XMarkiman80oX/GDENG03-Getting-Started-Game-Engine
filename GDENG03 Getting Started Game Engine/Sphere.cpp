@@ -17,6 +17,7 @@ Sphere::~Sphere()
 
 void Sphere::initializeObject(void* shaderByteCode, size_t sizeShader)
 {
+    
     // Sphere generation
     const int stacks = 20;
     const int slices = 20;
