@@ -7,6 +7,8 @@ class TextureManager : public ResourceManager
 public:
 	TextureManager();
 	~TextureManager();
+
+public:
 	TexturePtr createTextureFromFile(const wchar_t* file_path);
 	//allows for basic fill colors, not just images
 	TexturePtr createTextureFromPixelData(const void* pixel_data, UINT width, UINT height);
